@@ -1,0 +1,7 @@
+graph TD
+    subgraph Physical Layer
+        A[Computer A] -- "Sends Data" --> B(Physical Cable/Wi-Fi);
+        C[Attacker with Sniffer] -- "Intercepts raw data" --> B;
+        B -- "Data travels to" --> D[Computer B];
+    end
+    style C fill:#ffcccc
