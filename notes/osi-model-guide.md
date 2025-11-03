@@ -82,7 +82,7 @@ The Open Systems Interconnection (OSI) model is a conceptual framework that stan
     *   **Characteristics:** It establishes a connection using a **three-way handshake**, performs error checking, and retransmits lost segments. It is used for applications where reliability is more important than speed, such as web browsing, email, and file transfers.
     *   **Real-World Example:** When you download a file, TCP ensures that every single piece of the file arrives and is reassembled in the correct order. If a segment is lost, TCP requests the sender to re-send it.
     *   **TCP Three-Way Handshake Diagram:**
-        ![TCP Three-Way Handshake](../images/tcp-three-way-handshake.png)
+        ![TCP Three-Way Handshake](../notes/images/tcp-three-way-handshake.png)
 
 -   **UDP (User Datagram Protocol):**
     *   **Function:** UDP is a simple, connectionless protocol that offers very fast, low-overhead data delivery.
@@ -103,7 +103,7 @@ The Open Systems Interconnection (OSI) model is a conceptual framework that stan
     *   **Characteristics:** IP is a connectionless protocol, meaning it does not guarantee delivery. It relies on TCP at the Transport Layer to provide reliability. It comes in two versions: **IPv4** (e.g., `192.168.1.1`) and **IPv6** (e.g., `2001:0db8:85a3:0000:0000:8a2e:0370:7334`).
     *   **Real-World Example:** When you send an email, the data is broken into IP packets. Each packet has a header containing the source IP address (your computer) and the destination IP address (the mail server). Routers on the internet read this destination IP address to forward the packet along the best path toward its destination.
     *   **Simplified IP Packet Header Diagram:**
-        ![IP Packet Header](../images/ip-packet-header.png)
+        ![IP Packet Header](../notes/images/ip-packet-header.png)
 
 -   **ICMP (Internet Control Message Protocol):**
     *   **Function:** ICMP is used by network devices to send error messages and operational information. It is not used to carry end-user data.
@@ -158,7 +158,7 @@ Data transmission down the OSI stack is called **encapsulation**, where each lay
 
 ### Encapsulation (Sending Data)
 
-![Encapsulation Process](../images/encapsulation-process.png)
+![Encapsulation Process](../notes/images/encapsulation-process.png)
 
 ### De-encapsulation (Receiving Data)
 
