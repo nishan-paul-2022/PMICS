@@ -25,11 +25,7 @@ This setup allows web pages to be composed from resources scattered across the i
   - PC running Firefox browser (client).
   - Server running Apache Web server.
 
-```mermaid
-graph TD
-    A[Client Browser] -->|HTTP Request| B[Web Server]
-    B -->|HTTP Response| A
-```
+![HTTP Client Server](../notes/images/http-client-server.png)
 
 ### HTTP and TCP
 - **TCP Usage**: HTTP relies on **TCP** (Transmission Control Protocol) for reliable data transfer.
@@ -41,16 +37,7 @@ graph TD
   - **Why Stateless?**: Keeping state (history of interactions) makes protocols complex. If the server or client crashes, their views of the state might not match, requiring reconciliation (fixing inconsistencies).
   - **Aside**: Protocols that maintain state are more complex to manage.
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant Server
-    Client->>Server: Initiate TCP connection (socket creation)
-    Server->>Client: Accept TCP connection
-    Client->>Server: Send HTTP request message
-    Server->>Client: Send HTTP response message
-    Client->>Server: Close TCP connection
-```
+![HTTP TCP Sequence](../notes/images/http-tcp-sequence.png)
 
 ## HTTP Connections: Two Types
 
@@ -70,11 +57,7 @@ sequenceDiagram
     - Close the connection when done.
 - **Advantage**: More efficient for transferring multiple objects.
 
-```mermaid
-graph TD
-    A[Non-Persistent HTTP] --> B[Multiple TCP Connections for Multiple Objects]
-    C[Persistent HTTP] --> D[Single TCP Connection for Multiple Objects]
-```
+![HTTP Connections](../notes/images/http-connections.png)
 
 ## Non-Persistent HTTP: Example
 - **Scenario**: User enters URL: `www.someSchool.edu/someDepartment/home.index` (an HTML file containing text and references to 10 JPEG images).
@@ -87,23 +70,7 @@ graph TD
   6. **Repeat for Each Object**: Steps 1-5 are repeated for each of the 10 JPEG objects.
 - **Connection Closure**: After sending the response, the server closes the TCP connection.
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant Server
-    Client->>Server: TCP Connect (port 80)
-    Server->>Client: Accept Connection
-    Client->>Server: HTTP Request for home.index
-    Server->>Client: HTTP Response with HTML
-    Server->>Client: Close TCP
-    loop For each JPEG
-        Client->>Server: TCP Connect
-        Server->>Client: Accept
-        Client->>Server: HTTP Request for JPEG
-        Server->>Client: HTTP Response with JPEG
-        Server->>Client: Close TCP
-    end
-```
+![Non-Persistent HTTP Sequence](../notes/images/non-persistent-http-sequence.png)
 
 ### Response Time in Non-Persistent HTTP
 - **RTT Definition**: **Round-Trip Time (RTT)** is the time for a small packet to travel from client to server and back.
@@ -113,15 +80,7 @@ sequenceDiagram
   - Time to transmit the file/object.
 - **Total Formula**: Non-persistent HTTP response time = 2RTT + file transmission time.
 
-```mermaid
-gantt
-    title Non-Persistent HTTP Response Time
-    dateFormat s
-    section Client
-    Initiate TCP Connection : 0, 1
-    Send Request & Receive Response Start : 1, 1
-    Transmit File : 2, 3
-```
+![Non-Persistent Response Time](../notes/images/non-persistent-response-time.png)
 
 ## Persistent HTTP (HTTP 1.1)
 - **Issues with Non-Persistent HTTP**:
@@ -134,18 +93,7 @@ gantt
   - Client sends requests as soon as it finds referenced objects.
   - Can reduce to as little as one RTT for all referenced objects (cutting response time in half).
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant Server
-    Client->>Server: TCP Connect
-    Server->>Client: Accept
-    Client->>Server: HTTP Request 1
-    Server->>Client: HTTP Response 1 (keep open)
-    Client->>Server: HTTP Request 2
-    Server->>Client: HTTP Response 2 (keep open)
-    Client->>Server: Close TCP
-```
+![Persistent HTTP Sequence](../notes/images/persistent-http-sequence.png)
 
 ## HTTP Request Message
 - **Message Types**: HTTP has two main types: request and response.
@@ -177,13 +125,7 @@ sequenceDiagram
   Entity Body (optional)
   ```
 
-```mermaid
-graph TD
-    A[HTTP Request Message] --> B[Request Line: GET /path HTTP/1.1]
-    A --> C[Header Lines: Host, User-Agent, etc.]
-    A --> D[Empty Line]
-    A --> E[Entity Body (optional)]
-```
+![HTTP Request Message](../notes/images/http-request-message.png)
 
 ### Other HTTP Request Methods
 - **POST Method**: Used when a web page has form input. User data is sent in the **entity body** of the HTTP POST request message.
@@ -210,12 +152,7 @@ graph TD
   data data data data data ...
   ```
 
-```mermaid
-graph TD
-    A[HTTP Response Message] --> B[Status Line: HTTP/1.1 200 OK]
-    A --> C[Header Lines: Date, Server, Content-Type, etc.]
-    A --> D[Data: Requested Object]
-```
+![HTTP Response Message](../notes/images/http-response-message.png)
 
 ### HTTP Response Status Codes
 - **Status Codes**: Appear in the first line of the server-to-client response. Indicate the result of the request.

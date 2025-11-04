@@ -15,17 +15,7 @@ At the application layer, the main activity is **processes communicating** with 
   - **Server process**: A process that waits to be contacted. For example, a web server waits for requests from clients.
 
 ### Diagram: Process Communication
-```mermaid
-graph TD
-    A[Host 1] --> B[Process A (Client)]
-    B --> C[Message Exchange]
-    C --> D[Process B (Server)]
-    D --> E[Host 2]
-
-    F[Same Host IPC] --> G[Process X]
-    G --> H[Process Y]
-    H --> I[OS-Defined Mechanism]
-```
+![Process Communication](../notes/images/process-communication.png)
 
 **Explanation of Diagram**:
 - Arrows show the flow of communication.
@@ -48,16 +38,7 @@ A **socket** is the interface between a process and the transport layer. It acts
   - The transport layer (below the socket) is controlled by the OS.
 
 ### Diagram: Socket Analogy
-```mermaid
-graph TD
-    A[Sending Process] --> B[Socket (Door)]
-    B --> C[Transport Infrastructure (Network)]
-    C --> D[Receiving Socket (Door)]
-    D --> E[Receiving Process]
-
-    F[App Developer Controls] --> B
-    G[OS Controls] --> C
-```
+![Socket Analogy](../notes/images/socket-analogy.png)
 
 **Explanation of Diagram**:
 - The socket is the "door" for sending/receiving messages.
@@ -80,15 +61,7 @@ To receive messages, a process must have a unique **identifier**. This is crucia
 - **Example**: To send an HTTP message to the web server at gaia.cs.umass.edu, use IP address 128.119.245.12 and port 80.
 
 ### Diagram: Process Addressing
-```mermaid
-graph TD
-    A[Host (IP: 128.119.245.12)] --> B[Process 1 (Port 80 - HTTP)]
-    A --> C[Process 2 (Port 25 - Mail)]
-    A --> D[Process 3 (Port 443 - HTTPS)]
-
-    E[Sender] --> F[IP + Port to Identify Receiver]
-    F --> B
-```
+![Process Addressing](../notes/images/process-addressing.png)
 
 **Explanation of Diagram**:
 - Each host has an IP address.
@@ -112,16 +85,7 @@ An **application-layer protocol** defines the rules for how processes communicat
   - **Proprietary protocols**: Owned by a company, not publicly available. Examples: Skype, Zoom. These may not work with other systems.
 
 ### Diagram: Protocol Components
-```mermaid
-graph TD
-    A[Application-Layer Protocol] --> B[Message Types: Request/Response]
-    A --> C[Message Syntax: Fields & Delimiters]
-    A --> D[Message Semantics: Meaning of Fields]
-    A --> E[Rules: When/How to Send/Respond]
-
-    F[Open Protocols] --> G[RFCs - Public, Interoperable]
-    H[Proprietary Protocols] --> I[Company-Owned, Not Interoperable]
-```
+![Protocol Components](../notes/images/protocol-components.png)
 
 **Explanation of Diagram**:
 - Protocols have structure: types, syntax, semantics, rules.
@@ -142,15 +106,7 @@ This section introduces the **Web** and **HTTP** (HyperText Transfer Protocol), 
   - **Pathname**: The path to the specific file (e.g., /someDept/pic.gif).
 
 ### Diagram: Web Page Structure
-```mermaid
-graph TD
-    A[Web Page] --> B[Base HTML File]
-    B --> C[Reference to Object 1 (e.g., Image)]
-    B --> D[Reference to Object 2 (e.g., Video)]
-    B --> E[Reference to Object 3 (e.g., Script)]
-
-    F[Objects Stored on] --> G[Different Web Servers]
-```
+![Web Page Structure](../notes/images/web-page-structure.png)
 
 **Explanation of Diagram**:
 - A webpage is made of multiple objects linked together.

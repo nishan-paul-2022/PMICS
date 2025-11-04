@@ -26,17 +26,7 @@ DNS provides several services and is structured as a distributed, hierarchical d
 Figure Description: Slide 2-17 illustrates people and internet identifiers, with DNS as a distributed database. Slide 2-18 discusses why DNS isn't centralized, showing stats like Comcast handling 1.0T queries/day and Akamai 7.0T, emphasizing scalability.
 
 Mermaid Diagram: DNS Hierarchy
-```mermaid
-graph TD
-    A[Root DNS Servers] --> B[.com TLD Servers]
-    A --> C[.org TLD Servers]
-    A --> D[.edu TLD Servers]
-    B --> E[amazon.com Authoritative Servers]
-    B --> F[yahoo.com Authoritative Servers]
-    C --> G[pbs.org Authoritative Servers]
-    D --> H[nyu.edu Authoritative Servers]
-    D --> I[umass.edu Authoritative Servers]
-```
+![DNS Hierarchy](../notes/images/dns-hierarchy.png)
 
 ## 3. DNS Hierarchy
 DNS is organized in a tree-like hierarchy for efficient lookups.
@@ -49,23 +39,7 @@ DNS is organized in a tree-like hierarchy for efficient lookups.
 Figure Description: Slide 2-20 shows a tree diagram of the DNS hierarchy, starting from the root, branching to TLDs like .com, and then to authoritative servers for specific domains like amazon.com.
 
 Mermaid Diagram: Example Query Flow
-```mermaid
-sequenceDiagram
-    participant Client
-    participant LocalDNS as Local DNS Server
-    participant RootDNS as Root DNS Server
-    participant TLDDNS as TLD DNS Server (.com)
-    participant AuthDNS as Authoritative DNS Server (amazon.com)
-    
-    Client->>LocalDNS: Query: IP for www.amazon.com
-    LocalDNS->>RootDNS: Who handles .com?
-    RootDNS-->>LocalDNS: .com TLD server
-    LocalDNS->>TLDDNS: Who handles amazon.com?
-    TLDDNS-->>LocalDNS: amazon.com authoritative server
-    LocalDNS->>AuthDNS: IP for www.amazon.com?
-    AuthDNS-->>LocalDNS: 192.0.2.1
-    LocalDNS-->>Client: 192.0.2.1
-```
+![DNS Query Flow](../notes/images/dns-query-flow.png)
 
 ## 4. DNS Name Resolution Processes
 There are two main ways to resolve names: iterative and recursive queries.
@@ -77,16 +51,7 @@ There are two main ways to resolve names: iterative and recursive queries.
 Figure Description: Slide 2-25 shows an iterative query diagram with a client querying local DNS, which then queries root, TLD, and authoritative servers step-by-step. Slide 2-26 shows recursive query where the local DNS handles all steps.
 
 Mermaid Diagram: Iterative vs Recursive
-```mermaid
-graph LR
-    A[Client] --> B[Local DNS]
-    B --> C[Root DNS]
-    C --> D[TLD DNS]
-    D --> E[Authoritative DNS]
-    E --> B
-    B --> A
-    note right of B: Iterative: Each server points to next
-```
+![DNS Iterative Recursive](../notes/images/dns-iterative-recursive.png)
 
 ## 5. DNS Records and Protocol
 DNS stores records in a specific format, and messages follow a standard structure.
@@ -101,17 +66,7 @@ DNS stores records in a specific format, and messages follow a standard structur
 Figure Description: Slide 2-28 lists DNS records with examples. Slide 2-29 and 2-30 show the DNS message header as a table with fields like identification (16-bit number for matching queries/replies), flags (indicating query/reply, recursion), and sections for questions, answers, etc.
 
 Mermaid Diagram: DNS Message Format
-```mermaid
-graph TD
-    A[Header: Identification, Flags] --> B[Questions Section]
-    A --> C[Answers Section]
-    A --> D[Authority Section]
-    A --> E[Additional Info Section]
-    B --> F[Name, Type for Query]
-    C --> G[Resource Records]
-    D --> H[Authoritative Server Records]
-    E --> I[Extra Helpful Info]
-```
+![DNS Message Format](../notes/images/dns-message-format.png)
 
 ## 6. Getting Info into DNS and Security
 To add a domain, register with a registrar and set up servers. Security is crucial due to threats.

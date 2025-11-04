@@ -56,22 +56,7 @@ To compute utilization and delay with a cache:
 - LAN utilization increases slightly but remains efficient.
 
 ### Mermaid Diagram: Web Cache Interaction
-```mermaid
-sequenceDiagram
-    participant Client
-    participant WebCache
-    participant OriginServer
-
-    Client->>WebCache: HTTP Request for object
-    alt Object in cache (hit)
-        WebCache-->>Client: Return cached object
-    else Object not in cache (miss)
-        WebCache->>OriginServer: Request object
-        OriginServer-->>WebCache: Send object
-        WebCache->>WebCache: Cache the object
-        WebCache-->>Client: Return object
-    end
-```
+![Web Cache Interaction](../notes/images/web-cache-interaction.png)
 
 This diagram shows the flow: Client requests → Cache checks → Hit (serve) or Miss (fetch, cache, serve).
 
@@ -93,18 +78,7 @@ This is called a **Conditional GET** because the request is conditional on the o
 - Reduces server load and network traffic.
 
 ### Mermaid Diagram: Conditional GET Flow
-```mermaid
-sequenceDiagram
-    participant Browser
-    participant Server
-
-    Browser->>Server: GET /object HTTP/1.1<br>If-Modified-Since: <date>
-    alt Object not modified
-        Server-->>Browser: 304 Not Modified
-    else Object modified
-        Server-->>Browser: 200 OK<br><object data>
-    end
-```
+![Conditional GET](../notes/images/conditional-get.png)
 
 This illustrates the conditional check: If unchanged, no data; if changed, full response.
 
@@ -131,20 +105,7 @@ In HTTP/1.1, if a client requests 1 large object (O1, e.g., video) and 3 small o
 In HTTP/2, objects are framed and interleaved: Frames from O1, O2, O3, O4 are sent alternately, so small objects arrive faster, and O1 is only slightly delayed.
 
 ### Mermaid Diagram: HOL Blocking Comparison
-```mermaid
-graph TD
-    subgraph HTTP/1.1
-        A[Client requests O1, O2, O3, O4]
-        B[Server sends O1 fully]
-        C[Then O2, O3, O4]
-        D[HOL blocking: O2-O4 wait]
-    end
-    subgraph HTTP/2
-        E[Client requests O1, O2, O3, O4]
-        F[Server sends frames: O1f1, O2f1, O3f1, O4f1, O1f2, etc.]
-        G[Interleaved: O2, O3, O4 arrive quickly; O1 slightly delayed]
-    end
-```
+![HOL Blocking Comparison](../notes/images/hol-blocking-comparison.png)
 
 This shows the difference: HTTP/1.1 serial, HTTP/2 parallel via frames.
 

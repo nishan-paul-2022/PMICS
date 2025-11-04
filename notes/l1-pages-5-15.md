@@ -20,15 +20,7 @@ This sets the stage for understanding why we need a structured way to discuss an
 ### The Seven-Layer OSI/ISO Reference Model
 The **OSI (Open Systems Interconnection)** model is a 7-layer framework created by the International Organization for Standardization (ISO) to standardize network communication:
 
-```mermaid
-graph TD
-    A[Application Layer] --> B[Presentation Layer]
-    B --> C[Session Layer]
-    C --> D[Transport Layer]
-    D --> E[Network Layer]
-    E --> F[Link Layer]
-    F --> G[Physical Layer]
-```
+![OSI Model](../notes/images/osi-model.png)
 
 **Layers Explained:**
 1. **Application Layer**: Provides services directly to user applications (e.g., web browsing, email).
@@ -51,13 +43,7 @@ The Internet's TCP/IP model does **not** include the Presentation and Session la
 
 The Internet uses the **TCP/IP protocol stack**, which is a 5-layer (or sometimes 4-layer) model:
 
-```mermaid
-graph LR
-    A[Application Layer<br/>HTTP, IMAP, SMTP, DNS] --> B[Transport Layer<br/>TCP, UDP]
-    B --> C[Network Layer<br/>IP, Routing Protocols]
-    C --> D[Link Layer<br/>Ethernet, 802.11 (WiFi), PPP]
-    D --> E[Physical Layer<br/>Bits on the wire]
-```
+![TCP/IP Stack](../notes/images/tcp-ip-stack.png)
 
 **Layer Functions:**
 - **Application Layer**: Supports network applications like HTTP (web), SMTP (email), DNS (name resolution).
@@ -95,18 +81,7 @@ graph LR
 
 At the receiver, each layer removes its header to unwrap the data.
 
-```mermaid
-graph TD
-    A[Source Application: M] --> B[Transport: Ht + M<br/>Segment]
-    B --> C[Network: Hn + Ht + M<br/>Datagram]
-    C --> D[Link: Hl + Hn + Ht + M<br/>Frame]
-    D --> E[Physical: Transmit Bits]
-
-    F[Destination Physical: Receive Bits] --> G[Link: Remove Hl]
-    G --> H[Network: Remove Hn]
-    H --> I[Transport: Remove Ht]
-    I --> J[Application: Get M]
-```
+![Encapsulation Process](../notes/images/encapsulation-process.png)
 
 **Headers Explained:**
 - **Ht (Transport Header)**: Used for reliable delivery, contains port numbers to identify processes.
@@ -157,13 +132,6 @@ The content discusses how to measure real Internet performance using the **trace
 
 **Figure Explanation:** The traceroute diagram shows the path from gaia.cs.umass.edu to www.eurecom.fr, with delays at each hop, highlighting the trans-oceanic link and the 3 probes sent to each router.
 
-```mermaid
-graph LR
-    A[Source: gaia.cs.umass.edu] --> B[Router 1: cs-gw<br/>1ms]
-    B --> C[Router 2: border1-rt<br/>1ms]
-    C --> D[Router 3: cht-vbns<br/>6ms]
-    D --> E[Trans-oceanic Link<br/>22ms]
-    E --> F[Destination: www.eurecom.fr<br/>132ms]
-```
+![Traceroute Path](../notes/images/traceroute-path.png)
 
 This completes the explanation for pages 5-15, focusing on the provided content with clear explanations, diagrams, and figure descriptions.

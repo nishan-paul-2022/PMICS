@@ -34,23 +34,15 @@ Based on the content from pages 2 to 4 of the PDF (from "Computer Networking: A 
    - **Example**: National or global ISPs (like AT&T or Verizon) own parts of the core, connecting local ISPs. A video call between two countries uses the core to route data quickly. If there's congestion, routers reroute traffic to avoid delays.
    - **Why It Matters**: The core handles massive data volumes and ensures global connectivity. Without it, isolated networks couldn't communicate.
 
-#### 5. **Diagram Description (From PDF Pages 2-4)**
-   - The PDF includes a visual diagram showing the Internet structure. Here's a textual representation to make it easy to visualize (imagine this as a simple network map):
-     ```
-     [Mobile Network] --- [Access Network (Wi-Fi/Cellular)] --- [Home Network]
-          |                                                        |
-          |                                                        |
-     [Enterprise Network] --- [Local/Regional ISP] --- [National/Global ISP]
-          |                                                        |
-          |                                                        |
-     [Datacenter Network] --- [Content Provider Network] --- [Network Core (Interconnected Routers)]
-     ```
-     - **Explanation of Diagram**:
-       - **Top Layer (Network Edge)**: Shows various "end" networks like mobile (e.g., your phone's cellular connection), home (e.g., your Wi-Fi), enterprise (e.g., office networks), datacenter (e.g., server farms), and content provider (e.g., Netflix's network).
-       - **Middle Layer (Access Networks)**: Represents the physical links (wired/wireless) connecting the edge to the core, like cables from your home to an ISP.
-       - **Bottom Layer (Network Core)**: A central "cloud" of routers and high-speed links (e.g., undersea cables) that interconnect everything. Data flows through this core to reach other parts.
-     - **Key Insight**: The diagram emphasizes that the Internet is decentralized—no single point controls it. For example, data from a home network in Bangladesh might travel through a local ISP, then a global ISP, to reach a server in the US.
-     - **Real-World Analogy**: Think of it like a highway system: Your house (edge) connects via a local road (access) to a major interstate (core) that leads to other cities.
+#### 5. **Internet structure (From PDF Pages 2-4)**
+   ![Internet Structure Diagram](../notes/images/internet-structure.png)
+   
+   **Explanation of Diagram**:
+   - **Top Layer (Network Edge)**: Shows various "end" networks like mobile (e.g., your phone's cellular connection), home (e.g., your Wi-Fi), enterprise (e.g., office networks), datacenter (e.g., server farms), and content provider (e.g., Netflix's network).
+   - **Middle Layer (Access Networks)**: Represents the physical links (wired/wireless) connecting the edge to the core, like cables from your home to an ISP.
+   - **Bottom Layer (Network Core)**: A central "cloud" of routers and high-speed links (e.g., undersea cables) that interconnect everything. Data flows through this core to reach other parts.
+   - **Key Insight**: The diagram emphasizes that the Internet is decentralized—no single point controls it. For example, data from a home network in Bangladesh might travel through a local ISP, then a global ISP, to reach a server in the US.
+   - **Real-World Analogy**: Think of it like a highway system: Your house (edge) connects via a local road (access) to a major interstate (core) that leads to other cities.
 
 #### 6. **Real-World Examples**
    - **Scenario 1: Browsing a Website**:

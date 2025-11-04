@@ -9,16 +9,7 @@ Below is a detailed, easy-to-read explanation of the content from pages 1 to 15 
   - **Application Layer**: The layer in the network stack (a model of how data travels across networks) that deals with applications and services, such as web browsing or email.
 - **Explanation of Figure**: The content describes a diagram showing the email system with user agents (email clients), mail servers, and SMTP connections. It illustrates how emails flow from sender to receiver via servers.
   - **Mermaid Diagram for Email Flow**:
-    ```mermaid
-    graph TD
-        A[User Agent<br/>(e.g., Outlook)] --> B[Mail Server<br/>(Sender's)]
-        B -->|SMTP| C[Mail Server<br/>(Receiver's)]
-        C --> D[User Agent<br/>(Receiver's)]
-        style A fill:#e1f5fe
-        style D fill:#e1f5fe
-        style B fill:#fff3e0
-        style C fill:#fff3e0
-    ```
+    ![Email Flow](../notes/images/email-flow.png)
     - **How to Read**: This flowchart shows the basic email path. User agents are like email apps (e.g., Gmail app). Mail servers store and forward emails. SMTP is the "highway" for email transfer between servers.
 
 ## 2. E-mail Components
@@ -28,18 +19,7 @@ Below is a detailed, easy-to-read explanation of the content from pages 1 to 15 
   - **Simple Mail Transfer Protocol (SMTP)**: The protocol for transferring emails between mail servers, ensuring reliable delivery.
 - **Explanation of Figure**: The diagram depicts multiple user agents connected to mail servers via SMTP, with visual elements like mailboxes and queues highlighted.
   - **Mermaid Diagram for Email Components**:
-    ```mermaid
-    graph TD
-        A[User Agent 1] -->|Composes Email| B[Mail Server 1<br/>(Outgoing Queue)]
-        B -->|SMTP| C[Mail Server 2<br/>(Incoming Mailbox)]
-        C -->|Delivers to| D[User Agent 2]
-        E[User Agent 3] -->|Reads Email| C
-        style A fill:#e1f5fe
-        style D fill:#e1f5fe
-        style E fill:#e1f5fe
-        style B fill:#fff3e0
-        style C fill:#fff3e0
-    ```
+    ![Email Components](../notes/images/email-components.png)
     - **How to Read**: Arrows show the flow. User agents send/receive emails, servers handle storage and transfer via SMTP.
 
 ## 3. E-mail: Mail Servers
@@ -49,16 +29,7 @@ Below is a detailed, easy-to-read explanation of the content from pages 1 to 15 
   - **SMTP Protocol**: Used between mail servers to send emails. The sending server acts as the "client" (initiator), and the receiving server as the "server" (responder).
 - **Explanation of Figure**: Similar to the previous diagram, it shows mail servers with mailboxes and queues, emphasizing SMTP connections.
   - **Mermaid Diagram** (Enhanced for Mail Servers):
-    ```mermaid
-    graph TD
-        A[Mail Server<br/>(Sender)] -->|SMTP Client| B[Mail Server<br/>(Receiver)]
-        A -.->|Stores in| C[Outgoing Message Queue]
-        B -.->|Stores in| D[User Mailbox]
-        style A fill:#fff3e0
-        style B fill:#fff3e0
-        style C fill:#ffecb3
-        style D fill:#ffecb3
-    ```
+    ![Mail Servers](../notes/images/mail-servers.png)
     - **How to Read**: Focuses on server roles. Queues and mailboxes are storage points, and SMTP is the transfer method.
 
 ## 4. SMTP RFC (5321)
@@ -70,16 +41,7 @@ Below is a detailed, easy-to-read explanation of the content from pages 1 to 15 
 - **Command/Response Interaction**: Like HTTP (HyperText Transfer Protocol, used for web pages), it uses ASCII text commands (human-readable text) and responses with status codes (numbers indicating success or error, e.g., 220 for "ready").
 - **Explanation of Figure**: The diagram shows a timeline of SMTP handshaking, including TCP connection initiation, greetings (e.g., HELO), and responses (e.g., 250 Hello).
   - **Mermaid Diagram for SMTP Handshaking**:
-    ```mermaid
-    sequenceDiagram
-        participant Client as SMTP Client
-        participant Server as SMTP Server
-        Client->>Server: Initiate TCP Connection (Port 25)
-        Server->>Client: 220 (Ready)
-        Client->>Server: HELO
-        Server->>Client: 250 Hello
-        Note over Client,Server: Handshaking Complete
-    ```
+    ![SMTP Handshaking](../notes/images/smtp-handshaking.png)
     - **How to Read**: Sequence diagram shows step-by-step interaction. TCP ensures reliability; port 25 is specific to SMTP.
 
 ## 5. Scenario: Alice Sends E-mail to Bob
@@ -92,14 +54,7 @@ Below is a detailed, easy-to-read explanation of the content from pages 1 to 15 
   6. Bob uses his User Agent to read the email.
 - **Explanation of Figure**: A numbered flowchart showing the email journey from Alice to Bob via servers.
   - **Mermaid Diagram**:
-    ```mermaid
-    graph TD
-        A[1. Alice Composes<br/>via User Agent] --> B[2. Sent to Alice's<br/>Mail Server (Queue)]
-        B --> C[3. TCP Connection<br/>to Bob's Server]
-        C --> D[4. Email Transferred<br/>via SMTP]
-        D --> E[5. Stored in Bob's<br/>Mailbox]
-        E --> F[6. Bob Reads<br/>via User Agent]
-    ```
+    ![Alice Sends Bob](../notes/images/alice-sends-bob.png)
     - **How to Read**: Follow the numbers for the email's path.
 
 ## 6. SMTP: Observations
@@ -118,13 +73,7 @@ Below is a detailed, easy-to-read explanation of the content from pages 1 to 15 
   - **Blank Line**: Separates header and body.
 - **Explanation of Figure**: Diagram shows a box with header (top) and body (bottom), separated by a blank line.
   - **Mermaid Diagram**:
-    ```mermaid
-    graph TD
-        A[Header<br/>(To:, From:, Subject:)] --> B[Blank Line]
-        B --> C[Body<br/>(Message in ASCII)]
-        style A fill:#e1f5fe
-        style C fill:#e1f5fe
-    ```
+    ![Mail Message Format](../notes/images/mail-message-format.png)
     - **How to Read**: Visualizes email structure.
 
 ## 8. Sample SMTP Interaction
@@ -137,11 +86,7 @@ Below is a detailed, easy-to-read explanation of the content from pages 1 to 15 
   - **HTTP**: Used by webmail (e.g., Gmail) on top of SMTP (send) and IMAP/POP (retrieve).
 - **Explanation of Figure**: Diagram shows SMTP for delivery and access protocols (IMAP, HTTP) for retrieval.
   - **Mermaid Diagram**:
-    ```mermaid
-    graph TD
-        A[Sender's Server] -->|SMTP| B[Receiver's Server<br/>(Storage)]
-        B -->|IMAP/HTTP| C[User Agent<br/>(Retrieval)]
-    ```
+    ![Mail Access Protocols](../notes/images/mail-access-protocols.png)
 
 ## 10. Threats to SMTP Security
 - **Threats**: Unauthorized access, spam/phishing (deceptive emails), malware (harmful software), DoS attacks (overloading servers).
@@ -152,32 +97,18 @@ Below is a detailed, easy-to-read explanation of the content from pages 1 to 15 
 - **Overview**: Protocol for transferring files between a client and server. Uses TCP on port 21.
 - **Explanation of Figure**: Shows user interface, FTP client, and server with local/remote file systems.
   - **Mermaid Diagram**:
-    ```mermaid
-    graph TD
-        A[User at Host] --> B[FTP Client<br/>(Local System)]
-        B -->|TCP Port 21| C[FTP Server<br/>(Remote System)]
-    ```
+    ![FTP Overview](../notes/images/ftp-overview.png)
 
 ## 12. FTP: Separate Control, Data Connections
 - **Overview**: Control connection (port 21) for commands; data connection (port 20) for files. Server maintains state (tracks directory, authentication).
 - **Explanation of Figure**: Diagrams for control and data connections.
   - **Mermaid Diagram**:
-    ```mermaid
-    sequenceDiagram
-        participant Client
-        participant Server
-        Client->>Server: Control Connection (Port 21)
-        Server->>Client: Data Connection (Port 20) for File Transfer
-    ```
+    ![FTP Connections](../notes/images/ftp-connections.png)
 
 ## 13. FTP: Control and Data Connections (Detailed)
 - **Details**: Passive (server waits) vs. Active (client initiates) opens for connections.
 - **Explanation of Figures**: Step-by-step diagrams for control and data setups.
   - **Mermaid Diagram**:
-    ```mermaid
-    graph TD
-        A[Client] -->|Passive Open| B[Server Port 21]
-        C[Client] -->|Active Open| D[Server Port 20]
-    ```
+    ![FTP Detailed Connections](../notes/images/ftp-detailed-connections.png)
 
 This covers pages 1-15 comprehensively. For memorization, review the diagrams sequentially to visualize processes. If you need expansions or clarifications, let me know!
