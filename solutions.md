@@ -675,7 +675,17 @@ First, we need to understand how big each packet is:
 - Link transmission rate = 10 Mbps (10,000,000 bits per second)
 - Propagation delay = 10 milliseconds (time for signal to travel from A to B)
 
-**Step 5: Calculating Transmission Delay**
+**Step 5: Calculating Packetization Delay**
+Packetization delay is the time it takes to collect enough bits to fill a complete packet before transmission can begin.
+
+**Formula:** Packetization delay = Packet size ÷ Bit rate
+
+**Calculation:**
+Packetization delay = 448 bits ÷ 64,000 bits/second
+= 0.007 seconds
+= 7 milliseconds (ms)
+
+**Step 6: Calculating Transmission Delay**
 Transmission delay is the time to put the entire packet onto the link:
 
 **Formula:** Transmission delay = Packet size ÷ Link transmission rate
@@ -686,42 +696,37 @@ Transmission delay = 448 bits ÷ 10,000,000 bits/second
 = 0.0000448 seconds
 = 44.8 microseconds (μs)
 
-**Step 6: Understanding Propagation Delay**
+**Step 7: Understanding Propagation Delay**
 Propagation delay is given as 10 milliseconds. This is the time it takes for the signal to travel through the physical medium from Host A to Host B.
 
-**Step 7: Calculating Total End-to-End Delay**
+**Step 8: Calculating Total End-to-End Delay**
 The total delay from bit creation to bit playback includes:
 
-- **Time to fill packet:** The bit must wait for the packet to be filled before transmission
-- **Transmission delay:** Time to send the packet
-- **Propagation delay:** Time for the packet to travel to Host B
-- **Processing delay:** Time for Host B to receive and start converting back to analog
+- **Packetization delay:** Time to fill the packet (7 ms)
+- **Transmission delay:** Time to send the packet (0.0448 ms)
+- **Propagation delay:** Time for the packet to travel to Host B (10 ms)
 
-**Key Insight:** Since packets are sent as soon as they're full, and the problem asks for the delay from when a bit is created until it's decoded, we need to consider the worst-case scenario.
+**Key Insight:** For a bit that arrives just as a packet is completed, it must wait for the packet to be transmitted and propagated before it can be decoded at Host B.
 
-For a bit that arrives just as a packet is completed:
-- It waits for the current packet to transmit
-- Then the packet propagates to Host B
-- Then Host B starts decoding
+**Total Delay = Packetization delay + Transmission delay + Propagation delay**
+**Total Delay = 7 + 0.0448 + 10 = 17.0448 ms ≈ 17 ms**
 
-**Total Delay = Transmission delay + Propagation delay**
-**Total Delay = 44.8 μs + 10 ms = 10.0448 ms ≈ 10 ms**
+**Step 9: Why Packetization Delay Matters**
+The packetization delay is often overlooked but is crucial in VoIP systems. Voice data arrives continuously, but packets can only be sent when they are full. This introduces a waiting time that depends on the packet size and the data arrival rate.
 
-**Step 8: Why Propagation Delay Dominates**
-Notice that the transmission delay (44.8 μs) is much smaller than the propagation delay (10 ms). In VoIP systems, the propagation delay across distances is usually the limiting factor, not the transmission time over the link.
-
-**Step 9: Real-World Implications**
+**Step 10: Real-World Implications**
 This calculation shows why VoIP calls can have delays:
 - **Local calls:** Short propagation delays (microseconds)
 - **Long-distance/international calls:** Long propagation delays (milliseconds)
 - **Satellite calls:** Very long delays (hundreds of milliseconds)
 
-The 10 ms delay calculated here would be acceptable for voice communication, as humans can tolerate delays up to about 150-200 ms before the conversation feels unnatural.
+The 17 ms delay calculated here includes the packetization delay that I initially missed. This is still acceptable for voice communication, as humans can tolerate delays up to about 150-200 ms before the conversation feels unnatural.
 
-**Step 10: Key Takeaways**
+**Step 11: Key Takeaways**
 - VoIP converts analog voice to digital packets for internet transmission
 - Total delay includes packetization, transmission, and propagation times
-- For reasonable distances, propagation delay usually dominates
+- Packetization delay depends on packet size and data rate
+- For reasonable distances, propagation delay usually dominates, but packetization delay is significant for real-time applications
 - This delay affects the quality of real-time voice communication
 
 ---
