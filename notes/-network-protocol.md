@@ -9,11 +9,11 @@
 *   **Transmission Control Protocol (TCP):**
     > Ensures that data is delivered reliably, in order, and without errors between applications over a network. It's like sending a tracked package that must arrive intact.
 
-*   **Internet Protocol (IP):**
-    > Responsible for addressing and routing packets of data so they can travel across networks and arrive at the correct destination. It's like the postal address on a letter.
-
 *   **User Datagram Protocol (UDP):**
     > A fast, lightweight protocol that sends messages without guaranteeing delivery or order. It's ideal for time-sensitive tasks like video streaming or online gaming, where speed is more important than perfect accuracy.
+
+*   **Internet Protocol (IP):**
+    > Responsible for addressing and routing packets of data so they can travel across networks and arrive at the correct destination. It's like the postal address on a letter.
 
 *   **Simple Mail Transfer Protocol (SMTP):**
     > The standard protocol for sending emails from an email client to an email server. It's the postman that picks up and sends your mail.
@@ -47,4 +47,4 @@
 ## Network Protocols
 
 *   **Network Time Protocol (NTP):** 
-    > A networking protocol for synchronizing computer clocks over a network. It ensures devices have accurate and consistent time, which is critical for logging, security services like Active Directory, and the validity of digital certificates. NTP operates at the application layer.
+    > A networking protocol for synchronizing computer clocks over a network. It ensures devices have accurate and consistent time, which is critical for logging, security services, and the validity of digital certificates. NTP operates at the application layer.
