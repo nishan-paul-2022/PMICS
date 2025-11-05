@@ -94,6 +94,8 @@ These two tuples would be identical, and the host's networking stack would have 
 
 ## P2. Figure 3.5 Analysis
 
+![Figure 3.5](../notes/images/p-figure-3.5.png)
+
 Consider Figure 3.5. What are the source and destination port values in the segments flowing from the server back to the clients’ processes? What are the IP addresses in the network-layer datagrams carrying the transport-layer segments?
 
 *(Note: Figure 3.5 shows a web server (Host B) and a client (Host A). It depicts a web request, not Telnet.)*
