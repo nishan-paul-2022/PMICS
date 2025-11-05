@@ -1,61 +1,192 @@
-# [SECTION 2.1](../notes/documents/section-2.1.pdf)
+Here’s your text formatted for **maximum clarity and professional readability**, without changing **any words or text** — only the layout, spacing, and hierarchy have been improved.
 
-**R1.** List five nonproprietary Internet applications and the application-layer protocols that they use.
+---
 
-**R2.** What is the difference between network architecture and application architecture?
+# **SECTIONS 3.1–3.3**
 
-**R3.** For a communication session between a pair of processes, which process is the client and which is the server?
+---
 
-**R4.** For a P2P file-sharing application, do you agree with the statement, "There is no notion of client and server sides of a communication session"? Why or why not?
+[Section 3.1-3.3 PDF](documents/section-3.1-3.3.pdf)
 
-**R5.** What information is used by a process running on one host to identify a process running on another host?
+### **R1.**
 
-**R6.** Suppose you wanted to do a transaction from a remote client to a server as fast as possible. Would you use UDP or TCP? Why?
+Suppose the network layer provides the following service. The network layer in the source host accepts a segment of maximum size 1,200 bytes and a destination host address from the transport layer. The network layer then guarantees to deliver the segment to the transport layer at the destination host. Suppose many network application processes can be running at the destination host.
 
-**R7.** Referring to Figure 2.4, we see that none of the applications listed in Figure 2.4 requires both no data loss and timing. Can you conceive of an application that requires no data loss and that is also highly time-sensitive?
+a. Design the simplest possible transport-layer protocol that will get application data to the desired process at the destination host. Assume the operating system in the destination host has assigned a 4-byte port number to each running application process.
+b. Modify this protocol so that it provides a “return address” to the destination process.
+c. In your protocols, does the transport layer “have to do anything” in the core of the computer network?
 
-**R8.** List the four broad classes of services that a transport protocol can provide. For each of the service classes, indicate if either UDP or TCP (or both) provides such a service.
+---
 
-**R9.** Recall that TCP can be enhanced with TLS to provide process-to-process security services, including encryption. Does TLS operate at the transport layer or the application layer? If the application developer wants TCP to be enhanced with TLS, what does the developer have to do?
+### **R2.**
 
-# [SECTIONS 2.2–2.5](../notes/documents/section-2.2-2.5.pdf)
+Consider a planet where everyone belongs to a family of six, every family lives in its own house, each house has a unique address, and each person in a given house has a unique name. Suppose this planet has a mail service that delivers letters from source house to destination house. The mail service requires that
+(1) the letter be in an envelope, and that
+(2) the address of the destination house (and nothing more) be clearly written on the envelope.
 
-**R10.** What is meant by a handshaking protocol?
+Suppose each family has a delegate family member who collects and distributes letters for the other family members. The letters do not necessarily provide any indication of the recipients of the letters.
 
-**R11.** Why do HTTP, SMTP, and IMAP run on top of TCP rather than on UDP?
+a. Using the solution to Problem R1 above as inspiration, describe a protocol that the delegates can use to deliver letters from a sending family member to a receiving family member.
+b. In your protocol, does the mail service ever have to open the envelope and examine the letter in order to provide its service?
 
-**R12.** Consider an e-commerce site that wants to keep a purchase record for each of its customers. Describe how this can be done with cookies.
+---
 
-**R13.** Describe how Web caching can reduce the delay in receiving a requested object. Will Web caching reduce the delay for all objects requested by a user or for only some of the objects? Why?
+### **R3.**
 
-**R14.** Telnet into a Web server and send a multiline request message. Include in the request message the If-modified-since: header line to force a response message with the 304 Not Modified status code.
+Consider a TCP connection between Host A and Host B. Suppose that the TCP segments traveling from Host A to Host B have source port number **x** and destination port number **y**.
+What are the source and destination port numbers for the segments traveling from Host B to Host A?
 
-**R15.** List several popular messaging apps. Do they use the same protocols as SMS?
+---
 
-**R16.** Suppose Alice, with a Web-based e-mail account (such as Hotmail or Gmail), sends a message to Bob, who accesses his mail from his mail server using IMAP. Discuss how the message gets from Alice's host to Bob's host. Be sure to list the series of application-layer protocols that are used to move the message between the two hosts.
+### **R4.**
 
-**R17.** Print out the header of an e-mail message you have recently received. How many Received: header lines are there? Analyze each of the header lines in the message.
+Describe why an application developer might choose to run an application over **UDP** rather than **TCP**.
 
-**R18.** What is the HOL blocking issue in HTTP/1.1? How does HTTP/2 attempt to solve it?
+---
 
-**R19.** Is it possible for an organization's Web server and mail server to have exactly the same alias for a hostname (for example, foo.com)? What would be the type for the RR that contains the hostname of the mail server?
+### **R5.**
 
-**R20.** Look over your received e-mails, and examine the header of a message sent from a user with a .edu e-mail address. Is it possible to determine from the header the IP address of the host from which the message was sent? Do the same for a message sent from a Gmail account.
+Why is it that **voice and video traffic** is often sent over **TCP** rather than **UDP** in today’s Internet?
+*(Hint: The answer we are looking for has nothing to do with TCP’s congestion-control mechanism.)*
 
-**R21.** In BitTorrent, suppose Alice provides chunks to Bob throughout a 30-second interval. Will Bob necessarily return the favor and provide chunks to Alice in this same interval? Why or why not?
+---
 
-**R22.** Consider a new peer Alice that joins BitTorrent without possessing any chunks. Without any chunks, she cannot become a top-four uploader for any of the other peers, since she has nothing to upload. How then will Alice get her first chunk?
+### **R6.**
 
-**R23.** What is an overlay network? Does it include routers? What are the edges in the overlay network?
+Is it possible for an application to enjoy reliable data transfer even when the application runs over **UDP**? If so, how?
 
-# [SECTION 2.6](../notes/documents/section-2.6.pdf)
+---
 
-**R24.** CDNs typically adopt one of two different server placement philosophies. Name and briefly describe them.
+### **R7.**
 
-**R25.** Besides network-related considerations such as delay, loss, and bandwidth performance, there are other important factors that go into designing a CDN server selection strategy. What are they?
+Suppose a process in Host C has a UDP socket with port number **6789**.
+Suppose both Host A and Host B each send a UDP segment to Host C with destination port number **6789**.
 
-# [SECTION 2.7](../notes/documents/section-2.7.pdf)
+Will both of these segments be directed to the same socket at Host C?
+If so, how will the process at Host C know that these two segments originated from two different hosts?
 
-**R26.** In Section 2.7, the UDP server described needed only one socket, whereas the TCP server needed two sockets. Why? If the TCP server were to support n simultaneous connections, each from a different client host, how many sockets would the TCP server need?
+---
 
-**R27.** For the client-server application over TCP described in Section 2.7, why must the server program be executed before the client program? For the client-server application over UDP, why may the client program be executed before the server program?
+### **R8.**
+
+Suppose that a Web server runs in Host C on port **80**. Suppose this Web server uses **persistent connections**, and is currently receiving requests from two different Hosts, A and B.
+
+Are all of the requests being sent through the same socket at Host C?
+If they are being passed through different sockets, do both of the sockets have port **80**?
+
+Discuss and explain.
+
+---
+
+# **SECTION 3.4**
+
+---
+
+[Section 3.4 PDF](documents/section-3.4.pdf)
+
+### **R9.**
+
+In our **rdt protocols**, why did we need to introduce **sequence numbers**?
+
+---
+
+### **R10.**
+
+In our **rdt protocols**, why did we need to introduce **timers**?
+
+---
+
+### **R11.**
+
+Suppose that the roundtrip delay between sender and receiver is constant and known to the sender. Would a timer still be necessary in protocol **rdt 3.0**, assuming that packets can be lost? Explain.
+
+---
+
+### **R12.**
+
+Visit the **Go-Back-N interactive animation** at the companion Web site.
+
+a. Have the source send five packets, and then pause the animation before any of the five packets reach the destination. Then kill the first packet and resume the animation. Describe what happens.
+b. Repeat the experiment, but now let the first packet reach the destination and kill the first acknowledgment. Describe again what happens.
+c. Finally, try sending six packets. What happens?
+
+---
+
+### **R13.**
+
+Repeat **R12**, but now with the **Selective Repeat interactive animation**.
+How are **Selective Repeat** and **Go-Back-N** different?
+
+---
+
+# **SECTION 3.5**
+
+---
+
+[Section 3.5 PDF](documents/section-3.5.pdf)
+
+### **R14.**
+
+**True or false?**
+
+a. Host A is sending Host B a large file over a TCP connection. Assume Host B has no data to send Host A. Host B will not send acknowledgments to Host A because Host B cannot piggyback the acknowledgments on data.
+b. The size of the TCP **rwnd** never changes throughout the duration of the connection.
+c. Suppose Host A is sending Host B a large file over a TCP connection. The number of unacknowledged bytes that A sends cannot exceed the size of the receive buffer.
+d. Suppose Host A is sending a large file to Host B over a TCP connection. If the sequence number for a segment of this connection is **m**, then the sequence number for the subsequent segment will necessarily be **m + 1**.
+e. The TCP segment has a field in its header for **rwnd**.
+f. Suppose that the last **SampleRTT** in a TCP connection is equal to 1 sec. The current value of **TimeoutInterval** for the connection will necessarily be ≥ 1 sec.
+g. Suppose Host A sends one segment with sequence number **38** and 4 bytes of data over a TCP connection to Host B. In this same segment, the acknowledgment number is necessarily **42**.
+
+---
+
+### **R15.**
+
+Suppose Host A sends two TCP segments back to back to Host B over a TCP connection.
+The first segment has sequence number **90**; the second has sequence number **110**.
+
+a. How much data is in the first segment?
+b. Suppose that the first segment is lost but the second segment arrives at B. In the acknowledgment that Host B sends to Host A, what will be the acknowledgment number?
+
+---
+
+### **R16.**
+
+Consider the **Telnet example** discussed in Section 3.5.
+A few seconds after the user types the letter **‘C’**, the user types the letter **‘R’**.
+
+After typing the letter ‘R,’ how many segments are sent, and what is put in the **sequence number** and **acknowledgment fields** of the segments?
+
+---
+
+# **SECTION 3.7**
+
+---
+
+[Section 3.7 PDF](documents/section-3.7.pdf)
+
+### **R17.**
+
+Suppose two TCP connections are present over some **bottleneck link** of rate **R bps**.
+Both connections have a huge file to send (in the same direction over the bottleneck link).
+The transmissions of the files start at the same time.
+
+What transmission rate would TCP like to give to each of the connections?
+
+---
+
+### **R18.**
+
+**True or false?**
+Consider congestion control in TCP.
+When the timer expires at the sender, the value of **ssthresh** is set to one half of its previous value.
+
+---
+
+### **R19.**
+
+In the discussion of **TCP splitting** in the sidebar in Section 3.7, it was claimed that the response time with TCP splitting is approximately:
+
+> **4 × RTTFE + RTTBE + processing time**
+
+Justify this claim.
+
