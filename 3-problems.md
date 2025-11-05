@@ -2511,49 +2511,127 @@ We need to calculate the total data sent over the 6 RTTs and divide by the total
 
 The average throughput over this period is 8.5 segments (MSS) per RTT.
 
-## P45–P46. TCP Reno vs CUBIC
+## P45. TCP Reno In-depth Analysis
 
-*(These questions require a detailed, graphical trace of the `cwnd` evolution for both TCP Reno and CUBIC under specific loss scenarios. This is difficult to represent in plain text, but the logic can be described.)*
+**Task:** Describe the behavior of TCP Reno's congestion window (`cwnd`) over time, specifically its reaction to different types of packet loss. Explain the phases of slow start, congestion avoidance, and fast recovery from scratch.
 
 ---
 
-### Solution Overview
+### Solution
 
-#### TCP Reno Behavior (AIMD)
+TCP Reno is a foundational version of TCP's congestion control mechanism. Its goal is to use available network bandwidth efficiently without causing persistent congestion. It achieves this by dynamically adjusting its congestion window (`cwnd`), which limits the amount of unacknowledged data a sender can have in flight. The behavior of `cwnd` can be broken down into three main phases.
 
-*   **Congestion Avoidance:** `cwnd` increases by 1 MSS per RTT. This is a straight line with a gentle positive slope on a `cwnd` vs. time graph.
-*   **Loss Event (3 Duplicate ACKs):**
-    1.  `ssthresh` is set to `cwnd / 2`.
-    2.  `cwnd` is set to `ssthresh + 3 MSS` (fast recovery).
-    3.  During recovery, `cwnd` inflates for each duplicate ACK received.
-    4.  When a new ACK arrives, `cwnd` is deflated back to `ssthresh`, and the algorithm re-enters Congestion Avoidance.
-*   **Loss Event (Timeout):**
-    1.  `ssthresh` is set to `cwnd / 2`.
-    2.  `cwnd` is reset to `1 MSS`.
-    3.  The algorithm enters the Slow Start phase.
+#### Phase 1: Slow Start
 
-#### TCP CUBIC Behavior
+*   **Purpose:** To quickly probe for available bandwidth at the beginning of a connection or after a connection has been idle. Despite its name, this phase is one of exponential growth and is very aggressive.
+*   **Mechanism:**
+    1.  The connection begins with a small `cwnd`, typically 1 to 10 MSS (Maximum Segment Size). Let's assume it starts at 1 MSS.
+    2.  For every ACK received, the sender increases `cwnd` by 1 MSS.
+    3.  Since a sender with `cwnd=N` will send `N` segments and receive `N` ACKs in one RTT, this effectively doubles the `cwnd` every RTT.
+        *   RTT 1: `cwnd` = 1 MSS. Sends 1 segment.
+        *   RTT 2: `cwnd` = 2 MSS. Sends 2 segments.
+        *   RTT 3: `cwnd` = 4 MSS. Sends 4 segments.
+        *   RTT 4: `cwnd` = 8 MSS. Sends 8 segments.
+*   **Exiting Slow Start:** The exponential growth continues until one of two things happens:
+    1.  A packet loss is detected (either by timeout or duplicate ACKs).
+    2.  The `cwnd` reaches a predefined **slow start threshold (`ssthresh`)**. This threshold is a "memory" of the last known good network capacity. When `cwnd` reaches `ssthresh`, the growth must slow down to avoid overshooting the link capacity. The protocol then transitions to the Congestion Avoidance phase.
 
-CUBIC's window growth is not linear; it follows a cubic function.
-*   `W_max`: The window size just before the last loss event.
-*   `K`: The time it takes for CUBIC to grow from its current window size back to `W_max`.
-*   The growth function is `W(t) = C(t - K)^3 + W_max`.
+#### Phase 2: Congestion Avoidance (AIMD)
 
-**Key Characteristics:**
-*   **Concave Growth:** After a loss, the window is reduced. It then starts growing slowly (the concave part of the cubic curve). This is to be gentle on the network when the window is small.
-*   **Linear-like Growth:** As the window size approaches the old `W_max`, the cubic curve flattens out, and the growth rate becomes nearly linear, similar to TCP Reno.
-*   **Convex Growth (Probing):** After passing the old `W_max`, the growth becomes aggressive and convex, as CUBIC actively probes for new available bandwidth.
+*   **Purpose:** Once the connection has found a rough estimate of the available bandwidth (the `ssthresh`), it needs to probe for more bandwidth gently and additively.
+*   **Mechanism (Additive Increase):**
+    1.  Instead of doubling every RTT, the `cwnd` is increased by approximately **1 MSS per RTT**.
+    2.  This results in a linear, steady increase in the sending rate. The sender is carefully "filling the pipe" to find the exact point of congestion.
+*   **Exiting Congestion Avoidance:** This phase continues until a packet loss is detected. TCP Reno has two different reactions depending on how the loss is detected.
 
-**Tracing the Scenarios:**
+#### Phase 3: Reaction to Loss
 
-To trace the evolution, one would:
-1.  Start with an initial `cwnd` and `W_max`.
-2.  For **Reno**, plot a linear increase of 1 MSS per RTT.
-3.  For **CUBIC**, calculate `K` and plot the window growth according to the cubic function over time.
-4.  When a loss occurs, apply the respective rules:
-    *   **Reno:** `ssthresh = cwnd/2`, `cwnd = ssthresh`.
-    *   **CUBIC:** It has a similar multiplicative decrease factor. The new `W_max` is set to the `cwnd` at the time of the loss, and the process repeats.
-5.  The key difference in the graphs would be Reno's consistent, linear "sawtooth" pattern versus CUBIC's curved, more stable growth pattern that is less aggressive near the previous saturation point.
+This is where TCP Reno's specific implementation shines.
+
+**Scenario A: Loss Detected by Timeout**
+
+This is considered a major congestion event. The network is likely in bad shape, as no packets (or their ACKs) are getting through.
+
+1.  **Set `ssthresh`:** The slow start threshold is set to half of the current `cwnd`.
+    *   `ssthresh = cwnd / 2`. This records a new, lower estimate of the network's capacity.
+2.  **Reset `cwnd`:** The congestion window is reset to its initial small value, `cwnd = 1 MSS`.
+3.  **Re-enter Slow Start:** The protocol goes all the way back to Phase 1 (Slow Start) and begins the exponential growth process again until it reaches the new, lower `ssthresh`.
+
+**Scenario B: Loss Detected by 3 Duplicate ACKs (Fast Retransmit and Fast Recovery)**
+
+Receiving three duplicate ACKs is a weaker signal of congestion. It implies that a single packet was lost, but subsequent packets are still getting through, so the network is not completely dead. TCP Reno can recover without going all the way back to slow start.
+
+1.  **Fast Retransmit:** Upon receiving the 3rd duplicate ACK, the sender immediately retransmits the missing segment without waiting for its timer to expire.
+2.  **Set `ssthresh` and `cwnd` (Multiplicative Decrease):**
+    *   `ssthresh = cwnd / 2`.
+    *   `cwnd = ssthresh`. (In some variants, `cwnd = ssthresh + 3 MSS` to account for the segments that have left the network).
+3.  **Fast Recovery:** The protocol now enters a special state. For every additional duplicate ACK that arrives, it increases `cwnd` by 1 MSS. This "inflates" the window to account for the fact that packets are still leaving the network.
+4.  **Exit Fast Recovery:** When an ACK finally arrives for the retransmitted data (a "new ACK"), the sender deflates the `cwnd` back down to `ssthresh` and immediately enters **Congestion Avoidance** (Phase 2), resuming its gentle, linear growth.
+
+**Conclusion:**
+
+TCP Reno's behavior is a cycle: it uses **Slow Start** to rapidly find bandwidth, switches to **Congestion Avoidance** to carefully probe for more, and reacts to loss with either a harsh **Timeout** (resetting to `cwnd=1`) or a more graceful **Fast Recovery** (halving `cwnd` and avoiding slow start). This AIMD (Additive Increase, Multiplicative Decrease) strategy allows it to be both efficient and fair to other network traffic.
+
+## P46. TCP CUBIC In-depth Analysis
+
+**Task:** Describe the behavior of TCP CUBIC's congestion window (`cwnd`) growth. Explain how and why it differs from TCP Reno, particularly in high-speed, long-latency networks.
+
+---
+
+### Solution
+
+TCP CUBIC is the default congestion control algorithm in Linux and many other modern operating systems. It was designed specifically to overcome the performance limitations of TCP Reno in **high-speed, long-latency networks** (also known as "Long Fat Networks" or LFNs).
+
+#### Step 1: The Problem with TCP Reno in LFNs
+
+As shown in P50, TCP Reno's linear growth of "1 MSS per RTT" is extremely slow. On a 10 Gbps link, recovering from a single packet loss can take hours. This is because Reno's growth rate is independent of the link's capacity; it always increases by the same small, constant amount. For an LFN with a massive BDP, this is like trying to fill a swimming pool with a teaspoon.
+
+#### Step 2: The CUBIC Growth Function
+
+CUBIC's core innovation is to change the window growth function. Instead of being linear, the `cwnd` growth is governed by a **cubic function of time**.
+
+*   **Formula:** `W(t) = C * (t - K)^3 + W_max`
+    *   `W(t)`: The target `cwnd` at time `t` since the last loss event.
+    *   `W_max`: The `cwnd` value just before the last loss event occurred. This is CUBIC's "memory" of the last known network capacity.
+    *   `C`: A scaling constant.
+    *   `K`: The time it would take for the window to grow from its current size back to `W_max` if it were using standard TCP's growth rate. `K = cuberoot(W_max * β / C)`. `β` is the multiplicative decrease factor.
+
+#### Step 3: The Three Phases of CUBIC's Growth
+
+The shape of the cubic function gives CUBIC three distinct growth phases after a packet loss.
+
+1.  **Concave Growth (Stabilization):**
+    *   **Behavior:** Immediately after a loss, the `cwnd` is reduced. The cubic function is initially in its concave region, meaning the window grows very **slowly** at first and then gradually accelerates.
+    *   **Why:** This is a network-friendly phase. CUBIC is being cautious, ensuring the network has stabilized after the previous congestion event before it starts ramping up its sending rate aggressively.
+
+2.  **Linear-like Growth (Approaching `W_max`):**
+    *   **Behavior:** As time `t` approaches `K`, the cubic function flattens out around its inflection point. In this region, the window growth becomes almost **linear**, closely mimicking the behavior of TCP Reno.
+    *   **Why:** This ensures that CUBIC coexists fairly with standard TCP Reno flows if they are sharing the same bottleneck link. This is known as "TCP-friendliness".
+
+3.  **Convex Growth (Probing for Bandwidth):**
+    *   **Behavior:** Once the `cwnd` surpasses the old `W_max`, the cubic function enters its convex region. The window growth becomes very **fast and aggressive**, accelerating as it moves further from `W_max`.
+    *   **Why:** This is the key to CUBIC's high performance. Instead of Reno's slow linear probing (1 MSS per RTT), CUBIC rapidly expands its window to discover new, unused bandwidth on the link. It is actively and quickly searching for the new network ceiling.
+
+#### Step 4: Reaction to Loss
+
+CUBIC's reaction to a loss event is similar to Reno's but sets up the next growth cycle.
+
+1.  **Loss Detected:** A packet loss is detected (usually via 3 duplicate ACKs).
+2.  **Set `W_max`:** The current `cwnd` is saved as the new `W_max`. This becomes the new target for the next cycle.
+3.  **Multiplicative Decrease:** The `cwnd` is reduced by a factor `β` (e.g., `cwnd = cwnd * 0.7`).
+4.  **Restart Growth:** The algorithm immediately enters the concave growth phase of the next cubic cycle, with the new `W_max` as its target.
+
+#### Step 5: Conclusion - Reno vs. CUBIC
+
+| Feature           | TCP Reno                                          | TCP CUBIC                                                              |
+| ----------------- | ------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Growth Model**  | Linear (Additive Increase)                        | Cubic function of time                                                 |
+| **Growth Rate**   | Constant (1 MSS per RTT)                          | Variable (slow, then linear-like, then fast)                           |
+| **Dependency**    | Growth is independent of RTT.                     | Growth is primarily dependent on **time** between loss events, not RTT. |
+| **High-Speed Perf.** | Very poor. Takes hours to recover on fast links.  | Excellent. Recovers very quickly by aggressively probing for bandwidth. |
+| **Fairness**      | Can be unfair to connections with longer RTTs.     | More fair to connections with different RTTs because growth is time-based. |
+
+In summary, TCP CUBIC is a more intelligent and aggressive algorithm that is "aware" of its distance from the last known network capacity. Its three-phase growth allows it to be stable and fair when needed, but also to rapidly expand and capitalize on the high bandwidth available in modern networks, solving the critical performance bottleneck of TCP Reno.
 
 ## P47. TCP Loss Rate Formula
 
@@ -2627,129 +2705,353 @@ This matches the formula given.
 
 This famous formula shows the fundamental trade-off in TCP: to get higher throughput, the protocol must operate with a larger window size `W`, but a larger `W` can only be sustained if the packet loss rate `L` is very low.
 
-## P48–P50. TCP Throughput Analysis
+## P48. TCP Throughput Analysis (Part 1)
 
-*(These questions are a multi-part analysis of TCP Reno performance on a specific link.)*
+**Scenario:** A TCP connection has a link speed of 10 Mbps, an RTT of 150 ms, and an MSS of 1500 bytes. TCP Reno is in the congestion avoidance phase.
 
-**Scenario:** 10 Mbps link, 150 ms RTT, MSS = 1500 bytes.
+**Task:** Compute the maximum window size the connection can achieve.
 
 ---
 
 ### Solution
 
-#### Given Parameters:
+#### Step 1: Understand the Goal
 
-*   **Rate (R):** 10 Mbps = 10 * 10^6 bits/sec
-*   **RTT:** 150 ms = 0.15 sec
-*   **MSS:** 1500 bytes = 12,000 bits
+The "maximum window size" a connection can achieve is limited by the physical characteristics of the network path. It represents the maximum amount of data that can be "in flight" (sent but not yet acknowledged) without overwhelming the network. This is determined by the **Bandwidth-Delay Product (BDP)**.
 
-#### a. Maximum Window Size
+#### Step 2: Identify Given Parameters and Convert Units
 
-The maximum possible window size (`W_max`) is determined by the **Bandwidth-Delay Product (BDP)** of the link. The BDP tells us how much data can be "in flight" in the network pipe.
+We need to make sure all units are consistent (bits, seconds).
 
-`BDP = R * RTT`
-`BDP = (10 * 10^6 bits/sec) * 0.15 sec = 1,500,000 bits`
+*   **Link Rate (R):** 10 Mbps = 10 * 10^6 bits per second.
+*   **Round-Trip Time (RTT):** 150 ms = 0.15 seconds.
+*   **Maximum Segment Size (MSS):** 1500 bytes. We need this in bits for later calculations:
+    *   `MSS_bits = 1500 bytes * 8 bits/byte = 12,000 bits`.
 
-To find the window size in segments (MSS), we divide the BDP by the size of a segment.
+#### Step 3: Calculate the Bandwidth-Delay Product (BDP)
 
-`W_max (in segments) = BDP / MSS_bits`
-`W_max = 1,500,000 bits / 12,000 bits/segment = **125 segments**`
+The BDP tells us the capacity of the network "pipe" in bits. It's the number of bits that can be transmitted before the first bit of the transmission reaches the destination and starts its return journey.
 
-The maximum window size the link can support is 125 segments.
+*   **Formula:** `BDP = R * RTT`
+*   **Calculation:**
+    `BDP = (10 * 10^6 bits/sec) * 0.15 sec`
+    `BDP = 1,500,000 bits`
 
-#### b. Average Window Size & Throughput
+This means the network path can hold 1,500,000 bits of data at any given time.
 
-Assuming TCP operates in a steady state where it increases its window until it hits `W_max=125` and then a loss occurs, causing the window to drop to `W_max/2`.
+#### Step 4: Convert BDP to Window Size in Segments
 
-*   **Maximum Window (`W`):** 125 segments
-*   **Minimum Window (`W/2`):** 62.5 segments
-*   **Average Window Size:** `(W + W/2) / 2 = (3/4) * W`
-    `= 0.75 * 125 = **93.75 segments**`
+The congestion window (`cwnd`) is measured in bytes, but it's often more intuitive to think of it in terms of the number of segments (MSS). To find the maximum window size in segments, we divide the total capacity of the pipe (BDP) by the size of each segment (MSS).
 
-**Average Throughput:**
-The average throughput is determined by the average window size.
+*   **Formula:** `W_max = BDP / MSS_bits`
+*   **Calculation:**
+    `W_max = 1,500,000 bits / 12,000 bits/segment`
+    `W_max = 125 segments`
 
-`Throughput = (Average Window * MSS) / RTT`
-`Throughput = (93.75 segments * 12,000 bits/segment) / 0.15 sec`
-`Throughput = 1,125,000 bits / 0.15 sec`
-`Throughput = 7,500,000 bits/sec = **7.5 Mbps**`
+**Conclusion:** The maximum window size that this TCP connection can achieve to fully utilize the link is **125 segments**. If the window is smaller, the link will be underutilized. If it's larger, it will cause queuing and eventually packet loss at the bottleneck router.
 
-#### c. Time to Reach Max Window Again
+## P49. TCP Throughput Analysis (Part 2)
 
-After a loss, the window drops from 125 to `125/2 = 62.5`. We need to find the time it takes for the window to grow back from 62.5 to 125 in the congestion avoidance phase.
+**Scenario:** Same as P48 (10 Mbps link, 150 ms RTT, 1500-byte MSS).
 
-*   **Increase needed:** `125 - 62.5 = 62.5 MSS`
-*   **Increase rate:** 1 MSS per RTT
-
-`Time = (Increase needed) / (Increase rate)`
-`Time = 62.5 MSS / (1 MSS / RTT) = 62.5 RTTs`
-`Time = 62.5 * 0.15 sec = **9.375 seconds**`
-
-#### d. Problem with 10 Gbps Link
-
-Now, let's re-calculate for a 10 Gbps link.
-*   **Rate (R):** 10 Gbps = 10 * 10^9 bits/sec
-*   **RTT:** 0.15 sec
-*   **MSS:** 12,000 bits
-
-**New `W_max`:**
-`BDP = (10 * 10^9) * 0.15 = 1.5 * 10^9 bits`
-`W_max = (1.5 * 10^9) / 12,000 = 125,000 segments`
-
-**Time to Recover:**
-After a single packet loss, the window drops to `125,000 / 2 = 62,500`.
-*   **Increase needed:** `62,500 MSS`
-*   **Increase rate:** 1 MSS per RTT
-
-`Time = 62,500 RTTs`
-`Time = 62,500 * 0.15 sec = **9,375 seconds**`
-`9375 seconds ≈ 156 minutes ≈ 2.6 hours`
-
-**The Problem:**
-The additive increase of "1 MSS per RTT" is **far too slow** for high-speed, long-latency networks (known as "long fat networks"). A single packet loss can cause the throughput to be halved, and it would take **over 2.5 hours** for TCP Reno to recover and fully utilize the 10 Gbps link again. This makes standard TCP very inefficient for such networks.
-
-**Proposed Fix:**
-This is precisely the problem that high-speed TCP variants were designed to solve.
-*   **Solution:** Implement a more aggressive congestion avoidance algorithm. Instead of a fixed additive increase, the increase should be a function of the current window size. This is what protocols like **CUBIC** (the default in Linux) and was previously done by **High-Speed TCP (HSTCP)** do. CUBIC uses a cubic function to make the window grow very rapidly when it is far from the last maximum, allowing it to recover from a loss and find the new link capacity much more quickly.
-
-## P51–P54. AIMD and Variants
-
-*(These questions involve theoretical analysis of AIMD properties.)*
+**Task:** Assuming TCP increases its window until it reaches the maximum size, experiences a loss, and then halves its window, what is the average window size and average throughput of this connection?
 
 ---
 
-### Solution Overview
+### Solution
 
-#### P51: Relationship between T and Throughput
+#### Step 1: Understand the TCP Sawtooth Model
 
-*   `T` is the time it takes for the window to grow from `W/2` to `W`. `T = (W/2) * RTT`.
-*   Average throughput is `(3/4) * W * MSS / RTT`.
-*   We can express `W` in terms of `T`: `W = 2T / RTT`.
-*   Substitute this into the throughput formula:
-    `Throughput = (3/4) * (2T / RTT) * MSS / RTT = (3/2) * T * MSS / RTT^2`.
-*   This shows that average throughput is directly proportional to the time `T` between loss events.
+This question describes the steady-state behavior of TCP Reno's congestion avoidance. The `cwnd` follows a "sawtooth" pattern:
+1.  It increases linearly (additively) by 1 MSS per RTT.
+2.  It reaches a maximum value (`W_max`) where a loss occurs.
+3.  Upon loss, the window is immediately halved (`W_max / 2`).
+4.  The process repeats.
 
-#### P52: Multiplicative Increase Variant (MIMD/AIMD)
+#### Step 2: Determine the Window Size Range
 
-*   The question likely asks about a protocol with `cwnd = cwnd + α*cwnd` (multiplicative increase) and `cwnd = β*cwnd` (multiplicative decrease).
-*   This **MIMD** protocol would also not be fair. Like AIAD, it would maintain the initial ratio of rates between competing connections.
-*   It's the combination of a "gentle" increase (additive) and a "harsh" decrease (multiplicative) that allows **AIMD** to push connections towards fairness.
+From the previous problem (P48), we know the maximum window size `W_max` is **125 segments**.
 
-#### P53: Two-Connection Fairness
+*   **Maximum Window (`W`):** 125 segments.
+*   **Minimum Window (`W/2`):** `125 / 2 = 62.5` segments.
 
-*   This refers to the phase-plot diagram analysis (like in P41).
-*   The key insight is that for two connections (R1, R2) starting at an unfair point, the multiplicative decrease on a loss event `(R1, R2) -> (R1/2, R2/2)` moves the state vector closer to the fairness line `R1 = R2`.
-*   The additive increase `(R1+1, R2+1)` moves the state parallel to the fairness line.
-*   Over many cycles, the repeated multiplicative decrease steps cause the system to converge to the fair equilibrium point.
+The congestion window oscillates between 62.5 and 125 segments.
 
-#### P54: Synchronization
+#### Step 3: Calculate the Average Window Size
 
-*   **TCP Synchronization** (or phase effect) is a phenomenon where multiple TCP flows sharing a bottleneck router with a simple drop-tail queue can fall into sync.
-*   They all increase their windows together, fill the router's buffer at the same time, and then all experience packet loss simultaneously.
-*   This causes all flows to halve their windows at the same time.
-*   The result is a global synchronization of the "sawtooth" behavior of all the flows.
-*   This leads to bursty traffic patterns and underutilization of the link, as the link alternates between being overloaded and then underused.
-*   This is another problem that **Active Queue Management (AQM)** like RED is designed to solve, by randomly dropping packets from different flows *before* the buffer is full, thus de-synchronizing their congestion responses.
+Since the window increases linearly, the average window size over one cycle is simply the average of the minimum and maximum values.
+
+*   **Formula:** `Average Window = (Minimum Window + Maximum Window) / 2`
+    Alternatively: `Average Window = (W/2 + W) / 2 = 3W / 4`
+*   **Calculation:**
+    `Average Window = (62.5 + 125) / 2 = 187.5 / 2 = 93.75` segments.
+    Or: `Average Window = 0.75 * 125 = 93.75` segments.
+
+The average number of segments in flight is **93.75**.
+
+#### Step 4: Calculate the Average Throughput
+
+The average throughput is the average amount of data sent per unit of time. We can calculate this using the average window size. In one RTT, the sender sends, on average, `Average Window` number of segments.
+
+*   **Formula:** `Throughput = (Average Window * MSS_bits) / RTT`
+*   **Parameters:**
+    *   `Average Window = 93.75` segments
+    *   `MSS_bits = 12,000` bits
+    *   `RTT = 0.15` seconds
+*   **Calculation:**
+    `Throughput = (93.75 * 12,000) / 0.15`
+    `Throughput = 1,125,000 bits / 0.15 sec`
+    `Throughput = 7,500,000 bits/sec`
+
+**Conclusion:** The average throughput of the connection is **7.5 Mbps**. This makes sense, as the throughput is 75% of the link capacity (10 Mbps), which corresponds to the average window size being 75% of the maximum window size.
+
+## P50. TCP Throughput Analysis (Part 3)
+
+**Scenario:** Same as P48 (10 Mbps link, 150 ms RTT, 1500-byte MSS). Now consider a 10 Gbps link.
+
+**Task:**
+a. How long would it take for TCP Reno to increase its window size from `W/2` to `W` after a packet loss on this new link?
+b. Explain why this is problematic and propose a fix.
+
+---
+
+### Solution
+
+#### Part a: Time to Recover on a 10 Gbps Link
+
+#### Step 1: Calculate the New Maximum Window Size (`W_max`)
+
+First, we must find the BDP for the high-speed link.
+
+*   **Link Rate (R):** 10 Gbps = 10 * 10^9 bits per second.
+*   **RTT:** 150 ms = 0.15 seconds.
+*   **MSS:** 1500 bytes = 12,000 bits.
+
+*   **Calculate BDP:**
+    `BDP = R * RTT = (10 * 10^9 bits/sec) * 0.15 sec = 1.5 * 10^9 bits`
+
+*   **Calculate `W_max` in segments:**
+    `W_max = BDP / MSS_bits = (1.5 * 10^9) / 12,000 = 125,000` segments.
+
+#### Step 2: Calculate the Recovery Time
+
+After a single packet loss, TCP Reno halves its window.
+*   **Minimum Window (`W/2`):** `125,000 / 2 = 62,500` segments.
+*   **Window Increase Needed:** The window must grow from 62,500 back to 125,000.
+    `Increase = 125,000 - 62,500 = 62,500` segments.
+
+TCP Reno's congestion avoidance algorithm increases the window by **1 MSS per RTT**.
+*   **Formula:** `Time = (Increase Needed) * RTT`
+*   **Calculation:**
+    `Time = 62,500 RTTs`
+    `Time = 62,500 * 0.15 seconds = 9,375 seconds`
+
+*   **Convert to more understandable units:**
+    `9,375 sec / 60 ≈ 156.25 minutes`
+    `156.25 min / 60 ≈ 2.6 hours`
+
+It would take approximately **2.6 hours** for TCP Reno to recover from a single packet loss.
+
+#### Part b: The Problem and the Fix
+
+**The Problem:**
+
+The linear increase of "1 MSS per RTT" is **far too slow** for networks with a large bandwidth-delay product (often called "Long Fat Networks" or LFNs). On a 10 Gbps link, a single, non-congestive packet loss (e.g., due to a random bit error) would cause the throughput to be cut in half, and the connection would then operate at a fraction of its potential for over two hours while it slowly recovered. This makes TCP Reno extremely inefficient and unable to properly utilize the capacity of modern high-speed networks.
+
+**The Fix:**
+
+The solution is to use a TCP variant designed for high-speed networks. These protocols modify the congestion avoidance algorithm to be more aggressive.
+
+*   **Proposed Fix:** Replace TCP Reno with a modern congestion control algorithm like **TCP CUBIC**.
+*   **How it Works:** Instead of a linear increase, CUBIC's window growth follows a cubic function. After a loss, when the window is far from its previous maximum, the growth is very fast (aggressively probing for bandwidth). As the window size gets closer to the previous maximum (where the last loss occurred), the growth slows down to be more cautious. After passing the old maximum, it accelerates again to find the new network ceiling.
+*   **Benefit:** This allows CUBIC to recover from a loss and regain full utilization of a high-speed link in a matter of seconds or minutes, rather than hours.
+
+## P51. AIMD Analysis: T and Throughput
+
+**Task:** Analyze the relationship between `T` (the time between loss events) and the average throughput of a TCP connection.
+
+---
+
+### Solution
+
+#### Step 1: Define the Variables
+
+This analysis is based on the simplified "sawtooth" model of TCP's congestion avoidance phase.
+
+*   `W`: The maximum congestion window size (in segments) reached just before a loss event.
+*   `RTT`: The round-trip time of the connection.
+*   `T`: The time duration of one full "sawtooth" cycle, i.e., the time between two consecutive loss events.
+*   `MSS`: The maximum segment size (in bytes or bits).
+
+#### Step 2: Express `T` in terms of `W` and `RTT`
+
+During one cycle, the window grows from `W/2` to `W`. The rate of increase is 1 MSS per RTT.
+
+*   **Total increase needed:** `W - W/2 = W/2` segments.
+*   **Time to achieve this increase:** Since the window grows by 1 segment each RTT, the time `T` is simply the total increase multiplied by the RTT.
+    `T = (W/2) * RTT`
+
+#### Step 3: Express Average Throughput in terms of `W`
+
+As calculated in P49, the average window size during a cycle is `(3/4) * W`. The average throughput is this average window (in bits) divided by the RTT.
+
+*   `Average Throughput = ( (3/4) * W * MSS ) / RTT`
+
+#### Step 4: Combine the Equations to Relate Throughput and `T`
+
+Our goal is to find a relationship between `Throughput` and `T`. We can do this by eliminating `W` from the equations.
+
+1.  From the equation in Step 2, solve for `W`:
+    `W = 2 * T / RTT`
+
+2.  Substitute this expression for `W` into the throughput formula from Step 3:
+    `Average Throughput = (3/4) * (2 * T / RTT) * MSS / RTT`
+
+3.  Simplify the expression:
+    `Average Throughput = (6/4) * T * MSS / (RTT * RTT)`
+    `Average Throughput = (3/2) * T * MSS / RTT^2`
+
+**Conclusion and Insight:**
+
+The final relationship is **`Average Throughput = 1.5 * T * MSS / RTT^2`**.
+
+This shows that the average throughput of a TCP connection is **directly proportional to the time between loss events (`T`)**. This makes intuitive sense: the longer the protocol can go without experiencing packet loss, the longer it can keep its window size large, and thus the higher its average data transfer rate will be. It also shows an inverse square relationship with RTT, highlighting how latency is a major limiting factor for TCP performance.
+
+## P52. AIMD Analysis: Fairness of Variants
+
+**Task:** Analyze whether a protocol using **Multiplicative Increase, Multiplicative Decrease (MIMD)** would converge to fairness.
+
+---
+
+### Solution
+
+#### Step 1: Define the Algorithm and the Goal
+
+*   **MIMD Algorithm:**
+    *   **Increase:** `cwnd = cwnd * α` for `α > 1` (e.g., `α=1.1`) per RTT with no loss.
+    *   **Decrease:** `cwnd = cwnd * β` for `β < 1` (e.g., `β=0.5`) upon packet loss.
+*   **Goal:** To determine if two competing MIMD connections will converge to a fair share of the bottleneck link capacity (i.e., each gets R/2).
+
+#### Step 2: Set up the Fairness Analysis
+
+Let's consider two connections, Connection 1 and Connection 2, with rates `R1` and `R2`. They share a link with total capacity `R`. An ideal state is `R1 + R2 = R`. A fair state is `R1 = R2`.
+
+We analyze the **ratio** of their throughputs, `R1/R2`. If the protocol is fair, this ratio should converge to 1 over time, regardless of the starting point.
+
+#### Step 3: Analyze the Effect of Increase and Decrease on the Ratio
+
+Let the state at time `t` be `(R1, R2)`.
+
+*   **Increase Phase:** After one RTT, the new rates are `(α * R1, α * R2)`.
+    *   The new ratio is `(α * R1) / (α * R2) = R1 / R2`.
+    *   **The ratio of throughputs does not change during the increase phase.**
+
+*   **Decrease Phase:** Upon a loss event, the new rates are `(β * R1, β * R2)`.
+    *   The new ratio is `(β * R1) / (β * R2) = R1 / R2`.
+    *   **The ratio of throughputs does not change during the decrease phase.**
+
+#### Step 4: Conclusion
+
+Since neither the multiplicative increase nor the multiplicative decrease phase changes the ratio of the throughputs between the two connections, the system will never move towards fairness. If Connection 1 starts with twice the throughput of Connection 2, it will maintain that 2:1 advantage indefinitely.
+
+**Why AIMD is Different and Converges to Fairness:**
+
+Let's quickly contrast with **AIMD**:
+*   **Increase:** `(R1 + 1, R2 + 1)`. The ratio `(R1+1)/(R2+1)` moves closer to 1. For example, if `(R1, R2) = (4, 2)`, the ratio is 2. After increase, it's `(5, 3)`, and the ratio is ~1.67. The additive increase gently pushes the system towards fairness.
+*   **Decrease:** `(β * R1, β * R2)`. The ratio `R1/R2` is unchanged.
+
+Wait, the standard analysis is that Additive Increase moves parallel to the fairness line, and Multiplicative Decrease moves towards the origin, thus improving fairness. Let's re-evaluate.
+
+**Correct AIMD Analysis:**
+*   **Additive Increase:** The *difference* `R1 - R2` remains constant. The *ratio* `R1/R2` changes.
+*   **Multiplicative Decrease:** The *ratio* `R1/R2` remains constant.
+
+The key is what happens over a full cycle. An unfair state `(R1, R2)` increases until `R1+R2=R`, then decreases. The decrease brings it closer to the `y=x` fairness line. **MIMD lacks this property.**
+
+**Final Conclusion for MIMD:** The protocol is not fair. It preserves the initial ratio of throughputs between competing connections. The combination of a "gentle" additive increase and a "harsh" multiplicative decrease is what allows AIMD to achieve fairness.
+
+## P53. AIMD Analysis: Two-Connection Fairness
+
+**Task:** Explain and show how two competing TCP (AIMD) connections converge to a fair state.
+
+---
+
+### Solution
+
+#### Step 1: Set up the Model
+
+We use the phase-plot diagram where the x-axis is the throughput of Connection 1 (`R1`) and the y-axis is the throughput of Connection 2 (`R2`).
+
+*   **Link Capacity:** The total available bandwidth is `R`. The line `R1 + R2 = R` represents full utilization. Any point above this line is in congestion.
+*   **Fairness:** The line `R1 = R2` represents a perfectly fair allocation of bandwidth.
+*   **Goal:** The system should converge to the point `(R/2, R/2)`, where the utilization and fairness lines intersect.
+
+#### Step 2: Define the AIMD Algorithm
+
+*   **Additive Increase (AI):** For each RTT without loss, `cwnd` increases by 1 MSS. In our model, this means the state `(R1, R2)` moves to `(R1 + α, R2 + α)`. This is a vector at a 45-degree angle, moving up and to the right.
+*   **Multiplicative Decrease (MD):** When a loss occurs (when `R1 + R2 > R`), `cwnd` is halved. The state `(R1, R2)` moves to `(R1/2, R2/2)`. This is a vector pointing from the current state towards the origin (0,0).
+
+#### Step 3: Trace the System from an Unfair State
+
+Let's assume the system starts at an unfair point **A**, where Connection 1 has a much larger share of the bandwidth than Connection 2 (e.g., `R1 > R2`).
+
+1.  **Increase Phase:** From point **A**, both connections increase their rate additively. The system state moves up and to the right, parallel to the fairness line (`R1 = R2`), until it hits the full utilization line at point **B**. At this point, the router's buffer overflows, and a packet is dropped.
+
+2.  **Decrease Phase:** The loss at point **B** triggers a multiplicative decrease for both connections. The state `(R1, R2)` is halved, moving the system to point **C** = `(R1/B / 2, R2/B / 2)`.
+
+#### Step 4: Analyze the Convergence
+
+This is the crucial step. Point **C** is on the line that connects the origin (0,0) to point **B**. Because point **B** was unfair (`R1 > R2`), the line from the origin to **B** has a slope less than 1. This line is **closer to the fairness line (`R1=R2`)** than the path of the additive increase.
+
+*   By moving from **B** to **C**, the system has moved closer to a fair allocation. The absolute difference between the rates has shrunk (`R1/2 - R2/2` is smaller than `R1 - R2`), and the ratio is the same, but the new starting point for the next increase phase is "more fair".
+
+*   From point **C**, the system begins another additive increase phase, moving parallel to the fairness line until it hits the utilization line again at point **D**.
+
+*   At **D**, another loss occurs, and the system jumps to point **E** = `(R1/D / 2, R2/D / 2)`.
+
+Over many such cycles, the multiplicative decrease step repeatedly pulls the system's state vector closer and closer to the central fairness line. The oscillations will eventually center around the optimal, fair point of `(R/2, R/2)`.
+
+**Conclusion:** The combination of an increase that preserves the rate difference and a decrease that scales the rates towards the origin is what forces the system to converge to a fair equilibrium.
+
+## P54. AIMD Analysis: TCP Synchronization
+
+**Task:** Explain the phenomenon of TCP Synchronization.
+
+---
+
+### Solution
+
+#### Step 1: Define the Scenario
+
+TCP Synchronization (also known as the phase effect or global synchronization) is a problem that can occur when multiple TCP flows are competing for bandwidth at a single bottleneck router. The problem is most pronounced when the router uses a simple **drop-tail queue**.
+
+*   **Drop-Tail Queue:** A basic FIFO (First-In, First-Out) queue. When the buffer is full, any new arriving packets are simply dropped.
+
+#### Step 2: Describe the Process
+
+Imagine several TCP flows (let's say 10 of them) all passing through the same router.
+
+1.  **Collective Increase:** All 10 flows are in the congestion avoidance phase, and they all increase their congestion windows (`cwnd`) additively and independently.
+2.  **Queue Saturation:** Because all flows are increasing their sending rate, the total arrival rate at the router will eventually exceed the router's outbound link capacity. The router's buffer (queue) begins to fill up.
+3.  **Simultaneous Loss:** The buffer becomes completely full. The next packets to arrive from *several different flows* are all dropped at roughly the same time.
+4.  **Synchronized Decrease:** Each flow that experienced a packet loss will detect it (either via timeout or fast retransmit) and trigger its multiplicative decrease, halving its `cwnd`. Because the losses happened at the same time, the decreases also happen at roughly the same time.
+5.  **Link Underutilization:** Suddenly, all 10 flows have cut their sending rate in half. The total sending rate drops far below the link's capacity, and the link becomes underutilized. The router's queue empties.
+6.  **Repeat:** Now that the congestion is gone, all 10 flows begin their additive increase again, and the cycle repeats.
+
+#### Step 3: Explain the Consequences
+
+This global synchronization of the TCP "sawtooth" patterns has several negative effects:
+
+*   **Inefficient Link Utilization:** The network oscillates between periods of being overloaded (full queues, high latency, packet loss) and periods of being underutilized (empty queues, low throughput). The average throughput is lower than it could be.
+*   **High Latency and Jitter:** The queuing delay at the router oscillates wildly. When the buffer is full, latency is very high. When it's empty, latency is low. This variation in delay (jitter) is particularly harmful to real-time applications like VoIP and video conferencing.
+*   **Unfairness:** Drop-tail queues can be unfair to bursty traffic, and synchronization can exacerbate this.
+
+#### Step 4: The Solution
+
+The solution to TCP synchronization is to avoid the conditions that cause it. This is done by using smarter queue management strategies in the router, known as **Active Queue Management (AQM)**.
+
+*   **Example: Random Early Detection (RED):** Instead of waiting for the queue to be completely full, a RED-enabled router starts dropping packets *probabilistically* as the average queue size grows.
+*   **Benefit:** By dropping packets early and from random flows, RED signals congestion to a few flows at a time, causing them to reduce their windows at different times. This **de-synchronizes** their responses, breaks the global sawtooth pattern, and leads to a more stable queue size, lower average latency, and higher overall link utilization.
 
 ## P55. High-Speed TCP Loss Tolerance
 
