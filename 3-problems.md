@@ -1300,7 +1300,6 @@ The receiver FSM is exactly the same as the standard `rdt3.0` receiver. It doesn
 
 This design ensures A only moves on when it's confident both B and C have received the data, handling both packet loss (via timeout) and duplicate packets (via sequence numbers).
 
-... (Solutions for P20-P58 would follow in a similar, detailed manner) ...
 ## P20. Alternating Delivery at Receiver C
 
 Hosts A and B send messages to Host C over **independent unreliable channels**. C must deliver data alternately: first from A, then from B, then A, etc. Design a **stop-and-wait-like** protocol ensuring reliable transfer and alternating delivery. Provide FSMs for A and C and packet format(s).
