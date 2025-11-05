@@ -147,19 +147,19 @@ Is it possible that a 1-bit error will go undetected? How about a 2-bit error?
 **Step 1: Sum the bytes.**
 
 ```
-  01010011
-+ 01100110
------------
-  10111001
+   01010011
+ + 01100110
+ -----------
+   10111001
 ```
 
 Now, add the third byte to this result.
 
 ```
-  10111001
-+ 01110100
------------
-1 00101101  <-- Note the carry-out bit
+   10111001
+ + 01110100
+ -----------
+ 1 00101101  <-- Note the carry-out bit
 ```
 
 **Step 2: Handle the carry-out (end-around carry).**
@@ -167,10 +167,10 @@ Now, add the third byte to this result.
 In 1's complement arithmetic, any carry-out from the most significant bit must be added back to the least significant bit.
 
 ```
-  00101101
-+        1
------------
-  00101110   <-- This is the sum.
+   00101101
+ +        1
+ -----------
+   00101110   <-- This is the sum.
 ```
 
 **Step 3: Take the 1's complement of the sum.**
@@ -224,6 +224,8 @@ As described above:
     *   If `A` is corrupted to `A' = 0001...` (a bit flipped from 1 to 0).
     *   And `B` is corrupted to `B' = 1110...` (a bit in the same position flipped from 0 to 1).
     *   The sum `A' + B'` might be the same as `A + B`, causing the error to go undetected.
+
+    **Example from P4(c):** As shown in Problem 4 part (c), flipping corresponding bits in opposite directions in different bytes can leave the checksum unchanged.
 
 ## P4. 1's Complement Practice
 
