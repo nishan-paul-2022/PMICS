@@ -141,27 +141,50 @@ Let's break this down step by step, starting from the basics.
 
 **SMS (Short Message Service):**
 
-SMS is a protocol used for sending short text messages between mobile devices. It operates over the cellular network using the Signaling System No. 7 (SS7) protocol for routing messages between mobile carriers. Messages are limited to 160 characters (or 70 for non-Latin alphabets) and are stored and forwarded through Short Message Service Centers (SMSCs). SMS doesn't require internet connectivity, working directly through cellular signals, but it's not real-time in the instant messaging sense as delivery can take seconds to minutes depending on network conditions.
+SMS uses the **SS7 (Signaling System 7)** protocol suite and operates at the signaling layer of cellular networks. Messages are transmitted through the **SMSC (Short Message Service Center)** using protocols like **MAP (Mobile Application Part)** for GSM networks or **IS-41** for CDMA networks. SMS is limited to 160 characters for text messages and operates independently of internet connectivity, relying solely on cellular network infrastructure. The protocol is connection-oriented and guarantees message delivery through store-and-forward mechanisms at the carrier level.
 
 **iMessage:**
 
-iMessage is Apple's proprietary messaging service for iOS and macOS devices. It uses a combination of protocols including Apple's Push Notification service (APNs) for real-time delivery and encryption. Messages are sent over the internet using Wi-Fi or cellular data, with end-to-end encryption provided by the iMessage protocol. Unlike SMS, iMessage supports multimedia content, read receipts, and integrates seamlessly across Apple devices. It falls back to SMS for non-iMessage users, but the core protocol is Apple's custom implementation built on top of standard internet protocols.
+iMessage is Apple's proprietary messaging service that uses **Apple Push Notification service (APNs)** over internet protocols. It employs **end-to-end encryption** using public key cryptography and operates over **TCP/IP**. Messages are sent through Apple's servers using a combination of **HTTP/2** and **TLS 1.3** for secure transport. iMessage automatically falls back to SMS when internet connectivity is unavailable or when messaging non-Apple devices. The protocol supports rich media, read receipts, and typing indicators through Apple's proprietary binary protocol.
 
 **WeChat:**
 
-WeChat, developed by Tencent, is a comprehensive messaging and social media platform primarily used in China. It employs a proprietary protocol that combines elements of XMPP (Extensible Messaging and Presence Protocol) with custom extensions for multimedia and social features. Messages are transmitted over TCP/IP connections with encryption, and the service includes voice calls, video calls, and payments. WeChat's protocol is closed-source and heavily integrated with Chinese internet infrastructure, requiring users to register with phone numbers and often mandating real-name verification.
+WeChat uses a **proprietary protocol** built on top of standard internet protocols including **TCP** and **HTTP/HTTPS**. The application employs **XMPP-inspired** architecture for real-time messaging with modifications for optimization. Communication occurs through Tencent's servers using **TLS encryption** for transport security. WeChat's protocol includes special optimizations for the Chinese network environment, including techniques to handle network instability and support for multiple media types. The system uses a hybrid push-pull mechanism for message delivery and synchronization across devices.
 
 **WhatsApp:**
 
-WhatsApp uses a proprietary protocol based on XMPP (Extensible Messaging and Presence Protocol) with significant modifications for security and efficiency. It employs end-to-end encryption using the Signal protocol, which is based on the Double Ratchet algorithm. Messages are sent over internet connections (Wi-Fi or cellular data) and support multimedia content, group chats, and voice/video calls. WhatsApp's protocol includes optimizations for low-bandwidth environments and uses a centralized server architecture for message routing and storage.
+WhatsApp uses the **XMPP (Extensible Messaging and Presence Protocol)** as its foundation with significant customizations. It implements the **Signal Protocol** (formerly TextSecure) for **end-to-end encryption**, ensuring that only sender and recipient can read messages. Communication occurs over **TCP** with **TLS** encryption for transport security, and messages are routed through WhatsApp's servers (owned by Meta). The protocol uses **Protocol Buffers** for efficient binary serialization and supports features like group messaging, media sharing, and status updates through extended XMPP functionality.
 
 **Differences:**
 
-These messaging systems differ primarily in their underlying protocols, infrastructure requirements, and feature sets. SMS relies on traditional cellular networks and SS7 signaling, making it universal but limited in functionality and requiring no internet connection. In contrast, iMessage, WeChat, and WhatsApp all require internet connectivity and use modern protocols like XMPP or proprietary variants over TCP/IP. iMessage is exclusive to Apple ecosystems with seamless device integration, while WeChat is deeply embedded in Chinese digital infrastructure with extensive social features. WhatsApp stands out for its strong emphasis on privacy through Signal-based encryption and global accessibility. While SMS is carrier-dependent and often incurs fees, the internet-based services are generally free but depend on data plans and can be subject to government surveillance or blocking in certain regions.
+The primary differences lie in their **infrastructure dependencies and encryption models**. SMS operates entirely on cellular networks without internet, while iMessage, WeChat, and WhatsApp require internet connectivity. **End-to-end encryption** is native to iMessage and WhatsApp but not to SMS or WeChat (which only encrypts in transit). **Protocol openness** varies significantly: SMS uses standardized telecom protocols, WhatsApp builds on XMPP, while iMessage and WeChat use proprietary protocols. **Cross-platform compatibility** differs as SMS works on all phones, WhatsApp and WeChat are cross-platform for smartphones, but iMessage is restricted to Apple's ecosystem. Finally, SMS is carrier-dependent with per-message costs, while the others are data-dependent and typically free over WiFi/data plans.
 
 ## P3. Consider an HTTP client that wants to retrieve a Web document at a given URL. The IP address of the HTTP server is initially unknown. What transport and application-layer protocols besides HTTP are needed in this scenario?
 
-**Answer:** DNS (Domain Name System) for application layer, and TCP (Transmission Control Protocol) for transport layer.
+**Answer:**
+
+To retrieve a Web document when the IP address is initially unknown, the following protocols are needed:
+
+1. **DNS (Domain Name System)** - Application Layer
+     - To resolve the domain name in the URL to an IP address
+     - Uses UDP port 53 (typically)
+
+2. **UDP (User Datagram Protocol)** - Transport Layer
+     - Used by DNS for query/response messages
+
+3. **TCP (Transmission Control Protocol)** - Transport Layer
+     - HTTP uses TCP for reliable data transfer
+     - Establishes connection before HTTP communication
+
+4. **IP (Internet Protocol)** - Network Layer
+     - For routing packets between client and server
+     - Not explicitly mentioned as "besides HTTP" but necessary
+
+**Process Flow:**
+1. DNS query (using UDP) to resolve domain name → IP address
+2. TCP connection establishment (3-way handshake) to the server
+3. HTTP GET request sent over TCP connection
+4. HTTP response received over TCP connection
 
 **Explanation:**
 
@@ -176,28 +199,28 @@ Let's understand this step by step, as if you're learning networking for the fir
 4. **What is DNS?** DNS stands for Domain Name System. It's like the phone book of the internet. It translates human-readable domain names into IP addresses that computers can use.
 
 5. **Step-by-step process:**
-   - User enters URL: http://www.example.com/index.html
-   - Client extracts the hostname: www.example.com
-   - Client sends a DNS query to find the IP address of www.example.com
-   - DNS server responds with the IP address (e.g., 93.184.216.34)
-   - Now the client knows where to connect.
+    - User enters URL: http://www.example.com/index.html
+    - Client extracts the hostname: www.example.com
+    - Client sends a DNS query to find the IP address of www.example.com
+    - DNS server responds with the IP address (e.g., 93.184.216.34)
+    - Now the client knows where to connect.
 
 6. **What happens after getting the IP address?** The client needs to establish a connection to the server and send the HTTP request. This requires a transport protocol.
 
 7. **What is TCP?** TCP (Transmission Control Protocol) is a transport layer protocol that provides reliable, ordered delivery of data between applications. HTTP runs on top of TCP.
 
 8. **Why TCP specifically?** HTTP is designed to work over TCP because:
-   - TCP ensures data arrives in order and without errors.
-   - TCP handles flow control and congestion control.
-   - HTTP needs reliable delivery for web pages.
+    - TCP ensures data arrives in order and without errors.
+    - TCP handles flow control and congestion control.
+    - HTTP needs reliable delivery for web pages.
 
 9. **Could it use UDP?** No, because UDP (User Datagram Protocol) is unreliable - it doesn't guarantee delivery or order. HTTP requires reliability.
 
 10. **Are there other protocols involved?** In some cases, HTTPS (secure HTTP) might be used, which adds TLS/SSL for encryption, but the question specifies HTTP, so we stick to the basics.
 
 11. **Summary of protocols needed:**
-    - Application layer: DNS (to resolve domain name to IP) and HTTP (to request the document)
-    - Transport layer: TCP (to reliably transport the HTTP messages)
+     - Application layer: DNS (to resolve domain name to IP) and HTTP (to request the document)
+     - Transport layer: TCP (to reliably transport the HTTP messages)
 
 12. **Key concept to memorize:** For HTTP over the internet, you need DNS to find the server and TCP to reliably deliver the messages. HTTP itself is the application protocol for the web request/response.
 
@@ -218,7 +241,11 @@ Encoding: zip,deflate<cr><lf>Accept-Charset: ISO
 
 ### a. What is the URL of the document requested by the browser?
 
-**Answer:** /cs453/index.html
+**Answer:** `http://gaia.cs.umass.edu/cs453/index.html`
+
+**Location:**
+- Path: First line - `/cs453/index.html`
+- Host: Second line - `gaia.cs.umass.edu`
 
 **Explanation:**
 
@@ -229,9 +256,9 @@ Encoding: zip,deflate<cr><lf>Accept-Charset: ISO
 3. **Looking at the message:** The first line is: `GET /cs453/index.html HTTP/1.1<cr><lf>`
 
 4. **Breaking it down:**
-   - GET: The method (asking to retrieve something)
-   - /cs453/index.html: This is the path part of the URL
-   - HTTP/1.1: The version of HTTP being used
+    - GET: The method (asking to retrieve something)
+    - /cs453/index.html: This is the path part of the URL
+    - HTTP/1.1: The version of HTTP being used
 
 5. **What about the full URL?** The full URL would be the Host header plus this path. But the question asks for "the URL of the document requested," and in the context, it means the path. The Host header gives the domain: gaia.cs.umass.edu
 
@@ -292,9 +319,18 @@ Encoding: zip,deflate<cr><lf>Accept-Charset: ISO
 
 5. **Key concept to memorize:** HTTP requests don't contain the client's IP address; that's handled at the network layer.
 
-### e. What type of browser initiates this message? Why is the browser type needed in an HTTP request message?
+### e. What type of browser initiates this message? Why is the browser type needed?
 
-**Answer:** Mozilla/5.0 (Netscape 7.2), needed for server to send appropriate content
+**Answer:** **Netscape 7.2**
+
+**Location:** User-Agent header - `Mozilla/5.0 (Windows;U; Windows NT 5.1; en-US; rv:1.7.2) Gecko/20040804 Netscape/7.2 (ax)`
+
+**Why it's needed:**
+- **Content negotiation:** Servers can send different content based on browser capabilities
+- **Browser-specific features:** Some browsers support different HTML/CSS/JavaScript features
+- **Statistics:** Website owners track browser usage
+- **Bug workarounds:** Servers can implement workarounds for known browser bugs
+- **Security:** Detect outdated browsers with known vulnerabilities
 
 **Explanation:**
 
@@ -303,9 +339,9 @@ Encoding: zip,deflate<cr><lf>Accept-Charset: ISO
 2. **What does this mean?** It's Netscape 7.2 browser on Windows, but identifies as Mozilla for compatibility.
 
 3. **Why is it needed?** Servers can send different content based on browser capabilities. For example:
-   - Different HTML for different browsers
-   - Different features or workarounds for older browsers
-   - Analytics and debugging
+    - Different HTML for different browsers
+    - Different features or workarounds for older browsers
+    - Analytics and debugging
 
 4. **Key concept to memorize:** User-Agent header identifies the browser/client, allowing servers to customize responses.
 
@@ -329,9 +365,15 @@ NTU-ST550ASpring 2005 homepage</title><lf></head><lf>
 <much more document text following here (not shown)>
 ```
 
-### a. Was the server able to successfully find the document or not? What time was the document reply provided?
+### a. Was the server able to successfully find the document? What time was the reply provided?
 
-**Answer:** Yes, successfully found (status 200 OK), at Tue, 07 Mar 2008 12:39:45 GMT
+**Answer:**
+- **Success:** YES - indicated by status code `200 OK`
+- **Time:** Tuesday, 07 Mar 2008, 12:39:45 GMT
+
+**Location:**
+- Status: First line - `HTTP/1.1 200 OK`
+- Time: `Date: Tue, 07 Mar 2008 12:39:45 GMT`
 
 **Explanation:**
 
@@ -347,7 +389,9 @@ NTU-ST550ASpring 2005 homepage</title><lf></head><lf>
 
 ### b. When was the document last modified?
 
-**Answer:** Sat, 10 Dec 2005 18:27:46 GMT
+**Answer:** Saturday, 10 Dec 2005, 18:27:46 GMT
+
+**Location:** `Last-Modified: Sat, 10 Dec 2005 18:27:46 GMT`
 
 **Explanation:**
 
@@ -363,6 +407,8 @@ NTU-ST550ASpring 2005 homepage</title><lf></head><lf>
 
 **Answer:** 3874 bytes
 
+**Location:** `Content-Length: 3874`
+
 **Explanation:**
 
 1. **Content-Length header:** `Content-Length: 3874<cr><lf>`
@@ -375,7 +421,13 @@ NTU-ST550ASpring 2005 homepage</title><lf></head><lf>
 
 ### d. What are the first 5 bytes of the document being returned? Did the server agree to a persistent connection?
 
-**Answer:** First 5 bytes: <!doc (from <!doctype), Yes, persistent connection agreed
+**Answer:**
+- **First 5 bytes:** `<!doc` (the beginning of `<!doctype...>`)
+- **Persistent connection:** YES
+
+**Location:**
+- First bytes: Start of message body after the blank line
+- Persistent connection: `Connection: Keep-Alive` header
 
 **Explanation:**
 

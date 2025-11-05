@@ -12,213 +12,510 @@ This document contains detailed solutions to problems P16-P20. Each problem incl
 
 ## P16. How does SMTP mark the end of a message body? How about HTTP? Can HTTP use the same method as SMTP to mark the end of a message body? Explain.
 
-**Answer:** SMTP uses `<CRLF>.<CRLF>`, HTTP uses Content-Length or chunked transfer. HTTP cannot use SMTP's method because HTTP messages are binary and may contain `<CRLF>.<CRLF>`.
+### SMTP - How it marks end of message body:
 
-**Explanation:**
+**Answer:** SMTP uses a line containing only a **single period (.)** to mark the end of message body.
 
-1. **SMTP end marker:** The message body ends with a line containing only a period (.) followed by `<CRLF>.<CRLF>`.
+**Format:**
+```
+DATA
+354 Start mail input
+[message headers]
+[blank line]
+[message body]
+.
+250 OK
+```
 
-2. **HTTP end markers:** Uses Content-Length header (specifies exact byte count) or Transfer-Encoding: chunked (sends data in chunks with size indicators).
+**Transparency issue:**
+- If message body contains a line with just a period, SMTP uses **byte-stuffing**
+- Add an extra period at the beginning: `.` becomes `..`
+- Receiver removes the extra period
 
-3. **Why HTTP can't use SMTP method:** HTTP messages can contain arbitrary binary data, including the sequence `<CRLF>.<CRLF>`. SMTP assumes text and escapes dots.
+### HTTP - How it marks end of message body:
 
-4. **Key concept to memorize:** SMTP uses dot-stuffing for text messages, HTTP uses length-based or chunked encoding for binary safety.
+**Answer:** HTTP uses **multiple methods:**
+
+1. **Content-Length header:**
+    ```
+    Content-Length: 3874
+    ```
+    - Specifies exact number of bytes
+    - Receiver reads exactly that many bytes
+
+2. **Chunked Transfer Encoding:**
+    ```
+    Transfer-Encoding: chunked
+    ```
+    - Message sent in chunks
+    - Each chunk has size followed by data
+    - Zero-length chunk signals end
+
+3. **Connection close:**
+    - Server closes connection after sending body
+    - End of body = end of connection
+
+### Can HTTP use the same method as SMTP?
+
+**Answer: NO, HTTP should NOT use SMTP's period-on-a-line method**
+
+**Reasons:**
+
+1. **Binary data:** HTTP frequently transfers binary data (images, videos, executables). A byte value of 0x2E0D0A (the period-newline sequence) could naturally occur in binary data, causing premature termination.
+
+2. **Efficiency:** Content-Length is more efficient - receiver knows exactly how many bytes to read without scanning for special sequences.
+
+3. **Byte-stuffing overhead:** Would require scanning and modifying binary content, adding overhead and complexity.
+
+4. **Pipelining:** HTTP/1.1 supports pipelining multiple requests/responses. Content-Length allows immediate transition to next message without ambiguity.
+
+5. **Partial content:** HTTP supports Range requests (partial content). Content-Length is essential for this feature.
+
+**Conclusion:** SMTP's method works for text-based email content but is unsuitable for HTTP's diverse content types and performance requirements. Content-Length is the superior approach for HTTP.
+
+**Key concept to memorize:** SMTP uses dot-stuffing for text messages, HTTP uses length-based or chunked encoding for binary safety.
 
 ## P17. Read RFC 5321 for SMTP. What does MTA stand for? Consider the following received spam e-mail (modified from a real spam e-mail). Assuming only the originator of this spam e-mail is malicious and all other hosts are honest, identify the malacious host that has generated this spam e-mail.
 
+**MTA Definition:** MTA stands for **Mail Transfer Agent** - a server that transfers email from one computer to another using SMTP.
+
+### Given email headers:
 ```
 From - Fri Nov 07 13:41:30 2008
 Return-Path: <tennis5@pp33head.com>
-Received: from barmail.cs.umass.edu (barmail.cs.umass.
-edu
-[128.119.240.3]) by cs.umass.edu (8.13.1/8.12.6) for
-<hg@cs.umass.edu>; Fri, 7 Nov 2008 13:27:10 -0500
-Received: from asusus-4b96 (localhost [127.0.0.1]) by
-barmail.cs.umass.edu (Spam Firewall) for <hg@cs.umass.
-edu>; Fri, 7
-Nov 2008 13:27:07 -0500 (EST)
-Received: from asusus-4b96 ([58.88.21.177]) by barmail.
-cs.umass.edu
-for <hg@cs.umass.edu>; Fri, 07 Nov 2008 13:27:07 -0500
-(EST)
-Received: from [58.88.21.177] by inbnd55.exchangeddd.
-com; Sat, 8
-Nov 2008 01:27:07 +0700
+Received: from barmail.cs.umass.edu (barmail.cs.umass.edu [128.119.240.3])
+          by cs.umass.edu (8.13.1/8.12.6) for <hg@cs.umass.edu>;
+          Fri, 7 Nov 2008 13:27:10 -0500
+Received: from asusus-4b96 (localhost [127.0.0.1])
+          by barmail.cs.umass.edu (Spam Firewall) for <hg@cs.umass.edu>;
+          Fri, 7 Nov 2008 13:27:07 -0500 (EST)
+Received: from asusus-4b96 ([58.88.21.177])
+          by barmail.cs.umass.edu for <hg@cs.umass.edu>;
+          Fri, 07 Nov 2008 13:27:07 -0500 (EST)
+Received: from [58.88.21.177] by inbnd55.exchangeddd.com;
+          Sat, 8 Nov 2008 01:27:07 +0700
 From: "Jonny" <tennis5@pp33head.com>
 To: <hg@cs.umass.edu>
- 
 Subject: How to secure your savings
 ```
 
-**Answer:** MTA = Mail Transfer Agent. Malicious host is [58.88.21.177] (asusus-4b96).
+### Analysis:
 
-**Explanation:**
+**Reading Received headers from BOTTOM to TOP** (they're added as mail travels):
 
-1. **MTA:** Mail Transfer Agent - software that transfers email messages from one computer to another.
+1. **First hop:** `from [58.88.21.177] by inbnd55.exchangeddd.com`
+    - Origin claims to be 58.88.21.177
 
-2. **Received headers analysis:** Read from bottom to top to trace the path.
+2. **Second hop:** `from asusus-4b96 ([58.88.21.177]) by barmail.cs.umass.edu`
+    - barmail.cs.umass.edu received from 58.88.21.177
+    - The sending host claims to be "asusus-4b96"
 
-3. **Bottom header:** Received from [58.88.21.177] by inbnd55.exchangeddd.com - this is the originating server.
+3. **Third hop:** `from asusus-4b96 (localhost [127.0.0.1])`
+    - Spam firewall processing (internal)
 
-4. **Next:** From asusus-4b96 ([58.88.21.177]) - same IP.
+4. **Final hop:** `from barmail.cs.umass.edu by cs.umass.edu`
+    - Legitimate internal relay
 
-5. **The spammer used IP 58.88.21.177 to send the email.**
+### Identifying the malicious host:
 
-6. **All other hosts are honest intermediaries.**
+**Answer: The malicious host is at IP address 58.88.21.177 (claiming hostname asusus-4b96)**
 
-7. **Key concept to memorize:** Received headers show email routing path; bottom header indicates originator.
+**Evidence:**
 
-## P18. a. What is a whois database?
+1. **Suspicious hostname:** "asusus-4b96" is not a legitimate mail server name
+2. **First external entry point:** 58.88.21.177 is where the mail entered the umass.edu system
+3. **Forged From address:** tennis5@pp33head.com is likely fake
+4. **Suspicious relay:** inbnd55.exchangeddd.com appears to be a compromised or rogue relay
+5. **IP location:** 58.88.x.x range suggests origin from Asia-Pacific region (possibly China)
 
-**Answer:** A whois database is a public database containing registration information for domain names and IP addresses.
+**Assumption validation:**
+- We assume barmail.cs.umass.edu and cs.umass.edu are honest (they're the destination's mail servers)
+- The first external IP that contacted barmail is 58.88.21.177 - this is the malicious source
+- Everything before barmail.cs.umass.edu in the chain could be forged
 
-**Explanation:**
+**Key concept to memorize:** Received headers show email routing path; bottom header indicates originator.
 
-1. **Whois database:** Contains details about domain registration, including owner, contact info, registration dates, and name servers.
+## P18. Multiple Questions
 
-2. **Purpose:** Allows lookup of domain/IP ownership and contact information.
+### a. What is a whois database?
 
-3. **Managed by:** Regional Internet Registries (RIRs) for IP addresses, domain registrars for domains.
+**Answer:**
 
-4. **Key concept to memorize:** Whois provides public registration data for domains and IP blocks.
+A **whois database** is a publicly accessible directory service that provides information about:
+- **Domain name registrations:** Owner, registrar, registration/expiration dates
+- **IP address allocations:** Organization, contact information, address blocks
+- **Autonomous System Numbers (ASN):** Network operators
 
-### b. Use various whois databases on the Internet to obtain the names of two DNS servers. Indicate which whois databases you used.
+**Information typically includes:**
+- Registrant name and organization
+- Administrative and technical contacts
+- Registration and expiration dates
+- Name servers
+- Registrar information
+- Contact details (email, phone, address)
 
-**Answer:** Example: For google.com - ns1.google.com, ns2.google.com (using whois.verisign-grs.com or whois.iana.org).
+**Purpose:**
+- Identify domain/IP ownership
+- Contact network administrators
+- Investigate abuse or security incidents
+- Verify domain availability
+- Legal and law enforcement investigations
 
-**Explanation:**
+**Key concept to memorize:** Whois provides public registration data for domains and IP blocks.
 
-1. **Process:** Query whois for a domain to get name server information.
+### b. Use whois databases to obtain names of two DNS servers
 
-2. **Databases:** whois.iana.org, whois.verisign-grs.com, etc.
+**Answer:** (Examples - actual results vary)
 
-3. **Example output:** Name servers listed in whois response.
+I'll need to search for information about whois databases and DNS servers.
 
-4. **Key concept to memorize:** Whois queries reveal authoritative name servers for domains.
+**Example findings using common whois services:**
 
-### c. Use nslookup on your local host to send DNS queries to three DNS servers: your local DNS server and the two DNS servers you found in part (b). Try querying for Type A, NS, and MX reports. Summarize your findings.
+**Using ICANN Whois (whois.icann.org):**
+- Query: google.com
+- DNS Servers: ns1.google.com, ns2.google.com
 
-**Answer:** nslookup queries return IP addresses (A), name servers (NS), and mail servers (MX) for domains.
+**Using ARIN Whois (whois.arin.net):**
+- Query: mit.edu
+- DNS Servers: STRAWB.MIT.EDU, W20NS.MIT.EDU
 
-**Explanation:**
+**Whois databases used:**
+1. ICANN Whois (https://whois.icann.org)
+2. ARIN Whois (https://whois.arin.net) - North America
+3. Regional Internet Registries (RIPE, APNIC, etc.)
 
-1. **nslookup usage:** Command-line tool for DNS queries.
+**Key concept to memorize:** Whois queries reveal authoritative name servers for domains.
 
-2. **Record types:**
-   - A: IPv4 address
-   - NS: Name servers
-   - MX: Mail exchange servers
+### c. Use nslookup to query DNS servers
 
-3. **Findings:** Different servers may give same or different answers based on caching and authority.
+**Commands:**
 
-4. **Key concept to memorize:** nslookup tests DNS resolution and compares responses from different servers.
+```bash
+# Query local DNS server
+nslookup -type=A google.com
+nslookup -type=NS google.com
+nslookup -type=MX google.com
 
-### d. Use nslookup to find a Web server that has multiple IP addresses. Does the Web server of your institution (school or company) have multiple IP addresses?
+# Query specific DNS server (e.g., ns1.google.com)
+nslookup -type=A google.com ns1.google.com
+nslookup -type=NS google.com ns1.google.com
+nslookup -type=MX google.com ns1.google.com
 
-**Answer:** Many large sites have multiple IPs for load balancing. Institutional servers may or may not.
+# Query another DNS server (e.g., MIT's)
+nslookup -type=A mit.edu STRAWB.MIT.EDU
+nslookup -type=NS mit.edu STRAWB.MIT.EDU
+nslookup -type=MX mit.edu STRAWB.MIT.EDU
+```
 
-**Explanation:**
+**Expected findings:**
 
-1. **Multiple IPs:** For redundancy, load balancing, or CDNs.
+**Type A (Address record):**
+- Returns IPv4 address(es) of the domain
+- Example: google.com → 142.250.185.46
 
-2. **Check:** nslookup domain → multiple A records.
+**Type NS (Name Server record):**
+- Returns authoritative name servers for the domain
+- Example: google.com → ns1.google.com, ns2.google.com, ns3.google.com, ns4.google.com
 
-3. **Institutional:** Depends on setup; universities often have multiple for different services.
+**Type MX (Mail Exchange record):**
+- Returns mail servers for the domain with priority values
+- Example: google.com → smtp.google.com (priority 10)
 
-4. **Key concept to memorize:** Large websites use multiple IPs for scalability.
+**Summary:** Different DNS servers should return consistent results for authoritative data, though caching may cause temporary discrepancies.
 
-### e. Use the ARIN whois database to determine the IP address range used by your university.
+**Key concept to memorize:** nslookup tests DNS resolution and compares responses from different servers.
 
-**Answer:** Query ARIN whois with university name or IP to find allocated ranges.
+### d. Find a Web server with multiple IP addresses
 
-**Explanation:**
+**Command:**
+```bash
+nslookup www.google.com
+```
 
-1. **ARIN:** American Registry for Internet Numbers, manages IP allocations in Americas.
+**Expected result:**
+```
+Server: 8.8.8.8
+Address: 8.8.8.8#53
 
-2. **Query:** whois.arin.net with organization name.
+Non-authoritative answer:
+Name: www.google.com
+Address: 142.250.185.36
+Name: www.google.com
+Address: 2607:f8b0:4004:c07::69
+```
 
-3. **Result:** CIDR blocks assigned to the university.
+**Examples of sites with multiple IPs:**
+- **www.google.com** - Multiple IPs for load balancing
+- **www.facebook.com** - Multiple IPs globally distributed
+- **www.amazon.com** - Many IPs for different regions
 
-4. **Key concept to memorize:** RIR whois databases show IP address allocations.
+**Your institution:** Most universities/companies have multiple IPs for their web servers for:
+- Load balancing
+- Redundancy/failover
+- Geographic distribution
+- IPv4 and IPv6 addresses
 
-### f. Describe how an attacker can use whois databases and the nslookup tool to perform reconnaissance on an institution before launching an attack.
+**Key concept to memorize:** Large websites use multiple IPs for scalability.
 
-**Answer:** Attacker can gather domain info, IP ranges, mail servers, and DNS structure for targeted attacks.
+### e. Determine IP address range using ARIN whois
 
-**Explanation:**
+**Example for a university:**
 
-1. **Reconnaissance:** Gather intelligence before attack.
+```bash
+whois -h whois.arin.net "University of Massachusetts"
+```
 
-2. **Using whois:** Find contact info, IP ranges, name servers.
+**Expected output format:**
+```
+OrgName: University of Massachusetts
+NetRange: 128.119.0.0 - 128.119.255.255
+CIDR: 128.119.0.0/16
+NetHandle: NET-128-119-0-0-1
+Organization: University of Massachusetts
+```
 
-3. **Using nslookup:** Map DNS structure, find subdomains, mail servers.
+**For your institution:**
+1. Visit https://whois.arin.net
+2. Search for your institution's name
+3. Find NetRange or CIDR notation
+4. Example ranges:
+    - MIT: 18.0.0.0/8
+    - Stanford: 171.64.0.0/14
 
-4. **Attack preparation:** Identify vulnerable services, plan phishing, DDoS targets.
+**Key concept to memorize:** RIR whois databases show IP address allocations.
 
-5. **Key concept to memorize:** Public DNS/whois data aids attacker reconnaissance.
+### f. How attackers use whois and nslookup for reconnaissance
 
-### g. Discuss why whois databases should be publicly available.
+**Reconnaissance techniques:**
 
-**Answer:** Public access enables troubleshooting, security research, and accountability.
+1. **Domain enumeration:**
+    - Find all domains owned by target organization
+    - Identify subdomains and related infrastructure
 
-**Explanation:**
+2. **Network mapping:**
+    - Discover IP address ranges
+    - Identify network topology
+    - Find mail servers, DNS servers, web servers
 
-1. **Benefits:**
-   - Network troubleshooting
-   - Abuse reporting
-   - Research and statistics
-   - Transparency and accountability
+3. **Personnel identification:**
+    - Extract contact information
+    - Identify administrators (social engineering targets)
+    - Find email formats
 
-2. **Drawbacks:** Privacy concerns, enables malicious reconnaissance.
+4. **Infrastructure analysis:**
+    - Determine hosting providers
+    - Find CDN usage
+    - Identify load balancers
 
-3. **Balance:** Public access outweighs risks for internet health.
+5. **Attack surface identification:**
+    - Find all public-facing servers
+    - Discover forgotten/legacy systems
+    - Locate test/development servers
 
-4. **Key concept to memorize:** Whois transparency supports internet stability and security.
+**Attack sequence:**
+```
+1. whois target.com → Find IP ranges, name servers, contacts
+2. nslookup -type=NS target.com → Find authoritative DNS servers
+3. nslookup -type=MX target.com → Find mail servers (phishing targets)
+4. Zone transfer attempt → Get all DNS records
+5. Reverse DNS on IP range → Find all hosts
+6. Port scanning identified hosts
+7. Vulnerability scanning
+8. Exploitation
+```
+
+**Key concept to memorize:** Public DNS/whois data aids attacker reconnaissance.
+
+### g. Why whois databases should be publicly available
+
+**Arguments FOR public whois:**
+
+1. **Accountability:**
+    - Domain owners can be identified
+    - Responsibility for content/actions
+    - Prevents anonymous malicious activity
+
+2. **Network operations:**
+    - Contact administrators for technical issues
+    - Coordinate security incident response
+    - Troubleshoot network problems
+
+3. **Legal purposes:**
+    - Trademark protection
+    - Copyright enforcement
+    - Law enforcement investigations
+
+4. **Security:**
+    - Report abuse, spam, phishing
+    - Track malicious actors
+    - Coordinate DDoS mitigation
+
+5. **Transparency:**
+    - Public internet resources should have public ownership
+    - Promotes trust in internet infrastructure
+    - Enables community policing
+
+6. **Business purposes:**
+    - Due diligence for partnerships
+    - Competitive intelligence (legitimate)
+    - Domain acquisition negotiations
+
+**Counterarguments (privacy concerns):**
+- Personal information exposure
+- Spam/harassment of registrants
+- GDPR/privacy regulations
+- Solution: Domain privacy services, GDPR-redacted records
+
+**Balance:** Modern whois systems redact personal information while maintaining technical contact methods and organizational transparency.
+
+**Key concept to memorize:** Whois transparency supports internet stability and security.
 
 ## P19. In this problem, we use the useful dig tool available on Unix and Linux hosts to explore the hierarchy of DNS servers. Recall that in Figure 2.19, a DNS server in the DNS hierarchy delegates a DNS query to a DNS server lower in the hierarchy, by sending back to the DNS client the name of that lower-level DNS server. First read the man page for dig, and then answer the following questions.
 
-### a. Starting with a root DNS server (from one of the root servers [a-m].root-servers.net), initiate a sequence of queries for the IP address for your department's Web server by using dig. Show the list of the names of DNS servers in the delegation chain in answering your query.
+### a. Starting with a root DNS server (from one of the root servers [a-m]. root-servers.net), initiate a sequence of queries for the IP address for your department’s Web server by using dig. Show the list of the names of DNS servers in the delegation chain in answering your query.
 
-**Answer:** Delegation chain: root → TLD server → authoritative server.
+**Commands and expected delegation chain:**
 
-**Explanation:**
+```bash
+# Step 1: Query root server
+dig @a.root-servers.net www.cs.university.edu
 
-1. **dig usage:** dig @server domain
+# Expected response: Referral to .edu TLD servers
+# Authority section shows: edu. NS a.edu-servers.net
 
-2. **Start with root:** dig @a.root-servers.net domain
+# Step 2: Query TLD server
+dig @a.edu-servers.net www.cs.university.edu
 
-3. **Follow delegations:** Each response gives next level servers.
+# Expected response: Referral to university.edu name servers
+# Authority section shows: university.edu. NS dns1.university.edu
 
-4. **Chain example:** . → .edu → university.edu → dept.university.edu
+# Step 3: Query university's authoritative server
+dig @dns1.university.edu www.cs.university.edu
 
-5. **Key concept to memorize:** DNS resolution follows hierarchical delegation chain.
+# Expected response: Final answer with IP address
+# Answer section shows: www.cs.university.edu. A 128.119.x.x
+```
+
+**Delegation chain example:**
+1. **Root server** (a.root-servers.net) → delegates to
+2. **TLD server** (a.edu-servers.net) → delegates to
+3. **University server** (dns1.university.edu) → delegates to
+4. **Department server** (dns.cs.university.edu) → provides final answer
+
+**Example for cs.umass.edu:**
+```
+Root → .edu TLD → umass.edu → cs.umass.edu
+a.root-servers.net → a.edu-servers.net → dns1.umass.edu → ns1.cs.umass.edu
+```
+
+**Key concept to memorize:** DNS resolution follows hierarchical delegation chain.
 
 ### b. Repeat part (a) for several popular Web sites, such as google.com, yahoo.com, or amazon.com.
 
-**Answer:** Similar chains for .com domains.
+**Example 1: google.com**
+```bash
+dig @a.root-servers.net www.google.com
+dig @a.gtld-servers.net www.google.com
+dig @ns1.google.com www.google.com
+```
 
-**Explanation:**
+**Delegation chain:**
+```
+Root → .com TLD → google.com
+a.root-servers.net → a.gtld-servers.net → ns1.google.com (final answer)
+```
 
-1. **Process:** Same as part (a), starting from root.
+**Example 2: yahoo.com**
+```bash
+dig @a.root-servers.net www.yahoo.com
+dig @a.gtld-servers.net www.yahoo.com
+dig @ns1.yahoo.com www.yahoo.com
+```
 
-2. **Findings:** .com TLD servers, then site-specific authoritative servers.
+**Delegation chain:**
+```
+Root → .com TLD → yahoo.com
+a.root-servers.net → a.gtld-servers.net → ns1.yahoo.com (final answer)
+```
 
-3. **Key concept to memorize:** All domains follow same hierarchical resolution.
+**Example 3: amazon.com**
+```bash
+dig @a.root-servers.net www.amazon.com
+dig @a.gtld-servers.net www.amazon.com
+dig @pdns1.ultradns.net www.amazon.com
+```
+
+**Delegation chain:**
+```
+Root → .com TLD → amazon.com (uses UltraDNS)
+a.root-servers.net → a.gtld-servers.net → pdns1.ultradns.net (final answer)
+```
+
+**Common pattern:**
+- All start at root servers (13 root server clusters)
+- Delegated to appropriate TLD (.com, .org, .edu, etc.)
+- Finally to authoritative servers for specific domain
+- Typically 3-4 hops from root to final answer
+
+**Key concept to memorize:** All domains follow same hierarchical resolution.
 
 ## P20. Suppose you can access the caches in the local DNS servers of your department. Can you propose a way to roughly determine the Web servers (outside your department) that are most popular among the users in your department? Explain.
 
-**Answer:** Analyze cache entries for frequency of DNS queries to external domains.
+**Answer:**
 
-**Explanation:**
+**Method:** Analyze cached DNS entries in local DNS server
 
-1. **DNS cache:** Stores recent query results.
+**Approach:**
 
-2. **Access cache:** View cached records and timestamps.
+1. **Examine cache contents:**
+    - Query local DNS server's cache for A records
+    - Look for non-local domain names
+    - Record frequency and recency of entries
 
-3. **Popularity metric:** Count queries or cache hits for each domain.
+2. **Frequency analysis:**
+    - Domains with many cached entries → frequently accessed
+    - Recently cached entries → recent access
+    - Multiple users accessing same domain → popular site
 
-4. **External servers:** Focus on non-department domains.
+3. **Indicators of popularity:**
+    - **High cache hit rate** for specific domains
+    - **Frequent cache refreshes** (TTL expiration and renewal)
+    - **Multiple queries** for same domain from different hosts
+    - **Long-living cache entries** (frequently accessed before expiration)
 
-5. **Limitations:** Cache has limited size, LRU eviction, doesn't show all queries.
+**Practical implementation:**
 
-6. **Key concept to memorize:** DNS cache analysis reveals access patterns.
+```bash
+# If you have access to DNS server logs:
+# Count queries for external domains
+grep "query" /var/log/named/query.log | \
+  grep -v "\.university\.edu" | \
+  awk '{print $X}' | sort | uniq -c | sort -rn
+
+# Top domains = most popular sites
+```
+
+**Metrics to track:**
+- Number of queries per domain
+- Number of unique internal IPs querying each domain
+- Time distribution of queries
+- Cache hit rates
+
+**Example findings:**
+```
+1523 queries - www.google.com
+892 queries - www.youtube.com
+634 queries - www.facebook.com
+421 queries - github.com
+315 queries - stackoverflow.com
+```
+
+**Limitations:**
+- Doesn't show access via IP (bypassing DNS)
+- Doesn't show HTTPS/encrypted content accessed
+- Cache may have entries from automated systems
+- Short TTLs may underrepresent popular sites
+
+**Privacy consideration:** This method reveals browsing patterns of department users.
+
+**Key concept to memorize:** DNS cache analysis reveals access patterns.
