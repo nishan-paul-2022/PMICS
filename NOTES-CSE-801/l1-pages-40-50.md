@@ -56,7 +56,7 @@ To compute utilization and delay with a cache:
 - LAN utilization increases slightly but remains efficient.
 
 ### Mermaid Diagram: Web Cache Interaction
-![Web Cache Interaction](../notes/images/web-cache-interaction.png)
+![Web Cache Interaction](../supplies/images/web-cache-interaction.png)
 
 This diagram shows the flow: Client requests → Cache checks → Hit (serve) or Miss (fetch, cache, serve).
 
@@ -78,7 +78,7 @@ This is called a **Conditional GET** because the request is conditional on the o
 - Reduces server load and network traffic.
 
 ### Mermaid Diagram: Conditional GET Flow
-![Conditional GET](../notes/images/conditional-get.png)
+![Conditional GET](../supplies/images/conditional-get.png)
 
 This illustrates the conditional check: If unchanged, no data; if changed, full response.
 
@@ -105,7 +105,7 @@ In HTTP/1.1, if a client requests 1 large object (O1, e.g., video) and 3 small o
 In HTTP/2, objects are framed and interleaved: Frames from O1, O2, O3, O4 are sent alternately, so small objects arrive faster, and O1 is only slightly delayed.
 
 ### Mermaid Diagram: HOL Blocking Comparison
-![HOL Blocking Comparison](../notes/images/hol-blocking-comparison.png)
+![HOL Blocking Comparison](../supplies/images/hol-blocking-comparison.png)
 
 This shows the difference: HTTP/1.1 serial, HTTP/2 parallel via frames.
 

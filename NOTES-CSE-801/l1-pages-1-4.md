@@ -35,7 +35,7 @@ Based on the content from pages 2 to 4 of the PDF (from "Computer Networking: A 
    - **Why It Matters**: The core handles massive data volumes and ensures global connectivity. Without it, isolated networks couldn't communicate.
 
 #### 5. **Internet structure (From PDF Pages 2-4)**
-   ![Internet Structure Diagram](../notes/images/internet-structure.png)
+   ![Internet Structure Diagram](../supplies/images/internet-structure.png)
    
    **Explanation of Diagram**:
    - **Top Layer (Network Edge)**: Shows various "end" networks like mobile (e.g., your phone's cellular connection), home (e.g., your Wi-Fi), enterprise (e.g., office networks), datacenter (e.g., server farms), and content provider (e.g., Netflix's network).

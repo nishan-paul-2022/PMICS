@@ -26,7 +26,7 @@ DNS provides several services and is structured as a distributed, hierarchical d
 Figure Description: Slide 2-17 illustrates people and internet identifiers, with DNS as a distributed database. Slide 2-18 discusses why DNS isn't centralized, showing stats like Comcast handling 1.0T queries/day and Akamai 7.0T, emphasizing scalability.
 
 Mermaid Diagram: DNS Hierarchy
-![DNS Hierarchy](../notes/images/dns-hierarchy.png)
+![DNS Hierarchy](../supplies/images/dns-hierarchy.png)
 
 ## 3. DNS Hierarchy
 DNS is organized in a tree-like hierarchy for efficient lookups.
@@ -39,7 +39,7 @@ DNS is organized in a tree-like hierarchy for efficient lookups.
 Figure Description: Slide 2-20 shows a tree diagram of the DNS hierarchy, starting from the root, branching to TLDs like .com, and then to authoritative servers for specific domains like amazon.com.
 
 Mermaid Diagram: Example Query Flow
-![DNS Query Flow](../notes/images/dns-query-flow.png)
+![DNS Query Flow](../supplies/images/dns-query-flow.png)
 
 ## 4. DNS Name Resolution Processes
 There are two main ways to resolve names: iterative and recursive queries.
@@ -51,7 +51,7 @@ There are two main ways to resolve names: iterative and recursive queries.
 Figure Description: Slide 2-25 shows an iterative query diagram with a client querying local DNS, which then queries root, TLD, and authoritative servers step-by-step. Slide 2-26 shows recursive query where the local DNS handles all steps.
 
 Mermaid Diagram: Iterative vs Recursive
-![DNS Iterative Recursive](../notes/images/dns-iterative-recursive.png)
+![DNS Iterative Recursive](../supplies/images/dns-iterative-recursive.png)
 
 ## 5. DNS Records and Protocol
 DNS stores records in a specific format, and messages follow a standard structure.
@@ -66,7 +66,7 @@ DNS stores records in a specific format, and messages follow a standard structur
 Figure Description: Slide 2-28 lists DNS records with examples. Slide 2-29 and 2-30 show the DNS message header as a table with fields like identification (16-bit number for matching queries/replies), flags (indicating query/reply, recursion), and sections for questions, answers, etc.
 
 Mermaid Diagram: DNS Message Format
-![DNS Message Format](../notes/images/dns-message-format.png)
+![DNS Message Format](../supplies/images/dns-message-format.png)
 
 ## 6. Getting Info into DNS and Security
 To add a domain, register with a registrar and set up servers. Security is crucial due to threats.

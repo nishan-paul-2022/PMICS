@@ -23,7 +23,7 @@ The process can be broken down into three main exchanges:
 
 The first step is for the client to prove its identity to the KDC's Authentication Server (AS) to get a Ticket-Granting Ticket (TGT).
 
-![AS Exchange](../notes/images/kerberos-as-exchange.png)
+![AS Exchange](../supplies/images/kerberos-as-exchange.png)
 
 - **Client to AS**: The client sends its ID to the AS, requesting a TGT.
 - **AS to Client**:
@@ -36,7 +36,7 @@ The first step is for the client to prove its identity to the KDC's Authenticati
 
 Now that the client has a TGT, it can request a Service Ticket (ST) for a specific service from the Ticket-Granting Service (TGS).
 
-![TGS Exchange](../notes/images/kerberos-tgs-exchange.png)
+![TGS Exchange](../supplies/images/kerberos-tgs-exchange.png)
 
 - **Client to TGS**: The client sends three things to the TGS:
     1. The **TGT** it received from the AS.
@@ -52,7 +52,7 @@ Now that the client has a TGT, it can request a Service Ticket (ST) for a specif
 
 The client now has a Service Ticket and can finally present it to the Service Server (SS) to gain access.
 
-![CS Exchange](../notes/images/kerberos-cs-exchange.png)
+![CS Exchange](../supplies/images/kerberos-cs-exchange.png)
 
 - **Client to SS**: The client sends two things to the service server:
     1. The **Service Ticket (ST)**.
@@ -67,6 +67,6 @@ The client now has a Service Ticket and can finally present it to the Service Se
 
 This diagram shows the complete flow, from the initial request to the final service access.
 
-![Kerberos Diagram](../notes/images/kerberos-diagram.png)
+![Kerberos Diagram](../supplies/images/kerberos-diagram.png)
 
 By using this system of tickets and trusted third parties, Kerberos ensures that passwords are never sent over the network, and both the client and server can be confident in each other's identity.

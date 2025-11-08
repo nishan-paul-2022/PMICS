@@ -15,7 +15,7 @@ At the application layer, the main activity is **processes communicating** with 
   - **Server process**: A process that waits to be contacted. For example, a web server waits for requests from clients.
 
 ### Diagram: Process Communication
-![Process Communication](../notes/images/process-communication.png)
+![Process Communication](../supplies/images/process-communication.png)
 
 **Explanation of Diagram**:
 - Arrows show the flow of communication.
@@ -38,7 +38,7 @@ A **socket** is the interface between a process and the transport layer. It acts
   - The transport layer (below the socket) is controlled by the OS.
 
 ### Diagram: Socket Analogy
-![Socket Analogy](../notes/images/socket-analogy.png)
+![Socket Analogy](../supplies/images/socket-analogy.png)
 
 **Explanation of Diagram**:
 - The socket is the "door" for sending/receiving messages.
@@ -61,7 +61,7 @@ To receive messages, a process must have a unique **identifier**. This is crucia
 - **Example**: To send an HTTP message to the web server at gaia.cs.umass.edu, use IP address 128.119.245.12 and port 80.
 
 ### Diagram: Process Addressing
-![Process Addressing](../notes/images/process-addressing.png)
+![Process Addressing](../supplies/images/process-addressing.png)
 
 **Explanation of Diagram**:
 - Each host has an IP address.
@@ -85,7 +85,7 @@ An **application-layer protocol** defines the rules for how processes communicat
   - **Proprietary protocols**: Owned by a company, not publicly available. Examples: Skype, Zoom. These may not work with other systems.
 
 ### Diagram: Protocol Components
-![Protocol Components](../notes/images/protocol-components.png)
+![Protocol Components](../supplies/images/protocol-components.png)
 
 **Explanation of Diagram**:
 - Protocols have structure: types, syntax, semantics, rules.
@@ -106,7 +106,7 @@ This section introduces the **Web** and **HTTP** (HyperText Transfer Protocol), 
   - **Pathname**: The path to the specific file (e.g., /someDept/pic.gif).
 
 ### Diagram: Web Page Structure
-![Web Page Structure](../notes/images/web-page-structure.png)
+![Web Page Structure](../supplies/images/web-page-structure.png)
 
 **Explanation of Diagram**:
 - A webpage is made of multiple objects linked together.

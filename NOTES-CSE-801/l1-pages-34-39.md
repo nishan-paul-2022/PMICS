@@ -13,7 +13,7 @@ HTTP (HyperText Transfer Protocol) is the application-layer protocol used for we
 
 To illustrate, consider a stateful protocol where a client makes two changes to a variable X (from X to X' and then to X''). If the network connection or client crashes at time t' (after the first change), the system might be left in an inconsistent state, requiring recovery mechanisms.
 
-![Cookies Flow](../notes/images/cookies-flow.png)
+![Cookies Flow](../supplies/images/cookies-flow.png)
 
 In contrast, HTTP's statelessness avoids such issues.
 

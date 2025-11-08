@@ -20,7 +20,7 @@ This sets the stage for understanding why we need a structured way to discuss an
 ### The Seven-Layer OSI/ISO Reference Model
 The **OSI (Open Systems Interconnection)** model is a 7-layer framework created by the International Organization for Standardization (ISO) to standardize network communication:
 
-![OSI Model](../notes/images/osi-model.png)
+![OSI Model](../supplies/images/osi-model.png)
 
 **Layers Explained:**
 1. **Application Layer**: Provides services directly to user applications (e.g., web browsing, email).
@@ -43,7 +43,7 @@ The Internet's TCP/IP model does **not** include the Presentation and Session la
 
 The Internet uses the **TCP/IP protocol stack**, which is a 5-layer (or sometimes 4-layer) model:
 
-![TCP/IP Stack](../notes/images/tcp-ip-stack.png)
+![TCP/IP Stack](../supplies/images/tcp-ip-stack.png)
 
 **Layer Functions:**
 - **Application Layer**: Supports network applications like HTTP (web), SMTP (email), DNS (name resolution).
@@ -81,7 +81,7 @@ The Internet uses the **TCP/IP protocol stack**, which is a 5-layer (or sometime
 
 At the receiver, each layer removes its header to unwrap the data.
 
-![Encapsulation Process](../notes/images/encapsulation-process.png)
+![Encapsulation Process](../supplies/images/encapsulation-process.png)
 
 **Headers Explained:**
 - **Ht (Transport Header)**: Used for reliable delivery, contains port numbers to identify processes.
@@ -132,6 +132,6 @@ The content discusses how to measure real Internet performance using the **trace
 
 **Figure Explanation:** The traceroute diagram shows the path from gaia.cs.umass.edu to www.eurecom.fr, with delays at each hop, highlighting the trans-oceanic link and the 3 probes sent to each router.
 
-![Traceroute Path](../notes/images/traceroute-path.png)
+![Traceroute Path](../supplies/images/traceroute-path.png)
 
 This completes the explanation for pages 5-15, focusing on the provided content with clear explanations, diagrams, and figure descriptions.

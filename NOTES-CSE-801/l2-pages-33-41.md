@@ -49,13 +49,13 @@ This reciprocal mechanism ensures peers contribute to the network.
 
 ### Mermaid Diagram: Client-Server vs P2P File Distribution
 
-![Client Server vs P2P](../notes/images/client-server-vs-p2p.png)
+![Client Server vs P2P](../supplies/images/client-server-vs-p2p.png)
 
 - **Description**: In client-server, the server (A) sends the file to each client (B-E). In P2P, peers (F-I) share chunks among themselves, reducing server load.
 
 ### Mermaid Diagram: BitTorrent Process
 
-![BitTorrent Process](../notes/images/bittorrent-process.png)
+![BitTorrent Process](../supplies/images/bittorrent-process.png)
 
 - **Description**: Peer 1 joins via the tracker, connects to peers, and exchanges chunks using tit-for-tat.
 

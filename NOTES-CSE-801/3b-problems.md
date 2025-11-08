@@ -10,9 +10,9 @@
 
 ## P6. rdt2.1 Deadlock Scenario
 
-![Figure 3.11](../notes/images/p-figure-3.11.png)
+![Figure 3.11](../supplies/images/p-figure-3.11.png)
 
-![Figure 3.60](../notes/images/p-figure-3.60.png)
+![Figure 3.60](../supplies/images/p-figure-3.60.png)
 
 Consider our motivation for correcting protocol rdt2.1. Show that the receiver, shown in Figure 3.60, when operating with the sender shown in Figure 3.11, can lead the sender and receiver to enter into a deadlock state, where each is waiting for an event that will never occur.
 
@@ -25,7 +25,7 @@ Consider our motivation for correcting protocol rdt2.1. Show that the receiver, 
 *   **Sender (Figure 3.11 - `rdt2.1`):** A correct sender that uses sequence numbers (0 and 1) and waits for ACKs or NAKs. It retransmits the *current* packet if it receives a corrupt or NAK response.
 *   **Receiver (Figure 3.60 - Incorrect `rdt2.1`):** An incorrect receiver that sends ACKs for correctly received packets and NAKs for corrupted or out-of-sequence packets.
 
-![Figure 3.14](../notes/images/p-figure-3.14.png)
+![Figure 3.14](../supplies/images/p-figure-3.14.png)
 
 #### The Deadlock Scenario
 
@@ -118,7 +118,7 @@ This design ensures that the receiver correctly handles duplicates by re-sending
 
 ## P9. rdt3.0 Trace with Garbled Packets
 
-![Figure 3.16](../notes/images/p-figure-3.16.png)
+![Figure 3.16](../supplies/images/p-figure-3.16.png)
 
 Give a trace of the operation of protocol **rdt3.0** when data packets and acknowledgment packets are garbled. Your trace should be similar to that used in Figure 3.16.
 

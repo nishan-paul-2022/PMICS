@@ -255,7 +255,7 @@ In a high-data-rate scenario, the fast, proactive feedback from ACKs is crucial 
 
 ## P15. Channel Utilization and Window Size
 
-![Figure 3.17](../notes/images/p-figure-3.17.png)
+![Figure 3.17](../supplies/images/p-figure-3.17.png)
 
 Consider the cross-country example shown in Figure 3.17. How big would the window size have to be for the channel utilization to be greater than 98 percent? Suppose that the size of a packet is 1,500 bytes, including both header fields and data.
 

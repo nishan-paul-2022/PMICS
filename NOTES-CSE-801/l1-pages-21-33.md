@@ -25,7 +25,7 @@ This setup allows web pages to be composed from resources scattered across the i
   - PC running Firefox browser (client).
   - Server running Apache Web server.
 
-![HTTP Client Server](../notes/images/http-client-server.png)
+![HTTP Client Server](../supplies/images/http-client-server.png)
 
 ### HTTP and TCP
 - **TCP Usage**: HTTP relies on **TCP** (Transmission Control Protocol) for reliable data transfer.
@@ -37,7 +37,7 @@ This setup allows web pages to be composed from resources scattered across the i
   - **Why Stateless?**: Keeping state (history of interactions) makes protocols complex. If the server or client crashes, their views of the state might not match, requiring reconciliation (fixing inconsistencies).
   - **Aside**: Protocols that maintain state are more complex to manage.
 
-![HTTP TCP Sequence](../notes/images/http-tcp-sequence.png)
+![HTTP TCP Sequence](../supplies/images/http-tcp-sequence.png)
 
 ## HTTP Connections: Two Types
 
@@ -57,7 +57,7 @@ This setup allows web pages to be composed from resources scattered across the i
     - Close the connection when done.
 - **Advantage**: More efficient for transferring multiple objects.
 
-![HTTP Connections](../notes/images/http-connections.png)
+![HTTP Connections](../supplies/images/http-connections.png)
 
 ## Non-Persistent HTTP: Example
 - **Scenario**: User enters URL: `www.someSchool.edu/someDepartment/home.index` (an HTML file containing text and references to 10 JPEG images).
@@ -70,7 +70,7 @@ This setup allows web pages to be composed from resources scattered across the i
   6. **Repeat for Each Object**: Steps 1-5 are repeated for each of the 10 JPEG objects.
 - **Connection Closure**: After sending the response, the server closes the TCP connection.
 
-![Non-Persistent HTTP Sequence](../notes/images/non-persistent-http-sequence.png)
+![Non-Persistent HTTP Sequence](../supplies/images/non-persistent-http-sequence.png)
 
 ### Response Time in Non-Persistent HTTP
 - **RTT Definition**: **Round-Trip Time (RTT)** is the time for a small packet to travel from client to server and back.
@@ -80,7 +80,7 @@ This setup allows web pages to be composed from resources scattered across the i
   - Time to transmit the file/object.
 - **Total Formula**: Non-persistent HTTP response time = 2RTT + file transmission time.
 
-![Non-Persistent Response Time](../notes/images/non-persistent-response-time.png)
+![Non-Persistent Response Time](../supplies/images/non-persistent-response-time.png)
 
 ## Persistent HTTP (HTTP 1.1)
 - **Issues with Non-Persistent HTTP**:
@@ -93,7 +93,7 @@ This setup allows web pages to be composed from resources scattered across the i
   - Client sends requests as soon as it finds referenced objects.
   - Can reduce to as little as one RTT for all referenced objects (cutting response time in half).
 
-![Persistent HTTP Sequence](../notes/images/persistent-http-sequence.png)
+![Persistent HTTP Sequence](../supplies/images/persistent-http-sequence.png)
 
 ## HTTP Request Message
 - **Message Types**: HTTP has two main types: request and response.
@@ -125,7 +125,7 @@ This setup allows web pages to be composed from resources scattered across the i
   Entity Body (optional)
   ```
 
-![HTTP Request Message](../notes/images/http-request-message.png)
+![HTTP Request Message](../supplies/images/http-request-message.png)
 
 ### Other HTTP Request Methods
 - **POST Method**: Used when a web page has form input. User data is sent in the **entity body** of the HTTP POST request message.
@@ -152,7 +152,7 @@ This setup allows web pages to be composed from resources scattered across the i
   data data data data data ...
   ```
 
-![HTTP Response Message](../notes/images/http-response-message.png)
+![HTTP Response Message](../supplies/images/http-response-message.png)
 
 ### HTTP Response Status Codes
 - **Status Codes**: Appear in the first line of the server-to-client response. Indicate the result of the request.
