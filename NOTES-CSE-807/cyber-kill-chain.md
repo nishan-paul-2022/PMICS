@@ -1,4 +1,5 @@
 # The Cyber Kill Chain: A Step-by-Step Guide to Understanding Cyberattacks
+![The Cyber Kill Chain](../supplies/images/cyber-kill-chain.png)
 
 The "Cyber Kill Chain" is a framework developed by Lockheed Martin that outlines the stages of a cyberattack. It provides a structured way to understand how attackers operate, helping security professionals to better defend against advanced persistent threats (APTs).
 
