@@ -1,17 +1,15 @@
-Volatility 2.6
----------
+# Volatility 2.6
 	note: put all file in one folder
 	demo: volatility.exe -f /home/kali/memorydump/dump.vmem imageinfo
+#
 
 Imageinfo
 ---------
 	volatility.exe -f dump.vmem imageinfo
 
-
 pslist	(profile=WinXPSP2x86,WinXPSP3x86)
 -----------------------------------------
 	volatility.exe -f dump.vmem --profile=WinXPSP2x86 pslist
-
 
 psscan
 ------
@@ -30,7 +28,6 @@ DLLDump
 	volatility.exe -f dump.vmem --profile=WinXPSP2x86 dlldump --dump-dir <the path you wants to pest>
 
 	volatility.exe -f dump.vmem --profile=WinXPSP2x86 dlldump --dump-dir C:\Users\Ayan\Desktop\volatility\ramdump
-
 
 Handles
 -------
