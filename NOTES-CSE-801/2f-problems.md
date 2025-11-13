@@ -23,28 +23,33 @@ This document contains detailed solutions to problems P26-P32. Each problem incl
 Bob could potentially get the complete file through several BitTorrent mechanisms:
 
 **1. Optimistic Unchoking:**
+
 - BitTorrent randomly "optimistically unchokes" one peer every 30 seconds
 - This mechanism gives new or unlucky peers a chance to prove themselves
 - Bob could receive pieces during these optimistic unchoke periods
 - Very slow, but theoretically possible to accumulate all pieces over time
 
 **2. Initial Seeders:**
+
 - If there are altruistic seeders who already have the complete file
 - Some seeders may upload without expecting immediate reciprocation
 - Seeders often have different choking policies than leechers
 - Bob could download from these seeders
 
 **3. Joining Early:**
+
 - If Bob joins when there are few leechers in the swarm
 - Competition is low, making it easier to get unchoked
 - Can accumulate pieces before the swarm grows and becomes competitive
 
 **4. Seeders with Different Policies:**
+
 - Some clients/seeders don't strictly enforce tit-for-tat
 - Educational or research seeders may upload freely
 - Misconfigured clients may not properly enforce reciprocation
 
 **Limitations and Reality:**
+
 - **Very slow download speed** - only gets data during random unchoke intervals
 - **Most peers will choke Bob quickly** after detecting no reciprocation
 - **May never reach high priority** in any peer's upload queue
@@ -52,6 +57,7 @@ Bob could potentially get the complete file through several BitTorrent mechanism
 - **May never complete** if all seeders leave before Bob finishes
 
 **BitTorrent's Tit-for-Tat Mechanism:**
+
 - Designed specifically to discourage free-riding
 - Peers prioritize uploading to those who upload back
 - "Choking algorithm" identifies and blocks non-contributors
@@ -70,12 +76,14 @@ Bob can use multiple computers with different IP addresses from his computer lab
 **Method:**
 
 **1. Multiple Simultaneous Connections:**
+
 - Use N computers in the lab, each with a unique IP address
 - Each computer appears as an independent peer to the swarm
 - Each gets its own optimistic unchoke opportunities
 - N computers = N times the probability of being optimistically unchoked
 
 **2. Piece Coordination:**
+
 ```
 Computer 1: Downloads pieces 1-100
 Computer 2: Downloads pieces 101-200
@@ -83,30 +91,35 @@ Computer 3: Downloads pieces 201-300
 Computer 4: Downloads pieces 301-400
 ...and so on
 ```
+
 - Divide the file into non-overlapping piece ranges
 - Each computer requests different pieces
 - Share pieces among Bob's computers via fast local network (LAN)
 - Reassemble complete file from all collected pieces
 
 **3. Increased Optimistic Unchoke Probability:**
+
 - With N computers, N opportunities for random unchokes every 30 seconds
 - Each computer connects to different sets of peers
 - Probability of at least one getting unchoked increases significantly
 - More chances to receive data without uploading
 
 **4. Load Distribution Across Swarm:**
+
 - Each Bob-controlled computer connects to different peers
 - Spreads requests across the entire swarm
 - Harder for individual peers to detect the pattern
 - Reduces likelihood of coordinated blocking
 
 **5. Identity Recycling:**
+
 - If one identity gets blacklisted or permanently choked
 - Disconnect that peer and rejoin with new peer_id
 - Fresh start with the swarm under new identity
 - Evades reputation-based blocking
 
 **Implementation Pseudo-code:**
+
 ```
 For each computer i in {1, 2, ..., N}:
   1. Join swarm with unique peer_id
@@ -125,16 +138,19 @@ Central computer:
 **Effectiveness Analysis:**
 
 **Speedup Factor:**
+
 - **Single computer:** 1 optimistic unchoke chance per 30 seconds
 - **N computers:** N optimistic unchoke chances per 30 seconds
 - **Approximate speedup:** N-fold increase in download opportunities
 
 **Parallel Benefits:**
+
 - Different pieces download simultaneously across computers
 - No waiting for sequential piece completion
 - Better overall throughput
 
 **Detection Evasion:**
+
 - Individual peers only see one non-contributing peer
 - Pattern harder to detect across distributed identities
 - IP subnet blocking is possible but less common
@@ -142,32 +158,38 @@ Central computer:
 **Ethical and Practical Problems:**
 
 **1. Unfair to Community:**
+
 - Exploits BitTorrent's altruism mechanisms (optimistic unchoking)
 - Takes bandwidth without giving back
 - Violates the cooperative spirit of P2P networks
 
 **2. Wastes Bandwidth:**
+
 - Other peers upload to Bob without reciprocation
 - Reduces available upload capacity in the swarm
 - Slows downloads for cooperative peers
 
 **3. Damages Swarm Health:**
+
 - Reduces overall sharing efficiency
 - If everyone free-rides, system collapses
 - "Tragedy of the commons" scenario
 
 **4. May Get Detected:**
+
 - Advanced BitTorrent clients track IP subnets
 - Can detect multiple connections from same network
 - Coordinated blocking by sophisticated peers
 
 **5. May Get Banned:**
+
 - Private trackers maintain user ratios
 - IP subnet blocking by tracker
 - Reputation systems can span multiple identities
 - Permanent bans from tracker
 
 **6. Violates Community Norms:**
+
 - BitTorrent community values sharing
 - Free-riding is considered unethical
 - Private trackers enforce strict ratio requirements
@@ -175,6 +197,7 @@ Central computer:
 **Defense Mechanisms Against This Attack:**
 
 **1. IP Subnet Tracking:**
+
 ```python
 # Modern clients can detect:
 if multiple_peers_from_same_subnet(peer_list):
@@ -183,21 +206,25 @@ if multiple_peers_from_same_subnet(peer_list):
 ```
 
 **2. Tracker Limitations:**
+
 - Limit maximum peers per IP address
 - Limit peers per /24 subnet
 - Flag suspicious patterns to administrators
 
 **3. Reputation Systems:**
+
 - Track long-term behavior across sessions
 - Share reputation data between trackers
 - Penalize consistently poor uploaders
 
 **4. Advanced Choking Algorithms:**
+
 - Detect peers that only receive during optimistic unchoke
 - Reduce optimistic unchoke frequency for suspected free-riders
 - Prioritize peers with better upload ratios
 
 **5. Private Trackers:**
+
 - Require account registration
 - Enforce minimum upload/download ratios
 - Ban users who consistently free-ride
@@ -206,6 +233,7 @@ if multiple_peers_from_same_subnet(peer_list):
 **Conclusion:**
 
 While Bob can make free-riding more efficient using multiple computers, this approach:
+
 - **Violates the cooperative principles** of BitTorrent
 - **Harms the community** that makes file sharing possible
 - **May result in detection and banning**
@@ -254,25 +282,27 @@ Video N + Audio N → File N²
 **Example with N=3 (Low, Medium, High quality):**
 
 | File | Video Quality | Audio Quality |
-|------|---------------|---------------|
-| 1 | Low | Low |
-| 2 | Low | Medium |
-| 3 | Low | High |
-| 4 | Medium | Low |
-| 5 | Medium | Medium |
-| 6 | Medium | High |
-| 7 | High | Low |
-| 8 | High | Medium |
-| 9 | High | High |
+| ---- | ------------- | ------------- |
+| 1    | Low           | Low           |
+| 2    | Low           | Medium        |
+| 3    | Low           | High          |
+| 4    | Medium        | Low           |
+| 5    | Medium        | Medium        |
+| 6    | Medium        | High          |
+| 7    | High          | Low           |
+| 8    | High          | Medium        |
+| 9    | High          | High          |
 
 **Total: 9 files** (3² = 9)
 
 ---
 
 **Example with N=5:**
+
 - 5 video versions × 5 audio versions = **25 files**
 
 **Example with N=10:**
+
 - 10 video versions × 10 audio versions = **100 files**
 
 ---
@@ -282,6 +312,7 @@ Video N + Audio N → File N²
 **Growth Rate:** O(N²) - quadratic growth
 
 **Storage Calculation:**
+
 ```
 If average file size = S bytes
 Total storage = N² × S bytes
@@ -312,12 +343,14 @@ When audio and video are sent as separate, independent streams, we only need to 
 **Files Needed:**
 
 **Video files:** N files (one for each quality level)
+
 - Video quality 1
 - Video quality 2
 - ...
 - Video quality N
 
 **Audio files:** N files (one for each quality level)
+
 - Audio quality 1
 - Audio quality 2
 - ...
@@ -329,20 +362,21 @@ When audio and video are sent as separate, independent streams, we only need to 
 
 **Example with N=3:**
 
-| File Number | Type | Quality |
-|-------------|------|---------|
-| 1 | Video | Low (360p, 500 kbps) |
-| 2 | Video | Medium (720p, 2 Mbps) |
-| 3 | Video | High (1080p, 5 Mbps) |
-| 4 | Audio | Low (64 kbps) |
-| 5 | Audio | Medium (128 kbps) |
-| 6 | Audio | High (256 kbps) |
+| File Number | Type  | Quality               |
+| ----------- | ----- | --------------------- |
+| 1           | Video | Low (360p, 500 kbps)  |
+| 2           | Video | Medium (720p, 2 Mbps) |
+| 3           | Video | High (1080p, 5 Mbps)  |
+| 4           | Audio | Low (64 kbps)         |
+| 5           | Audio | Medium (128 kbps)     |
+| 6           | Audio | High (256 kbps)       |
 
 **Total: 6 files** (2 × 3 = 6)
 
 **How It Works:**
 
 **Client-Side Operation:**
+
 1. Client requests video stream (e.g., Medium quality 720p)
 2. Client requests audio stream (e.g., High quality 256 kbps)
 3. Client downloads both streams simultaneously
@@ -350,6 +384,7 @@ When audio and video are sent as separate, independent streams, we only need to 
 5. Client can switch video or audio quality independently during playback
 
 **Example Playback Scenario:**
+
 ```
 Time 0-10s: Video=High (1080p) + Audio=High (256kbps)
 Time 10-20s: Video=Medium (720p) + Audio=High (256kbps)  [video drops due to bandwidth]
@@ -361,17 +396,17 @@ Time 30-40s: Video=High (1080p) + Audio=High (256kbps)    [both recover]
 
 **Comparison Table:**
 
-| Aspect | Mixed (Method a) | Separate (Method b) |
-|--------|-----------------|---------------------|
-| **Files Needed** | N² | 2N |
-| **Storage Growth** | Quadratic O(N²) | Linear O(N) |
-| **Example (N=5)** | 25 files | 10 files |
-| **Example (N=10)** | 100 files | 20 files |
-| **Example (N=20)** | 400 files | 40 files |
-| **Flexibility** | Must switch both together | Switch independently |
-| **Client Complexity** | Simpler (one stream) | More complex (sync 2 streams) |
-| **Bandwidth Efficiency** | Lower | Higher |
-| **Cache Efficiency** | Lower | Higher (shared components) |
+| Aspect                   | Mixed (Method a)          | Separate (Method b)           |
+| ------------------------ | ------------------------- | ----------------------------- |
+| **Files Needed**         | N²                        | 2N                            |
+| **Storage Growth**       | Quadratic O(N²)           | Linear O(N)                   |
+| **Example (N=5)**        | 25 files                  | 10 files                      |
+| **Example (N=10)**       | 100 files                 | 20 files                      |
+| **Example (N=20)**       | 400 files                 | 40 files                      |
+| **Flexibility**          | Must switch both together | Switch independently          |
+| **Client Complexity**    | Simpler (one stream)      | More complex (sync 2 streams) |
+| **Bandwidth Efficiency** | Lower                     | Higher                        |
+| **Cache Efficiency**     | Lower                     | Higher (shared components)    |
 
 ---
 
@@ -382,6 +417,7 @@ Time 30-40s: Video=High (1080p) + Audio=High (256kbps)    [both recover]
 **Reduction:** 80 files = **80% reduction in file count**
 
 If each file averages 1 GB:
+
 - Mixed: 100 GB storage
 - Separate: 20 GB storage
 - **Savings: 80 GB**
@@ -391,33 +427,40 @@ If each file averages 1 GB:
 **Advantages of Separate Streams (Method b):**
 
 **1. Drastically Reduced Storage:**
+
 - Linear growth vs quadratic growth
 - 80-90% reduction for typical N values
 
 **2. Greater Flexibility:**
+
 - Video and audio quality can be adjusted independently
 - User wants high-quality audio but lower video? Possible!
 
 **3. Easier to Extend:**
+
 - Adding new quality level: add 2 files (not N new files)
 - Adding new codec: simpler management
 
 **4. Better Caching:**
+
 - Popular audio quality cached once, works with all video qualities
 - CDN efficiency improved
 - Reduced cache storage requirements
 
 **5. Different Codecs Possible:**
+
 - Video: H.264, H.265, VP9, AV1
 - Audio: AAC, Opus, MP3
 - Mix and match without N² combinations
 
 **6. Bandwidth Optimization:**
+
 - Fine-grained control over total bandwidth
 - Can prioritize video or audio based on content type
 - Better adaptation to network conditions
 
 **7. Maintenance:**
+
 - Easier to update one quality level
 - Re-encode only affected files, not all combinations
 
@@ -426,20 +469,24 @@ If each file averages 1 GB:
 **Disadvantages of Separate Streams:**
 
 **1. Client Complexity:**
+
 - Must synchronize two streams precisely
 - Audio-video sync ("lip-sync") challenges
 - Buffer management for both streams
 
 **2. More Network Connections:**
+
 - Two HTTP connections instead of one
 - Slightly more overhead
 
 **3. Synchronization Overhead:**
+
 - Client must align timestamps
 - Handle different segment durations
 - Compensate for network jitter
 
 **4. Player Implementation:**
+
 - More complex player logic
 - More potential for bugs
 - Requires sophisticated buffering strategy
@@ -449,12 +496,14 @@ If each file averages 1 GB:
 **Real-World Usage:**
 
 **Modern DASH implementations use Method b (separate streams):**
+
 - **YouTube:** Separate video and audio streams
 - **Netflix:** Separate adaptive streams
 - **Hulu, Amazon Prime Video:** Separate streams
 - **Industry Standard:** MPEG-DASH specification recommends separate
 
 **MPEG-DASH Manifest Example:**
+
 ```xml
 <AdaptationSet mimeType="video/mp4">
   <Representation bandwidth="500000" width="640" height="360"/>
@@ -474,6 +523,7 @@ If each file averages 1 GB:
 **Conclusion:**
 
 **Method b (Separate streams: 2N files) is vastly superior** to Method a (Mixed: N² files) because:
+
 - **80-90% storage reduction** for typical configurations
 - **Independent quality control** for video and audio
 - **Linear scaling** instead of quadratic
@@ -503,6 +553,7 @@ clientSocket.connect((serverName, serverPort))
 ```
 
 **Error Output:**
+
 ```
 Traceback (most recent call last):
   File "TCPClient.py", line X, in <module>
@@ -515,6 +566,7 @@ ConnectionRefusedError: [Errno 111] Connection refused
 **Why This Happens:**
 
 **1. TCP is Connection-Oriented:**
+
 - TCP requires explicit connection establishment before data transfer
 - Uses 3-way handshake: SYN → SYN-ACK → ACK
 - Both client and server must be ready to establish connection
@@ -540,11 +592,13 @@ Step 8: Client's OS raises ConnectionRefusedError
 ```
 
 **3. TCP State Machine:**
+
 - **Server must be in LISTEN state** before client can connect
 - Without server listening, connection cannot be established
 - OS actively refuses the connection (sends RST packet)
 
 **Packet Exchange:**
+
 ```
 Client                           Server
   |                                |
@@ -560,16 +614,19 @@ Client                           Server
 **Key Concepts:**
 
 **TCP Requires Both Endpoints:**
+
 - Server must call `bind()` and `listen()` first
 - Server must call `accept()` to accept connections
 - Only then can client successfully `connect()`
 
 **Active Rejection:**
+
 - Server doesn't ignore the SYN packet
 - Server **actively rejects** it with RST
 - Client knows immediately that connection failed
 
 **Compare to:**
+
 - If firewall blocks port: timeout (no response)
 - If server listening: connection succeeds
 - If wrong port: connection refused
@@ -602,6 +659,7 @@ modifiedMessage, serverAddress = clientSocket.recvfrom(2048)
 ```
 
 **Behavior:**
+
 ```
 Input lowercase sentence: hello world
 Message sent successfully
@@ -615,6 +673,7 @@ Message sent successfully
 **Why This Happens:**
 
 **1. UDP is Connectionless:**
+
 - No connection establishment required
 - No handshake protocol
 - "Fire and forget" model
@@ -643,6 +702,7 @@ Step 9: No response ever arrives → blocks forever
 ```
 
 **Packet Exchange:**
+
 ```
 Client                           Server
   |                                |
@@ -659,18 +719,21 @@ Client                           Server
 **Key Differences from TCP:**
 
 **No Error on Send:**
+
 - `sendto()` completes successfully
 - OS accepts the packet and sends it
 - No verification that receiver exists
 - Client thinks message was sent successfully
 
 **ICMP Message (Usually Ignored):**
+
 - Server may send ICMP "Destination Port Unreachable"
 - Firewalls often filter ICMP messages
 - Python UDP sockets don't always process ICMP errors
 - Even if received, may not raise exception
 
 **recvfrom() Blocks:**
+
 - Waits for response that will never come
 - No timeout by default
 - Blocks indefinitely
@@ -681,12 +744,14 @@ Client                           Server
 **Possible Outcomes:**
 
 **Scenario 1: No Timeout Set (Default)**
+
 ```python
 clientSocket.recvfrom(2048)
 # Blocks forever until user interrupts
 ```
 
 **Scenario 2: With Timeout**
+
 ```python
 clientSocket.settimeout(5.0)  # 5 second timeout
 try:
@@ -696,6 +761,7 @@ except socket.timeout:
 ```
 
 **Scenario 3: ICMP Error Delivered (Rare)**
+
 ```python
 # On some systems, may eventually raise:
 # OSError: [Errno 111] Connection refused
@@ -707,17 +773,20 @@ except socket.timeout:
 **Why UDP Behaves This Way:**
 
 **1. Design Philosophy:**
+
 - UDP is lightweight, minimal protocol
 - No reliability guarantees
 - No connection state
 - Fast, low overhead
 
 **2. No Handshake:**
+
 - Unlike TCP's SYN/SYN-ACK/ACK
 - UDP just sends packets
 - Receiver detection not part of protocol
 
 **3. Best Effort:**
+
 - "Send and hope for the best"
 - Application responsible for reliability
 - No built-in error detection
@@ -745,6 +814,7 @@ clientSocket.connect((serverName, 12001))
 ```
 
 **Why it fails:**
+
 - Server is listening on port 12000
 - Client attempts connection to port 12001
 - No process listening on port 12001
@@ -772,6 +842,7 @@ serverSocket.recvfrom(2048)  # Blocks forever
 ```
 
 **Why it fails:**
+
 - Packet sent to port 12001
 - Server listening on port 12000
 - Packet arrives at wrong port
@@ -833,21 +904,25 @@ clientSocket.sendto(message, (serverName, PORT))  # UDP
 **Port Number Ranges:**
 
 **Well-Known Ports (0-1023):**
+
 - Reserved for standard services
 - Require root/admin privileges
 - Examples: 80 (HTTP), 443 (HTTPS), 22 (SSH), 25 (SMTP)
 
 **Registered Ports (1024-49151):**
+
 - Registered with IANA for specific services
 - Can be used by applications
 - Example: 3306 (MySQL), 5432 (PostgreSQL)
 
 **Dynamic/Private Ports (49152-65535):**
+
 - Available for dynamic allocation
 - OS assigns these to client sockets automatically
 - Temporary use for client connections
 
 **Best Practice:**
+
 - Use ports above 1024 to avoid permission issues
 - Document the port number clearly
 - Use configuration files or constants
@@ -864,6 +939,7 @@ clientSocket.sendto(message, (serverName, PORT))  # UDP
 ### How UDP Server Identifies Client
 
 **UDPServer.py code:**
+
 ```python
 from socket import *
 
@@ -877,7 +953,7 @@ while True:
     message, clientAddress = serverSocket.recvfrom(2048)
     # clientAddress is EXTRACTED from the incoming packet
     # It contains (client_IP, client_Port)
-    
+
     modifiedMessage = message.decode().upper()
     serverSocket.sendto(modifiedMessage.encode(), clientAddress)
     # Sends reply to wherever the packet came from
@@ -892,11 +968,13 @@ while True:
 **Without clientSocket.bind():**
 
 **Server Side:**
+
 - **Port Number:** 12000 (explicitly bound with `serverSocket.bind(('', 12000))`)
 - **Socket Address:** (server_IP, 12000)
 - **Example:** (192.168.1.100, 12000)
 
 **Client Side:**
+
 - **Port Number:** **Random ephemeral port** assigned by OS
 - **Typical Range:** 49152-65535 (dynamic port range)
 - **Examples:** 54321, 49152, 60000, 52847, etc.
@@ -905,6 +983,7 @@ while True:
 - **Example:** (192.168.1.50, 54321)
 
 **How it works without bind():**
+
 ```python
 # Client code:
 clientSocket = socket(AF_INET, SOCK_DGRAM)
@@ -916,6 +995,7 @@ clientSocket.sendto(message, (serverName, 12000))
 ```
 
 **Example Communication Flow:**
+
 ```
 Client (192.168.1.50:54321) → Server (192.168.1.100:12000)
                                 ↓
@@ -931,17 +1011,20 @@ Server (192.168.1.100:12000) → Client (192.168.1.50:54321)
 **With clientSocket.bind(('', 5432)):**
 
 **Server Side:**
+
 - **Port Number:** 12000 (unchanged)
 - **Socket Address:** (server_IP, 12000)
 - **Example:** (192.168.1.100, 12000)
 
 **Client Side:**
+
 - **Port Number:** 5432 (explicitly bound)
 - **Socket Address:** (client_IP, 5432)
 - **Example:** (192.168.1.50, 5432)
 - **Assignment Method:** Explicitly set by `bind()` call
 
 **How it works with bind():**
+
 ```python
 # Client code:
 clientSocket = socket(AF_INET, SOCK_DGRAM)
@@ -953,6 +1036,7 @@ clientSocket.sendto(message, (serverName, 12000))
 ```
 
 **Example Communication Flow:**
+
 ```
 Client (192.168.1.50:5432) → Server (192.168.1.100:12000)
                               ↓
@@ -968,6 +1052,7 @@ Server (192.168.1.100:12000) → Client (192.168.1.50:5432)
 **UDP Datagram Header Structure:**
 
 Every UDP packet contains source information:
+
 ```
 +------------------------+
 | Source IP Address      | ← Client's IP (e.g., 192.168.1.50)
@@ -981,6 +1066,7 @@ Every UDP packet contains source information:
 ```
 
 **Server extracts client address automatically:**
+
 ```python
 message, clientAddress = serverSocket.recvfrom(2048)
 # clientAddress = (clientIP, clientPort)
@@ -993,6 +1079,7 @@ serverSocket.sendto(response, clientAddress)
 ```
 
 **Server is address-agnostic:**
+
 - Works with **any client IP address**
 - Works with **any client port number**
 - No hardcoded client address information
@@ -1002,21 +1089,22 @@ serverSocket.sendto(response, clientAddress)
 
 ### Summary Table
 
-| Aspect | Before Modification | After Modification |
-|--------|-------------------|-------------------|
-| **Client Port** | Random ephemeral (e.g., 54321) | Fixed at 5432 |
-| **Server Port** | 12000 | 12000 (unchanged) |
-| **Client Port Range** | 49152-65535 (varies each run) | Always 5432 |
-| **Server Code Changes** | N/A | **None required** |
-| **Port Predictability** | Unpredictable | Predictable |
-| **Multiple Clients** | Multiple can run simultaneously | Only one at a time |
-| **OS Assignment** | Automatic on first send | Manual via bind() |
+| Aspect                  | Before Modification             | After Modification |
+| ----------------------- | ------------------------------- | ------------------ |
+| **Client Port**         | Random ephemeral (e.g., 54321)  | Fixed at 5432      |
+| **Server Port**         | 12000                           | 12000 (unchanged)  |
+| **Client Port Range**   | 49152-65535 (varies each run)   | Always 5432        |
+| **Server Code Changes** | N/A                             | **None required**  |
+| **Port Predictability** | Unpredictable                   | Predictable        |
+| **Multiple Clients**    | Multiple can run simultaneously | Only one at a time |
+| **OS Assignment**       | Automatic on first send         | Manual via bind()  |
 
 ---
 
 ### Advantages of Binding Client Port
 
 **1. Predictable Port Number:**
+
 ```python
 # Debugging is easier:
 # "Client is always on port 5432"
@@ -1025,6 +1113,7 @@ serverSocket.sendto(response, clientAddress)
 ```
 
 **2. Firewall Rules:**
+
 ```bash
 # With fixed port:
 iptables -A INPUT -p udp --sport 5432 -j ACCEPT
@@ -1034,6 +1123,7 @@ iptables -A INPUT -p udp --sport 49152:65535 -j ACCEPT
 ```
 
 **3. Network Monitoring:**
+
 ```bash
 # Easy to filter traffic:
 tcpdump 'udp port 5432'
@@ -1042,12 +1132,14 @@ tcpdump 'udp port 5432'
 ```
 
 **4. Application Protocol Requirements:**
+
 ```
 Some protocols (like DNS, TFTP) may expect
 clients to use specific port numbers
 ```
 
 **5. Server-Side Access Control:**
+
 ```python
 # Server could implement port-based filtering:
 message, (clientIP, clientPort) = serverSocket.recvfrom(2048)
@@ -1064,6 +1156,7 @@ else:
 ### Disadvantages of Binding Client Port
 
 **1. Port Conflict (Major Issue):**
+
 ```python
 # First client instance:
 client1 = socket(AF_INET, SOCK_DGRAM)
@@ -1078,6 +1171,7 @@ client2.bind(('', 5432))  # ERROR!
 **Only ONE client can run at a time per machine**
 
 **2. Less Flexibility:**
+
 ```python
 # Can't run multiple test clients simultaneously
 # Can't have multiple instances of the application
@@ -1085,6 +1179,7 @@ client2.bind(('', 5432))  # ERROR!
 ```
 
 **3. Permission Issues:**
+
 ```python
 # Ports below 1024 require root/administrator privileges:
 clientSocket.bind(('', 80))  # Requires root on Linux/Unix
@@ -1092,6 +1187,7 @@ clientSocket.bind(('', 80))  # Requires root on Linux/Unix
 ```
 
 **4. Port Availability:**
+
 ```python
 # If another application is using port 5432:
 clientSocket.bind(('', 5432))
@@ -1101,6 +1197,7 @@ clientSocket.bind(('', 5432))
 ```
 
 **5. Operating System Restrictions:**
+
 ```python
 # Some OSs may have reserved port ranges
 # Some applications register specific ports
@@ -1112,6 +1209,7 @@ clientSocket.bind(('', 5432))
 ### Code Example: Handling Port Binding
 
 **Robust client code with error handling:**
+
 ```python
 from socket import *
 
@@ -1146,6 +1244,7 @@ clientSocket.close()
 ```
 
 **Output without bind():**
+
 ```
 Client using address: ('0.0.0.0', 54321)
 Input lowercase sentence: hello
@@ -1153,6 +1252,7 @@ HELLO
 ```
 
 **Output with successful bind():**
+
 ```
 Client bound to port 5432
 Client using address: ('0.0.0.0', 5432)
@@ -1161,6 +1261,7 @@ HELLO
 ```
 
 **Output with failed bind():**
+
 ```
 Could not bind to port 5432: [Errno 98] Address already in use
 Using OS-assigned ephemeral port instead
@@ -1192,6 +1293,7 @@ HELLO
 **The key insight:** UDP server code **never needs to know the client's port in advance** because it extracts the source address from each incoming packet. This makes UDP servers inherently flexible and able to handle clients on any port without configuration changes.
 
 **Default behavior (no bind) is usually preferred** for UDP clients because:
+
 - Avoids port conflicts
 - Allows multiple instances
 - Simpler code
@@ -1211,14 +1313,15 @@ HELLO
 
 **Modern browsers (2025) typically use:**
 
-| Browser | Default Connections per Host | Configurable? |
-|---------|----------------------------|---------------|
-| **Chrome/Edge** | 6 connections | Limited (command-line flags) |
-| **Firefox** | 6 connections | Yes (about:config) |
-| **Safari** | 6 connections | No (user-friendly way) |
-| **Opera** | 6 connections | Limited |
+| Browser         | Default Connections per Host | Configurable?                |
+| --------------- | ---------------------------- | ---------------------------- |
+| **Chrome/Edge** | 6 connections                | Limited (command-line flags) |
+| **Firefox**     | 6 connections                | Yes (about:config)           |
+| **Safari**      | 6 connections                | No (user-friendly way)       |
+| **Opera**       | 6 connections                | Limited                      |
 
 **Historical context:**
+
 - **HTTP/1.0 era:** 1-2 connections (non-persistent)
 - **HTTP/1.1 early:** 2 connections (browser default)
 - **HTTP/1.1 modern:** 6-8 connections (current standard)
@@ -1229,6 +1332,7 @@ HELLO
 ### How to Configure (Firefox Example)
 
 **Firefox Configuration:**
+
 ```
 1. Type in address bar: about:config
 2. Accept the warning
@@ -1239,6 +1343,7 @@ HELLO
 ```
 
 **Other relevant Firefox settings:**
+
 ```
 network.http.max-connections = 900 (total connections)
 network.http.max-persistent-connections-per-proxy = 32
@@ -1246,6 +1351,7 @@ network.http.max-connections-per-server = 15 (max per server)
 ```
 
 **Chrome/Edge (requires command-line):**
+
 ```bash
 chrome.exe --max-connections-per-host=10
 ```
@@ -1261,6 +1367,7 @@ chrome.exe --max-connections-per-host=10
 #### 1. **Parallel Object Downloads**
 
 **Scenario:** Web page with many resources
+
 ```
 Single connection (sequential):
 HTML → CSS → JS → Image1 → Image2 → Image3 → ...
@@ -1277,6 +1384,7 @@ Time: Max of individual times (much faster!)
 ```
 
 **Performance improvement:**
+
 ```
 Page with 18 small images:
 - 1 connection: 18 × 2 RTT = 36 RTT
@@ -1289,6 +1397,7 @@ Speedup: 6× faster page load
 #### 2. **Reduced Perceived Latency**
 
 **User experience:**
+
 ```
 Single connection:
 [Loading.....................] (user waits for everything)
@@ -1306,12 +1415,14 @@ Multiple connections:
 #### 3. **Head-of-Line Blocking Mitigation (HTTP/1.1)**
 
 **Problem with single connection:**
+
 ```
 Request1 (large video) → BLOCKED → Request2 (small CSS)
 CSS must wait for video to complete
 ```
 
 **Solution with multiple connections:**
+
 ```
 Connection 1: Large video (slow)
 Connection 2: CSS (fast) ✓ completes quickly!
@@ -1325,6 +1436,7 @@ Connection 3: JavaScript (fast) ✓ completes quickly!
 #### 4. **Better Bandwidth Utilization**
 
 **High-bandwidth scenarios:**
+
 ```
 Single TCP connection:
 - May not saturate available bandwidth
@@ -1338,6 +1450,7 @@ Multiple connections:
 ```
 
 **Example:**
+
 ```
 100 Mbps connection:
 - Single TCP: achieves 20 Mbps (conservative)
@@ -1349,11 +1462,13 @@ Multiple connections:
 #### 5. **Resilience to Connection Failures**
 
 **Single connection failure:**
+
 ```
 Connection drops → All transfers fail
 ```
 
 **Multiple connections:**
+
 ```
 Connection 1 drops → Only affects objects on that connection
 Connections 2-6 continue normally
@@ -1364,6 +1479,7 @@ Connections 2-6 continue normally
 #### 6. **Priority Handling**
 
 **Different objects have different priorities:**
+
 ```
 Connection 1: Critical CSS and JS (high priority)
 Connection 2: Above-the-fold images (medium priority)
@@ -1383,6 +1499,7 @@ Connection 4-6: Other resources
 #### 1. **Server Resource Exhaustion**
 
 **Per-connection overhead on server:**
+
 ```
 Each TCP connection consumes:
 - Memory for socket buffers (send/receive)
@@ -1392,6 +1509,7 @@ Each TCP connection consumes:
 ```
 
 **Example calculation:**
+
 ```
 1 connection = 64 KB buffers × 2 = 128 KB
 1000 concurrent clients × 10 connections each = 10,000 connections
@@ -1400,6 +1518,7 @@ Plus CPU for context switching, state management
 ```
 
 **Server limits:**
+
 ```
 Max file descriptors: 65536 (typical)
 Max connections: limited by available resources
@@ -1413,6 +1532,7 @@ With greedy clients: server can be overwhelmed
 #### 2. **Network Congestion and Unfairness**
 
 **TCP congestion window behavior:**
+
 ```
 Single connection:
 CWND grows gradually (fair sharing)
@@ -1424,6 +1544,7 @@ UNFAIR to other users!
 ```
 
 **Example scenario:**
+
 ```
 100 Mbps shared link, 10 users:
 - 9 users with 1 connection each: ~8 Mbps per user
@@ -1432,6 +1553,7 @@ Greedy user steals bandwidth from others!
 ```
 
 **Network congestion:**
+
 ```
 More connections → More packets
 More packets → Higher congestion
@@ -1445,6 +1567,7 @@ Result: Network becomes less efficient for everyone
 #### 3. **Client Resource Consumption**
 
 **Memory usage:**
+
 ```
 Each socket requires:
 - Send buffer: 16-64 KB
@@ -1456,6 +1579,7 @@ Each socket requires:
 ```
 
 **CPU overhead:**
+
 ```
 - Managing multiple connections
 - Context switching
@@ -1464,6 +1588,7 @@ Each socket requires:
 ```
 
 **File descriptor limits:**
+
 ```
 Linux default: 1024 per process
 100 tabs × 10 connections = 1000 FDs
@@ -1475,6 +1600,7 @@ Can hit OS limits quickly
 #### 4. **TCP Handshake Overhead**
 
 **Connection establishment cost:**
+
 ```
 Each TCP connection requires:
 - 3-way handshake: 1 RTT
@@ -1486,6 +1612,7 @@ For short transfers, overhead > actual data transfer time!
 ```
 
 **Example:**
+
 ```
 RTT = 50ms
 10 connections = 10 × 50ms = 500ms just for setup
@@ -1497,6 +1624,7 @@ If transfers take < 500ms, overhead dominates!
 #### 5. **Inefficient for Small Objects**
 
 **Scenario: Many small resources**
+
 ```
 Small CSS file: 5 KB
 - TCP setup: 1 RTT (50ms)
@@ -1514,6 +1642,7 @@ Could have transferred all 10 files sequentially faster!
 #### 6. **Firewall and NAT Issues**
 
 **Firewall connection limits:**
+
 ```
 Many firewalls limit:
 - Connections per source IP
@@ -1527,6 +1656,7 @@ Excessive connections trigger:
 ```
 
 **NAT table exhaustion:**
+
 ```
 Home router NAT table:
 - Typical capacity: 4096-8192 entries
@@ -1540,6 +1670,7 @@ Result: New connections fail
 #### 7. **Increased Complexity**
 
 **Application complexity:**
+
 ```python
 # Managing 10 connections:
 connections
@@ -1573,3 +1704,4 @@ connections
 3. **Functionality:** HTTP/1.1 and HTTP/2 support, SSL/TLS, virtual hosting, authentication, URL rewriting, proxying, extensive module system.
 
 4. **Key concept to memorize:** Apache is free, modular web server powering much of the internet.
+```

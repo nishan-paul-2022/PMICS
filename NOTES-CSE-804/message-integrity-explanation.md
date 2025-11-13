@@ -20,6 +20,7 @@ Think of a **fingerprint** for documents. In the real world, fingerprints are un
 ![Hash Function Diagram](../supplies/images/hash-function.png)
 
 **Explanation of the diagram:**
+
 - The sender creates a hash from the original message.
 - The receiver creates a hash from the received message.
 - If both hashes are identical, the message hasn't been altered.
@@ -34,6 +35,7 @@ A **digital signature** is like an electronic version of your handwritten signat
 ### How Does It Work? (Using Private and Public Keys)
 
 Digital signatures use a pair of **keys**:
+
 - **Private key**: A secret code only you have. It's like your personal password.
 - **Public key**: A code everyone can see. It's shared openly, like your email address.
 
@@ -50,6 +52,7 @@ Digital signatures use a pair of **keys**:
 ![Digital Signature Diagram](../supplies/images/digital-signature.png)
 
 **Explanation of the diagram:**
+
 - The sender signs the message with their private key.
 - The receiver verifies using the sender's public key.
 - Only the correct public key can verify a signature made with the matching private key.

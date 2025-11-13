@@ -17,6 +17,7 @@ This document contains detailed solutions to problems P16-P20. Each problem incl
 **Answer:** SMTP uses a line containing only a **single period (.)** to mark the end of message body.
 
 **Format:**
+
 ```
 DATA
 354 Start mail input
@@ -28,6 +29,7 @@ DATA
 ```
 
 **Transparency issue:**
+
 - If message body contains a line with just a period, SMTP uses **byte-stuffing**
 - Add an extra period at the beginning: `.` becomes `..`
 - Receiver removes the extra period
@@ -37,23 +39,27 @@ DATA
 **Answer:** HTTP uses **multiple methods:**
 
 1. **Content-Length header:**
-    ```
-    Content-Length: 3874
-    ```
-    - Specifies exact number of bytes
-    - Receiver reads exactly that many bytes
+
+   ```
+   Content-Length: 3874
+   ```
+
+   - Specifies exact number of bytes
+   - Receiver reads exactly that many bytes
 
 2. **Chunked Transfer Encoding:**
-    ```
-    Transfer-Encoding: chunked
-    ```
-    - Message sent in chunks
-    - Each chunk has size followed by data
-    - Zero-length chunk signals end
+
+   ```
+   Transfer-Encoding: chunked
+   ```
+
+   - Message sent in chunks
+   - Each chunk has size followed by data
+   - Zero-length chunk signals end
 
 3. **Connection close:**
-    - Server closes connection after sending body
-    - End of body = end of connection
+   - Server closes connection after sending body
+   - End of body = end of connection
 
 ### Can HTTP use the same method as SMTP?
 
@@ -80,6 +86,7 @@ DATA
 **MTA Definition:** MTA stands for **Mail Transfer Agent** - a server that transfers email from one computer to another using SMTP.
 
 ### Given email headers:
+
 ```
 From - Fri Nov 07 13:41:30 2008
 Return-Path: <tennis5@pp33head.com>
@@ -104,17 +111,17 @@ Subject: How to secure your savings
 **Reading Received headers from BOTTOM to TOP** (they're added as mail travels):
 
 1. **First hop:** `from [58.88.21.177] by inbnd55.exchangeddd.com`
-    - Origin claims to be 58.88.21.177
+   - Origin claims to be 58.88.21.177
 
 2. **Second hop:** `from asusus-4b96 ([58.88.21.177]) by barmail.cs.umass.edu`
-    - barmail.cs.umass.edu received from 58.88.21.177
-    - The sending host claims to be "asusus-4b96"
+   - barmail.cs.umass.edu received from 58.88.21.177
+   - The sending host claims to be "asusus-4b96"
 
 3. **Third hop:** `from asusus-4b96 (localhost [127.0.0.1])`
-    - Spam firewall processing (internal)
+   - Spam firewall processing (internal)
 
 4. **Final hop:** `from barmail.cs.umass.edu by cs.umass.edu`
-    - Legitimate internal relay
+   - Legitimate internal relay
 
 ### Identifying the malicious host:
 
@@ -129,6 +136,7 @@ Subject: How to secure your savings
 5. **IP location:** 58.88.x.x range suggests origin from Asia-Pacific region (possibly China)
 
 **Assumption validation:**
+
 - We assume barmail.cs.umass.edu and cs.umass.edu are honest (they're the destination's mail servers)
 - The first external IP that contacted barmail is 58.88.21.177 - this is the malicious source
 - Everything before barmail.cs.umass.edu in the chain could be forged
@@ -142,11 +150,13 @@ Subject: How to secure your savings
 **Answer:**
 
 A **whois database** is a publicly accessible directory service that provides information about:
+
 - **Domain name registrations:** Owner, registrar, registration/expiration dates
 - **IP address allocations:** Organization, contact information, address blocks
 - **Autonomous System Numbers (ASN):** Network operators
 
 **Information typically includes:**
+
 - Registrant name and organization
 - Administrative and technical contacts
 - Registration and expiration dates
@@ -155,6 +165,7 @@ A **whois database** is a publicly accessible directory service that provides in
 - Contact details (email, phone, address)
 
 **Purpose:**
+
 - Identify domain/IP ownership
 - Contact network administrators
 - Investigate abuse or security incidents
@@ -172,14 +183,17 @@ I'll need to search for information about whois databases and DNS servers.
 **Example findings using common whois services:**
 
 **Using ICANN Whois (whois.icann.org):**
+
 - Query: google.com
 - DNS Servers: ns1.google.com, ns2.google.com
 
 **Using ARIN Whois (whois.arin.net):**
+
 - Query: mit.edu
 - DNS Servers: STRAWB.MIT.EDU, W20NS.MIT.EDU
 
 **Whois databases used:**
+
 1. ICANN Whois (https://whois.icann.org)
 2. ARIN Whois (https://whois.arin.net) - North America
 3. Regional Internet Registries (RIPE, APNIC, etc.)
@@ -210,14 +224,17 @@ nslookup -type=MX mit.edu STRAWB.MIT.EDU
 **Expected findings:**
 
 **Type A (Address record):**
+
 - Returns IPv4 address(es) of the domain
 - Example: google.com → 142.250.185.46
 
 **Type NS (Name Server record):**
+
 - Returns authoritative name servers for the domain
 - Example: google.com → ns1.google.com, ns2.google.com, ns3.google.com, ns4.google.com
 
 **Type MX (Mail Exchange record):**
+
 - Returns mail servers for the domain with priority values
 - Example: google.com → smtp.google.com (priority 10)
 
@@ -228,11 +245,13 @@ nslookup -type=MX mit.edu STRAWB.MIT.EDU
 ### d. Find a Web server with multiple IP addresses
 
 **Command:**
+
 ```bash
 nslookup www.google.com
 ```
 
 **Expected result:**
+
 ```
 Server: 8.8.8.8
 Address: 8.8.8.8#53
@@ -245,11 +264,13 @@ Address: 2607:f8b0:4004:c07::69
 ```
 
 **Examples of sites with multiple IPs:**
+
 - **www.google.com** - Multiple IPs for load balancing
 - **www.facebook.com** - Multiple IPs globally distributed
 - **www.amazon.com** - Many IPs for different regions
 
 **Your institution:** Most universities/companies have multiple IPs for their web servers for:
+
 - Load balancing
 - Redundancy/failover
 - Geographic distribution
@@ -266,6 +287,7 @@ whois -h whois.arin.net "University of Massachusetts"
 ```
 
 **Expected output format:**
+
 ```
 OrgName: University of Massachusetts
 NetRange: 128.119.0.0 - 128.119.255.255
@@ -275,12 +297,13 @@ Organization: University of Massachusetts
 ```
 
 **For your institution:**
+
 1. Visit https://whois.arin.net
 2. Search for your institution's name
 3. Find NetRange or CIDR notation
 4. Example ranges:
-    - MIT: 18.0.0.0/8
-    - Stanford: 171.64.0.0/14
+   - MIT: 18.0.0.0/8
+   - Stanford: 171.64.0.0/14
 
 **Key concept to memorize:** RIR whois databases show IP address allocations.
 
@@ -289,30 +312,31 @@ Organization: University of Massachusetts
 **Reconnaissance techniques:**
 
 1. **Domain enumeration:**
-    - Find all domains owned by target organization
-    - Identify subdomains and related infrastructure
+   - Find all domains owned by target organization
+   - Identify subdomains and related infrastructure
 
 2. **Network mapping:**
-    - Discover IP address ranges
-    - Identify network topology
-    - Find mail servers, DNS servers, web servers
+   - Discover IP address ranges
+   - Identify network topology
+   - Find mail servers, DNS servers, web servers
 
 3. **Personnel identification:**
-    - Extract contact information
-    - Identify administrators (social engineering targets)
-    - Find email formats
+   - Extract contact information
+   - Identify administrators (social engineering targets)
+   - Find email formats
 
 4. **Infrastructure analysis:**
-    - Determine hosting providers
-    - Find CDN usage
-    - Identify load balancers
+   - Determine hosting providers
+   - Find CDN usage
+   - Identify load balancers
 
 5. **Attack surface identification:**
-    - Find all public-facing servers
-    - Discover forgotten/legacy systems
-    - Locate test/development servers
+   - Find all public-facing servers
+   - Discover forgotten/legacy systems
+   - Locate test/development servers
 
 **Attack sequence:**
+
 ```
 1. whois target.com → Find IP ranges, name servers, contacts
 2. nslookup -type=NS target.com → Find authoritative DNS servers
@@ -331,36 +355,37 @@ Organization: University of Massachusetts
 **Arguments FOR public whois:**
 
 1. **Accountability:**
-    - Domain owners can be identified
-    - Responsibility for content/actions
-    - Prevents anonymous malicious activity
+   - Domain owners can be identified
+   - Responsibility for content/actions
+   - Prevents anonymous malicious activity
 
 2. **Network operations:**
-    - Contact administrators for technical issues
-    - Coordinate security incident response
-    - Troubleshoot network problems
+   - Contact administrators for technical issues
+   - Coordinate security incident response
+   - Troubleshoot network problems
 
 3. **Legal purposes:**
-    - Trademark protection
-    - Copyright enforcement
-    - Law enforcement investigations
+   - Trademark protection
+   - Copyright enforcement
+   - Law enforcement investigations
 
 4. **Security:**
-    - Report abuse, spam, phishing
-    - Track malicious actors
-    - Coordinate DDoS mitigation
+   - Report abuse, spam, phishing
+   - Track malicious actors
+   - Coordinate DDoS mitigation
 
 5. **Transparency:**
-    - Public internet resources should have public ownership
-    - Promotes trust in internet infrastructure
-    - Enables community policing
+   - Public internet resources should have public ownership
+   - Promotes trust in internet infrastructure
+   - Enables community policing
 
 6. **Business purposes:**
-    - Due diligence for partnerships
-    - Competitive intelligence (legitimate)
-    - Domain acquisition negotiations
+   - Due diligence for partnerships
+   - Competitive intelligence (legitimate)
+   - Domain acquisition negotiations
 
 **Counterarguments (privacy concerns):**
+
 - Personal information exposure
 - Spam/harassment of registrants
 - GDPR/privacy regulations
@@ -397,12 +422,14 @@ dig @dns1.university.edu www.cs.university.edu
 ```
 
 **Delegation chain example:**
+
 1. **Root server** (a.root-servers.net) → delegates to
 2. **TLD server** (a.edu-servers.net) → delegates to
 3. **University server** (dns1.university.edu) → delegates to
 4. **Department server** (dns.cs.university.edu) → provides final answer
 
 **Example for cs.umass.edu:**
+
 ```
 Root → .edu TLD → umass.edu → cs.umass.edu
 a.root-servers.net → a.edu-servers.net → dns1.umass.edu → ns1.cs.umass.edu
@@ -413,6 +440,7 @@ a.root-servers.net → a.edu-servers.net → dns1.umass.edu → ns1.cs.umass.edu
 ### b. Repeat part (a) for several popular Web sites, such as google.com, yahoo.com, or amazon.com.
 
 **Example 1: google.com**
+
 ```bash
 dig @a.root-servers.net www.google.com
 dig @a.gtld-servers.net www.google.com
@@ -420,12 +448,14 @@ dig @ns1.google.com www.google.com
 ```
 
 **Delegation chain:**
+
 ```
 Root → .com TLD → google.com
 a.root-servers.net → a.gtld-servers.net → ns1.google.com (final answer)
 ```
 
 **Example 2: yahoo.com**
+
 ```bash
 dig @a.root-servers.net www.yahoo.com
 dig @a.gtld-servers.net www.yahoo.com
@@ -433,12 +463,14 @@ dig @ns1.yahoo.com www.yahoo.com
 ```
 
 **Delegation chain:**
+
 ```
 Root → .com TLD → yahoo.com
 a.root-servers.net → a.gtld-servers.net → ns1.yahoo.com (final answer)
 ```
 
 **Example 3: amazon.com**
+
 ```bash
 dig @a.root-servers.net www.amazon.com
 dig @a.gtld-servers.net www.amazon.com
@@ -446,12 +478,14 @@ dig @pdns1.ultradns.net www.amazon.com
 ```
 
 **Delegation chain:**
+
 ```
 Root → .com TLD → amazon.com (uses UltraDNS)
 a.root-servers.net → a.gtld-servers.net → pdns1.ultradns.net (final answer)
 ```
 
 **Common pattern:**
+
 - All start at root servers (13 root server clusters)
 - Delegated to appropriate TLD (.com, .org, .edu, etc.)
 - Finally to authoritative servers for specific domain
@@ -468,20 +502,20 @@ a.root-servers.net → a.gtld-servers.net → pdns1.ultradns.net (final answer)
 **Approach:**
 
 1. **Examine cache contents:**
-    - Query local DNS server's cache for A records
-    - Look for non-local domain names
-    - Record frequency and recency of entries
+   - Query local DNS server's cache for A records
+   - Look for non-local domain names
+   - Record frequency and recency of entries
 
 2. **Frequency analysis:**
-    - Domains with many cached entries → frequently accessed
-    - Recently cached entries → recent access
-    - Multiple users accessing same domain → popular site
+   - Domains with many cached entries → frequently accessed
+   - Recently cached entries → recent access
+   - Multiple users accessing same domain → popular site
 
 3. **Indicators of popularity:**
-    - **High cache hit rate** for specific domains
-    - **Frequent cache refreshes** (TTL expiration and renewal)
-    - **Multiple queries** for same domain from different hosts
-    - **Long-living cache entries** (frequently accessed before expiration)
+   - **High cache hit rate** for specific domains
+   - **Frequent cache refreshes** (TTL expiration and renewal)
+   - **Multiple queries** for same domain from different hosts
+   - **Long-living cache entries** (frequently accessed before expiration)
 
 **Practical implementation:**
 
@@ -496,12 +530,14 @@ grep "query" /var/log/named/query.log | \
 ```
 
 **Metrics to track:**
+
 - Number of queries per domain
 - Number of unique internal IPs querying each domain
 - Time distribution of queries
 - Cache hit rates
 
 **Example findings:**
+
 ```
 1523 queries - www.google.com
 892 queries - www.youtube.com
@@ -511,6 +547,7 @@ grep "query" /var/log/named/query.log | \
 ```
 
 **Limitations:**
+
 - Doesn't show access via IP (bypassing DNS)
 - Doesn't show HTTPS/encrypted content accessed
 - Cache may have entries from automated systems

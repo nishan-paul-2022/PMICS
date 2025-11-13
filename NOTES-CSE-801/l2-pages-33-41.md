@@ -14,20 +14,23 @@ BitTorrent is a protocol for distributing files in a peer-to-peer (P2P) network,
 #### Time Calculations for File Distribution
 
 Consider distributing a file of size \( F \) from one server to \( N \) peers, where:
+
 - \( u_s \): Server upload capacity (bits per second).
 - \( u_i \): Upload capacity of peer \( i \).
 - \( d_i \): Download capacity of peer \( i \).
-- \( d_{min} \): Minimum download rate among peers.
+- \( d\_{min} \): Minimum download rate among peers.
 
 For **Client-Server**:
+
 - Server must send \( N \) copies: Time = \( \frac{NF}{u_s} \).
-- Each client downloads: Time = \( \frac{F}{d_{min}} \).
-- Total time: \( D_{c-s} \geq \max\left( \frac{NF}{u_s}, \frac{F}{d_{min}} \right) \).
+- Each client downloads: Time = \( \frac{F}{d\_{min}} \).
+- Total time: \( D*{c-s} \geq \max\left( \frac{NF}{u_s}, \frac{F}{d*{min}} \right) \).
 
 For **P2P**:
+
 - Server sends at least one copy: Time = \( \frac{F}{u_s} \).
 - Aggregate download: \( NF \) bits, max upload rate = \( u_s + \sum u_i \).
-- Total time: \( D_{P2P} \geq \max\left( \frac{F}{u_s}, \frac{F}{d_{min}}, \frac{NF}{u_s + \sum u_i} \right) \).
+- Total time: \( D*{P2P} \geq \max\left( \frac{F}{u_s}, \frac{F}{d*{min}}, \frac{NF}{u_s + \sum u_i} \right) \).
 
 P2P scales better as each peer adds capacity.
 

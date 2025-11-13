@@ -3,6 +3,7 @@
 This explanation covers the DNS section from the PDF, focusing on pages 16-32. I'll break it down into clear sections, explain all technical terms in simple language, include Mermaid diagrams for better memorization, and describe any figures from the content. DNS is like a phonebook for the internet, translating human-friendly names (like www.google.com) into machine-readable IP addresses (like 216.58.204.68).
 
 ## 1. Introduction to DNS
+
 DNS stands for **Domain Name System**. It's a system that maps human-readable domain names to IP addresses, which are numerical labels used by computers to identify devices on a network.
 
 - **Why DNS?** People use names like "google.com" for websites, but computers communicate using IP addresses (e.g., 32-bit numbers like 192.168.1.1). DNS acts as a translator to bridge this gap.
@@ -14,6 +15,7 @@ DNS stands for **Domain Name System**. It's a system that maps human-readable do
 Figure Description: The introductory slide (2-16) shows a simple diagram with people using identifiers (like names) and internet devices using IP addresses, highlighting the need for DNS to map between them.
 
 ## 2. DNS Services and Structure
+
 DNS provides several services and is structured as a distributed, hierarchical database.
 
 - **Services Offered:**
@@ -29,6 +31,7 @@ Mermaid Diagram: DNS Hierarchy
 ![DNS Hierarchy](../supplies/images/dns-hierarchy.png)
 
 ## 3. DNS Hierarchy
+
 DNS is organized in a tree-like hierarchy for efficient lookups.
 
 - **Root DNS Servers:** The top level, managed by ICANN (Internet Corporation for Assigned Names and Numbers). There are 13 logical root servers, replicated hundreds of times worldwide. They direct queries to the appropriate Top-Level Domain (TLD) servers.
@@ -42,6 +45,7 @@ Mermaid Diagram: Example Query Flow
 ![DNS Query Flow](../supplies/images/dns-query-flow.png)
 
 ## 4. DNS Name Resolution Processes
+
 There are two main ways to resolve names: iterative and recursive queries.
 
 - **Iterative Query:** The contacted server replies with the next server to ask, not the full answer. It's like getting directions step-by-step.
@@ -54,6 +58,7 @@ Mermaid Diagram: Iterative vs Recursive
 ![DNS Iterative Recursive](../supplies/images/dns-iterative-recursive.png)
 
 ## 5. DNS Records and Protocol
+
 DNS stores records in a specific format, and messages follow a standard structure.
 
 - **DNS Records (RR - Resource Records):** Format: (name, value, type, ttl)
@@ -69,6 +74,7 @@ Mermaid Diagram: DNS Message Format
 ![DNS Message Format](../supplies/images/dns-message-format.png)
 
 ## 6. Getting Info into DNS and Security
+
 To add a domain, register with a registrar and set up servers. Security is crucial due to threats.
 
 - **Registering a Domain:** Contact a registrar (e.g., Network Solutions), provide authoritative server details, and they update TLD servers with NS and A records.

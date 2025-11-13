@@ -20,6 +20,7 @@ Welcome to Part 1 of the comprehensive guide for Computer Networking problems. T
 
 **Step 1: Understanding the Problem and Requirements**
 Imagine you're designing a communication system between an ATM machine and a bank's central computer. This is like creating a set of rules for how they "talk" to each other to handle banking transactions. The protocol needs to handle three main tasks:
+
 - **Card verification**: Checking if the user's ATM card and PIN (personal identification number) are valid
 - **Balance queries**: Allowing the user to check how much money they have in their account
 - **Money withdrawals**: Letting the user take money out of their account, but only if they have enough funds
@@ -27,11 +28,13 @@ Imagine you're designing a communication system between an ATM machine and a ban
 The protocol must also handle a common problem: what happens when someone tries to withdraw more money than they have in their account (called "insufficient funds").
 
 This is an **application-level protocol**, which means it's designed specifically for this banking application, not for general computer networking. It uses a **client-server model** where:
+
 - The **ATM is the client** (it asks for things and starts conversations)
 - The **bank's computer is the server** (it responds to requests and provides information)
 
 **Step 2: Designing the Protocol Architecture**
 The communication follows a simple **request-response pattern**:
+
 - The ATM (client) always starts by sending a request message
 - The bank's computer (server) receives the request, processes it, and sends back a response
 - The ATM waits for each response before sending the next request
@@ -42,14 +45,17 @@ This back-and-forth pattern ensures that each step happens in the correct order 
 We need different types of messages for different operations. Each message carries specific information needed for that operation. Here are the message types we need:
 
 **For card verification:**
+
 - **VerifyCard message**: Sent by ATM to bank. Contains the card number (like a unique ID for the card) and the PIN (the secret password the user entered).
 - **CardResponse message**: Sent by bank to ATM. Contains either "VALID" (meaning the card and PIN are correct) or "INVALID" (meaning something is wrong with the card or PIN).
 
 **For balance checking:**
+
 - **BalanceRequest message**: Sent by ATM to bank. Contains just the card number (since we already verified the PIN).
 - **BalanceResponse message**: Sent by bank to ATM. Contains the account balance (like "$500.00") or "INVALID" if there's a problem.
 
 **For money withdrawal:**
+
 - **WithdrawalRequest message**: Sent by ATM to bank. Contains the card number and the amount of money the user wants to withdraw.
 - **WithdrawalResponse message**: Sent by bank to ATM. Contains "APPROVED" (withdrawal allowed), "INSUFFICIENT_FUNDS" (not enough money in account), or "INVALID" (some other problem).
 
@@ -57,16 +63,19 @@ We need different types of messages for different operations. Each message carri
 Now we need to explain exactly what happens when each message is sent or received. This is like writing instructions for both the ATM and the bank computer.
 
 **Card Verification Process:**
+
 - **ATM sends VerifyCard**: When a user inserts their card and enters their PIN, the ATM creates a VerifyCard message with the card number and PIN, then sends it to the bank. The ATM then waits for a response - it can't do anything else until it knows if the card is valid.
 - **Bank receives VerifyCard**: The bank's computer looks up the card number in its database. It checks if the card exists and if the PIN matches what's stored for that card. Then it sends back a CardResponse message.
 - **ATM receives CardResponse**: If the response is "VALID", the ATM knows the user is authenticated and can show them options like checking balance or withdrawing money. If it's "INVALID", the ATM might give the user a few more tries to enter the correct PIN, or it might eject the card and end the session.
 
 **Balance Query Process:**
+
 - **ATM sends BalanceRequest**: When the user chooses to check their balance, the ATM sends a BalanceRequest message with the card number to the bank.
 - **Bank receives BalanceRequest**: The bank's computer looks up the current balance for that card number in its database and sends back a BalanceResponse message.
 - **ATM receives BalanceResponse**: The ATM displays the balance amount on the screen so the user can see how much money they have.
 
 **Withdrawal Process:**
+
 - **ATM sends WithdrawalRequest**: When the user enters the amount they want to withdraw, the ATM sends a WithdrawalRequest message with the card number and withdrawal amount to the bank.
 - **Bank receives WithdrawalRequest**: The bank's computer checks the current balance for that account. If the balance is greater than or equal to the withdrawal amount, it subtracts the withdrawal amount from the balance and sends "APPROVED". If the balance is less than the withdrawal amount, it sends "INSUFFICIENT_FUNDS" without changing the balance.
 - **ATM receives WithdrawalResponse**: If the response is "APPROVED", the ATM dispenses the requested amount of money through the cash slot and prints a receipt showing the new balance. If it's "INSUFFICIENT_FUNDS", the ATM displays an error message to the user and might offer them options like trying a smaller amount or checking their balance.
@@ -93,6 +102,7 @@ Let's walk through a complete example of a user withdrawing money, assuming ever
 10. **ATM prints receipt**: The ATM prints a receipt showing the withdrawal amount and remaining balance.
 
 Here's a simple diagram showing the message flow:
+
 ```
 ATM                    Bank
   |                       |
@@ -121,6 +131,7 @@ The delay for one packet is simply:
 **Delay = N × (L/R)**
 
 This makes sense because:
+
 - Each link takes time L/R to transmit the packet (transmission delay)
 - The packet has to go through N links, so total delay is N times the transmission delay per link
 - We ignore propagation delay (time for signal to travel) and other delays for this basic formula
@@ -253,12 +264,14 @@ Most importantly, once the application starts, it runs for a "relatively long pe
 Before answering, let's recall what these two approaches are:
 
 **Circuit Switching:**
+
 - Like a telephone call - you establish a dedicated connection first
 - The entire path from source to destination is reserved just for your communication
 - Once connected, you have guaranteed bandwidth for the duration
 - Like booking a lane on a highway exclusively for your use
 
 **Packet Switching:**
+
 - Like sending letters through the postal service
 - Data is broken into small packets that travel independently
 - Each packet finds its own path through the network
@@ -269,6 +282,7 @@ Before answering, let's recall what these two approaches are:
 For an application with steady data rate and long duration, **circuit switching is more appropriate**. Here's why:
 
 **Why Circuit Switching Fits Better:**
+
 - **Dedicated Bandwidth:** Since the application needs a steady, predictable data rate, having a guaranteed amount of bandwidth (like a reserved highway lane) prevents interruptions or slowdowns
 - **No Packetization Overhead:** Packet switching requires breaking data into packets, adding headers, and reassembling at the destination. For steady streaming data, this overhead is wasteful
 - **No Queuing Delays:** In packet switching, packets might have to wait in queues if the network is busy. Circuit switching avoids this by reserving capacity in advance
@@ -276,6 +290,7 @@ For an application with steady data rate and long duration, **circuit switching 
 
 **Real-World Analogy:**
 Imagine you need to transport water from one city to another steadily for a month. Would you:
+
 - Use trucks that make many trips, loading/unloading water each time (packet switching)?
 - Or build a dedicated pipeline for the month (circuit switching)?
 
@@ -285,10 +300,12 @@ The pipeline (circuit switching) makes more sense for steady, long-term transpor
 The second part assumes we're using packet switching and asks if congestion control is needed.
 
 **Key Assumptions:**
+
 - Only this type of application is using the network (no other traffic)
 - The sum of all application data rates is less than the capacity of every link
 
 **Why No Congestion Control is Needed:**
+
 - **Sufficient Capacity:** Since the total data rate from all applications is less than any link's capacity, there's always enough bandwidth available
 - **Statistical Multiplexing:** Packet switching allows multiple users to share links efficiently. With the total demand below capacity, packets won't queue up
 - **No Contention:** There's no competition for resources, so no need for mechanisms to prevent or resolve congestion
@@ -300,6 +317,7 @@ Imagine a highway with 4 lanes where only 2 lanes worth of traffic is present. C
 If the total data rates exceeded link capacities, packets would queue up, causing delays and potential packet loss. Then congestion control mechanisms would be essential to manage the limited resources fairly.
 
 **Step 5: Summary and Key Takeaways**
+
 - **Circuit switching** is better for steady, long-duration applications because it provides dedicated, predictable bandwidth without overhead
 - **Congestion control** is not needed when network capacity exceeds total demand, as statistical multiplexing handles the load efficiently
 - The choice depends on application characteristics: bursty traffic favors packet switching, steady traffic favors circuit switching
@@ -322,6 +340,7 @@ In this problem, we have a network with switches labeled A, B, C, and D arranged
 
 **Step 2: Visualizing the Network Topology**
 Imagine the switches arranged in a square:
+
 ```
 A ---- B
 |      |
@@ -335,6 +354,7 @@ Each side of the square has 4 circuits, so each link can handle 4 simultaneous c
 Each connection between two switches requires circuits on the links along the path. Since connections go through intermediate switches, they need circuits on multiple links.
 
 For example, a connection from A to C might go A→B→C, requiring:
+
 - 1 circuit on the A-B link
 - 1 circuit on the B-C link
 
@@ -344,15 +364,18 @@ So each connection uses 2 circuits total (one on each link in its path).
 The problem asks: "What is the maximum number of simultaneous connections that can be in progress at any one time in this network?"
 
 **Total Available Circuits:**
+
 - There are 4 links in the network
 - Each link has 4 circuits
 - Total circuits = 4 links × 4 circuits/link = 16 circuits
 
 **Circuits Per Connection:**
+
 - Each connection requires 2 circuits (one per link in the path)
 - This is true regardless of which switches are communicating
 
 **Maximum Connections:**
+
 - If each connection uses 2 circuits, then maximum connections = total circuits ÷ circuits per connection
 - Maximum = 16 ÷ 2 = 8 connections
 
@@ -364,12 +387,14 @@ Now the problem specifies that all connections are between switches A and C only
 
 **Available Paths from A to C:**
 In this square topology, there are two possible paths from A to C:
+
 1. A → B → C (going clockwise through B)
 2. A → D → C (going counterclockwise through D)
 
 Each path has 4 circuits available, so theoretically each path can handle 4 connections.
 
 **Maximum A-C Connections:**
+
 - Path 1 (A-B-C): 4 circuits → 4 connections
 - Path 2 (A-D-C): 4 circuits → 4 connections
 - Total maximum = 4 + 4 = 8 connections
@@ -380,6 +405,7 @@ This is the same as the general maximum! This makes sense because when all traff
 The problem asks: "Suppose we want to make four connections between switches A and C, and another four connections between switches B and D. Can we route these calls through the four links to accommodate all eight connections?"
 
 **Breaking Down the Requirements:**
+
 - 4 connections between A and C
 - 4 connections between B and D
 - Total: 8 connections
@@ -387,11 +413,13 @@ The problem asks: "Suppose we want to make four connections between switches A a
 **Analyzing Path Requirements:**
 
 **For A-C connections:**
+
 - Need to route 4 connections between A and C
 - Available paths: A-B-C and A-D-C
 - We can split them: 2 on each path
 
 **For B-D connections:**
+
 - Need to route 4 connections between B and D
 - Available paths: B-A-D and B-C-D
 - We can split them: 2 on each path
@@ -405,6 +433,7 @@ Let's see if this routing works without circuit conflicts:
 **B-C-D path:** Used for 2 B-D connections
 
 **Circuit Usage Check:**
+
 - A-B link: Used by 2 A-C connections → 2 circuits used (out of 4)
 - B-C link: Used by 2 A-C connections → 2 circuits used (out of 4)
 - A-D link: Used by 2 B-D connections → 2 circuits used (out of 4)
@@ -413,6 +442,7 @@ Let's see if this routing works without circuit conflicts:
 All links have 2 circuits remaining, so there's no overload. The routing is possible!
 
 **Step 7: Key Insights and Summary**
+
 - **Total network capacity:** 16 circuits allow maximum 8 simultaneous connections
 - **A-C specific traffic:** Can still achieve 8 connections by using both available paths
 - **Mixed traffic routing:** The 4+4 connection scenario is feasible by balancing load across available paths
@@ -436,6 +466,7 @@ The problem refers to a caravan analogy from Section 1.4 of the textbook. Imagin
 The key insight is that all cars in the caravan travel at the same speed and stay together as a group. They all start together, pass through tollbooths together, and arrive at the destination together. The caravan moves as a unit.
 
 **Step 2: Understanding the Given Parameters**
+
 - **Propagation speed:** 100 km/hour (this is the speed at which the caravan travels)
 - **Distance to travel:** 175 km
 - **Journey:** Starts in front of tollbooth 1, passes tollbooth 2, finishes after tollbooth 3
@@ -461,6 +492,7 @@ The problem asks to repeat the calculation for 8 cars instead of 10.
 Time = 175 km ÷ 100 km/hour = 1.75 hours
 
 **Explanation:**
+
 - The caravan moves as a cohesive unit
 - All cars maintain the same speed (100 km/hour)
 - The distance is the same (175 km)
@@ -470,6 +502,7 @@ Time = 175 km ÷ 100 km/hour = 1.75 hours
 This analogy helps explain packet switching in networks:
 
 **In the caravan analogy:**
+
 - Cars = packets of data
 - Tollbooths = routers/switches
 - Highway = network links

@@ -18,9 +18,9 @@ Consider the Go-Back-N protocol with a sender window size of 4. Suppose the rece
 
 #### Protocol Overview
 
-*   **Sender Window Size:** 4 packets (can send up to 4 unacknowledged packets).
-*   **Receiver Buffer:** Can hold only 2 packets.
-*   **Scenario:** The 4th packet is lost.
+- **Sender Window Size:** 4 packets (can send up to 4 unacknowledged packets).
+- **Receiver Buffer:** Can hold only 2 packets.
+- **Scenario:** The 4th packet is lost.
 
 #### Timeline Trace
 
@@ -139,11 +139,11 @@ Consider the Go-Back-N protocol with a sender window size of 4. Suppose the rece
 
 #### Key Points
 
-*   When pkt3 is lost, the receiver buffers pkt0, pkt1, and pkt2 but cannot deliver them because GBN requires in-order delivery.
-*   The receiver continues to send ACK2 for each subsequent packet it receives (since pkt2 is the last in-order packet).
-*   When the sender times out on pkt3, it retransmits pkt3, pkt4, pkt5, and pkt6.
-*   Upon receiving pkt3, the receiver can now deliver all four packets and send ACK3.
-*   The sender then slides its window and continues.
+- When pkt3 is lost, the receiver buffers pkt0, pkt1, and pkt2 but cannot deliver them because GBN requires in-order delivery.
+- The receiver continues to send ACK2 for each subsequent packet it receives (since pkt2 is the last in-order packet).
+- When the sender times out on pkt3, it retransmits pkt3, pkt4, pkt5, and pkt6.
+- Upon receiving pkt3, the receiver can now deliver all four packets and send ACK3.
+- The sender then slides its window and continues.
 
 ## P23. Selective Repeat (SR) Protocol
 
@@ -155,9 +155,9 @@ Consider the Selective Repeat protocol with a sender window size of 4. Suppose t
 
 #### Protocol Overview
 
-*   **Sender Window Size:** 4 packets (can send up to 4 unacknowledged packets).
-*   **Receiver Buffer:** Can hold only 2 packets.
-*   **Scenario:** The 4th packet is lost.
+- **Sender Window Size:** 4 packets (can send up to 4 unacknowledged packets).
+- **Receiver Buffer:** Can hold only 2 packets.
+- **Scenario:** The 4th packet is lost.
 
 #### Timeline Trace
 
@@ -239,17 +239,18 @@ Consider the Selective Repeat protocol with a sender window size of 4. Suppose t
 
 #### Key Points
 
-*   When pkt3 is lost, the receiver continues to deliver pkt0, pkt1, and pkt2 as they arrive.
-*   The sender only retransmits pkt3 when its timer expires.
-*   Upon receiving pkt3, the receiver delivers it and sends ACK3.
-*   The sender slides its window and continues.
-*   Unlike GBN, SR does not retransmit packets that have already been acknowledged.
+- When pkt3 is lost, the receiver continues to deliver pkt0, pkt1, and pkt2 as they arrive.
+- The sender only retransmits pkt3 when its timer expires.
+- Upon receiving pkt3, the receiver delivers it and sends ACK3.
+- The sender slides its window and continues.
+- Unlike GBN, SR does not retransmit packets that have already been acknowledged.
 
 ## P24. GBN vs SR Window Sizes
 
 In protocol rdt3.0, the alternating-bit protocol, the sender window size is 1. What are the minimum sender and receiver window sizes for:
-*   Go-Back-N protocol?
-*   Selective Repeat protocol?
+
+- Go-Back-N protocol?
+- Selective Repeat protocol?
 
 ---
 
@@ -257,15 +258,15 @@ In protocol rdt3.0, the alternating-bit protocol, the sender window size is 1. W
 
 #### Go-Back-N (GBN) Protocol
 
-*   **Minimum Sender Window Size:** 1. (The sender must be able to send at least one packet to start the protocol.)
-*   **Minimum Receiver Window Size:** 1. (The receiver must be able to accept at least one packet. In GBN, the receiver window is effectively 1 because it only accepts the next expected packet in sequence.)
+- **Minimum Sender Window Size:** 1. (The sender must be able to send at least one packet to start the protocol.)
+- **Minimum Receiver Window Size:** 1. (The receiver must be able to accept at least one packet. In GBN, the receiver window is effectively 1 because it only accepts the next expected packet in sequence.)
 
 In GBN, the receiver window size is typically 1, but the protocol can work with larger receiver windows. The standard GBN assumes a receiver window of 1 (cumulative ACKs only).
 
 #### Selective Repeat (SR) Protocol
 
-*   **Minimum Sender Window Size:** 1. (Same as GBN.)
-*   **Minimum Receiver Window Size:** The receiver window must be at least as large as the sender window to handle out-of-order packets. For SR to work correctly, the receiver window size must be greater than or equal to the sender window size. So, minimum is 1, but practically, it should be at least equal to the sender window size.
+- **Minimum Sender Window Size:** 1. (Same as GBN.)
+- **Minimum Receiver Window Size:** The receiver window must be at least as large as the sender window to handle out-of-order packets. For SR to work correctly, the receiver window size must be greater than or equal to the sender window size. So, minimum is 1, but practically, it should be at least equal to the sender window size.
 
 For SR, to avoid sequence number ambiguity, the total window sizes (sender + receiver) must be less than or equal to the sequence number space (typically 2^k for k-bit sequence numbers).
 
@@ -282,12 +283,14 @@ In Go-Back-N, can the receiver window size be greater than 1? Explain.
 In standard GBN, the receiver window is 1, meaning it only accepts the next expected packet in sequence. However, the protocol can be modified to allow the receiver to buffer out-of-order packets and send cumulative ACKs, effectively making the receiver window larger than 1.
 
 **Benefits:**
-*   If the receiver can buffer packets, it can acknowledge packets that arrive out of order, but still deliver them in order.
-*   This reduces the number of retransmissions if packets are delayed but not lost.
+
+- If the receiver can buffer packets, it can acknowledge packets that arrive out of order, but still deliver them in order.
+- This reduces the number of retransmissions if packets are delayed but not lost.
 
 **Drawbacks:**
-*   Requires more buffer space at the receiver.
-*   The sender still retransmits all packets from the lost one onward, so the benefit is limited.
+
+- Requires more buffer space at the receiver.
+- The sender still retransmits all packets from the lost one onward, so the benefit is limited.
 
 In practice, GBN receivers often have a window size of 1, but larger windows are possible.
 

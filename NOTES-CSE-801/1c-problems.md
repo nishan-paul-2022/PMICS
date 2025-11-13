@@ -22,21 +22,25 @@ Welcome to Part 3 of the comprehensive guide for Computer Networking problems. T
 The problem compares two switching techniques:
 
 **Store-and-Forward Switching (from P10):**
+
 - Router waits to receive the entire packet before forwarding it
 - Like waiting for a complete letter before mailing it
 
 **Cut-Through Switching (this problem):**
+
 - Router starts forwarding as soon as it knows the destination
 - Doesn't wait for the entire packet
 - Like starting to read a letter while it's still being delivered
 
 **Step 2: Understanding the Scenario**
+
 - Same network as P10: 3 links, 2 routers
 - All links have same rate R and processing delay dproc = 0
 - Packet length L, link lengths d_i, propagation speeds s_i
 
 **Step 3: How Store-and-Forward Works**
 In store-and-forward:
+
 1. Packet arrives at Router 1
 2. Router 1 waits for entire packet (takes L/R time)
 3. Router 1 processes and starts forwarding
@@ -49,6 +53,7 @@ In store-and-forward:
 
 **Step 4: How Cut-Through Switching Works**
 In cut-through switching:
+
 1. Router starts forwarding as soon as it receives enough of the packet to determine the destination
 2. Typically, this happens after receiving the header (much smaller than L)
 3. For analysis, we assume the router can start forwarding immediately when the first bit arrives
@@ -57,6 +62,7 @@ In cut-through switching:
 
 **Step 5: Cut-Through Delay Analysis**
 With cut-through switching:
+
 - The packet flows through the network like a continuous stream
 - Transmission delay is only incurred once (at the first link)
 - Propagation delays accumulate as before
@@ -68,6 +74,7 @@ With cut-through switching:
 
 **Step 6: Numerical Calculation**
 Using the same values as P10:
+
 - L = 12,000 bits
 - R = 2.5 Mbps = 2,500,000 bps
 - d_1 = 5,000 km = 5,000,000 m
@@ -78,6 +85,7 @@ Using the same values as P10:
 **Transmission Delay:** L/R = 12,000 / 2,500,000 = 0.0048 s = 4.8 ms
 
 **Propagation Delays:**
+
 - Link 1: 5,000,000 / 2.5×10^8 = 0.02 s = 20 ms
 - Link 2: 4,000,000 / 2.5×10^8 = 0.016 s = 16 ms
 - Link 3: 1,000,000 / 2.5×10^8 = 0.004 s = 4 ms
@@ -91,6 +99,7 @@ Using the same values as P10:
 **Improvement:** 60.4 - 44.8 = 15.6 ms faster
 
 **Why Faster:**
+
 - Eliminates waiting for packets at intermediate routers
 - Reduces transmission delays from 3×(L/R) to 1×(L/R)
 - Still includes all propagation delays
@@ -98,20 +107,24 @@ Using the same values as P10:
 **Step 8: Key Insights**
 
 **Advantages of Cut-Through:**
+
 - **Lower latency** for long packets
 - **Better performance** for real-time traffic
 - **Reduced buffering** requirements
 
 **Disadvantages of Cut-Through:**
+
 - **Can't do error checking** on entire packet before forwarding
 - **More complex** to implement
 - **Vulnerable to errors** propagating through network
 
 **When to Use Each:**
+
 - **Store-and-Forward:** When error checking is critical
 - **Cut-Through:** When low latency is critical
 
 **Step 9: Real-World Applications**
+
 - **Ethernet switches** often use cut-through switching
 - **Core routers** typically use store-and-forward
 - **Trade-off** between speed and reliability
@@ -130,6 +143,7 @@ This problem demonstrates how switching techniques affect network performance an
 A packet switch (router) receives a packet and needs to forward it. When the packet arrives, there are already other packets waiting to be transmitted on the outbound link. This creates queuing delay - the packet has to wait its turn.
 
 **Situation:**
+
 - One packet is halfway done being transmitted (x bits already sent)
 - Four other packets are already in the queue
 - All packets are 1,500 bytes (12,000 bits)
@@ -158,6 +172,7 @@ There are n = 4 packets already in the queue.
 
 **Step 6: Numerical Calculation**
 **Given values:**
+
 - L = 1,500 bytes = 12,000 bits
 - x = L/2 = 6,000 bits (halfway done)
 - n = 4 packets
@@ -171,6 +186,7 @@ There are n = 4 packets already in the queue.
 
 **Step 7: General Formula**
 The problem asks for the general formula when:
+
 - L = packet length
 - R = transmission rate
 - x = bits of current packet already transmitted
@@ -181,31 +197,37 @@ The problem asks for the general formula when:
 **Step 8: Understanding Different Queuing Scenarios**
 
 **Scenario 1: Packet arrives just as transmission starts (x = 0)**
+
 - Queuing Delay = L/R + n × L/R = (n+1) × L/R
 - Packet waits for n+1 full packet transmissions
 
 **Scenario 2: Packet arrives just as transmission completes (x = L)**
+
 - Queuing Delay = 0 + n × L/R = n × L/R
 - Packet waits for n full packet transmissions
 
 **Scenario 3: No queue (n = 0)**
+
 - Queuing Delay = (L - x)/R
 - Packet only waits for current transmission to complete
 
 **Step 9: Key Insights**
 
 **Queuing Delay Factors:**
+
 - **Link utilization:** Higher utilization → longer queues → more delay
 - **Packet size:** Larger packets → longer transmission times → more delay
 - **Arrival timing:** When packet arrives relative to current transmission
 - **Traffic pattern:** Burstier traffic → longer queues
 
 **Impact on Performance:**
+
 - **Throughput:** Queuing doesn't reduce throughput (eventually all packets get through)
 - **Delay:** Queuing increases delay, affecting real-time applications
 - **Jitter:** Variable queuing delays cause jitter in packet arrival times
 
 **Step 10: Real-World Implications**
+
 - **Buffer sizing:** Networks need buffers to handle queuing
 - **QoS mechanisms:** Priority queuing can reduce delays for important traffic
 - **Congestion control:** Prevents excessive queuing that causes packet loss
@@ -229,11 +251,13 @@ This problem introduces fundamental concepts in queuing theory, which is crucial
 
 **Analysis:**
 When N packets arrive at once to an empty queue:
+
 - The first packet starts transmitting immediately
 - The other N-1 packets wait in queue
 - Each packet experiences different queuing delays
 
 **Queuing Delays:**
+
 - Packet 1: 0 delay (starts immediately)
 - Packet 2: waits for packet 1 to finish (L/R delay)
 - Packet 3: waits for packets 1 and 2 (2×L/R delay)
@@ -253,6 +277,7 @@ For large N, this approximates to N × L/(2R)
 **Problem:** N packets arrive every LN/R seconds. What is the average queuing delay of a packet?
 
 **Understanding the Pattern:**
+
 - Packets arrive in batches of N every T seconds, where T = N × L/R
 - This creates a steady-state queuing pattern
 - The system reaches equilibrium with constant queue length
@@ -264,15 +289,18 @@ Average arrival rate = Average departure rate
 Using Little's Law: Average packets in system = Average arrival rate × Average delay
 
 **Traffic Intensity:**
+
 - Batch size: N packets
 - Inter-batch time: T = N × L/R seconds
 - Arrival rate: N packets / T = N / (N × L/R) = R/(L) packets/second
 
 **Service Rate:**
+
 - Each packet takes L/R seconds to transmit
 - Service rate: R/L packets/second
 
 **Utilization:**
+
 - ρ = Arrival rate / Service rate = (R/L) / (R/L) = 1
 
 Wait, that can't be right. If utilization is 1, the queue would grow infinitely.
@@ -346,21 +374,25 @@ Yes, matches the formula.
 **Step 5: Key Insights**
 
 **Simultaneous Arrival:**
+
 - Creates a burst of queuing
 - Average delay proportional to N
 - Good model for synchronized traffic
 
 **Periodic Arrival:**
+
 - Steady-state queuing pattern
 - High utilization leads to long delays
 - Models regular traffic patterns
 
 **Queuing Theory Applications:**
+
 - **Network design:** Understanding delay requirements
 - **Capacity planning:** Determining link speeds needed
 - **QoS guarantees:** Meeting delay bounds
 
 **Step 6: Real-World Implications**
+
 - **Traffic shaping:** Can reduce queuing delays
 - **Buffer sizing:** Networks need buffers for queuing
 - **Admission control:** Preventing overload conditions
@@ -379,6 +411,7 @@ b. Plot the total delay as a function of L /R.
 
 **Step 1: Understanding Traffic Intensity**
 Traffic intensity (I) is a key concept in networking that measures how busy a link is. It's defined as I = La/R, where:
+
 - La = average packet arrival rate (packets/second)
 - R = link transmission rate (bits/second)
 - L = packet length (bits)
@@ -389,6 +422,7 @@ So I = (La × L)/R represents the fraction of time the link is busy transmitting
 The problem states that queuing delay takes the form IL/R × 1/(1-I) for I < 1.
 
 Let's break this down:
+
 - IL/R = (La × L/R) × L/R = La × L²/R²
 - This gives the basic queuing delay component
 - The 1/(1-I) factor accounts for the fact that as utilization approaches 1, queuing delay increases dramatically
@@ -414,6 +448,7 @@ Total Delay = L/R + (I × L/R) / (1-I)
 This formula shows that total delay = (Transmission delay) / (1 - Traffic intensity)
 
 As I approaches 1:
+
 - The denominator (1-I) approaches 0
 - Total delay approaches infinity
 - This makes sense - when a link is fully utilized, queues grow without bound
@@ -424,10 +459,12 @@ The problem asks to plot total delay as a function of L/R.
 From the formula: Total Delay = (L/R) / (1-I)
 
 Since I is constant, this is a straight line:
+
 - Slope = 1/(1-I)
 - Intercept = 0
 
 **Interpretation:**
+
 - For fixed traffic intensity I, total delay increases linearly with packet transmission time L/R
 - Higher traffic intensity (larger I) makes the slope steeper
 - As I → 1, the slope → ∞
@@ -435,22 +472,26 @@ Since I is constant, this is a straight line:
 **Step 7: Key Insights**
 
 **Traffic Intensity Effects:**
+
 - **Low I (e.g., 0.1):** Delay ≈ L/R × 1.11 (minimal queuing)
 - **Medium I (e.g., 0.5):** Delay ≈ L/R × 2 (moderate queuing)
 - **High I (e.g., 0.9):** Delay ≈ L/R × 10 (significant queuing)
 
 **Practical Implications:**
+
 - **Link upgrades:** Increasing R reduces L/R, reducing total delay
 - **Traffic engineering:** Keeping I < 0.8 prevents excessive delays
 - **QoS design:** Different traffic classes need different I targets
 
 **Step 8: Real-World Applications**
+
 - **Network planning:** Calculate delays for different link speeds
 - **SLA guarantees:** Ensure delay bounds are met
 - **Congestion control:** TCP uses similar logic to avoid high delays
 
 **Step 9: M/M/1 Queue Theory Connection**
 This formula comes from M/M/1 queue theory, where:
+
 - M/M/1 = Memoryless arrival, Memoryless service, 1 server
 - Average queuing delay = I/(μ(1-I)) where μ is service rate
 - Service rate μ = R/L packets/second
@@ -470,10 +511,12 @@ This problem demonstrates how traffic intensity dramatically affects network del
 
 **Step 1: Understanding the Parameters**
 The problem introduces new notation:
+
 - a = packet arrival rate (packets/second)
 - μ = link transmission rate (packets/second)
 
 Previously we used:
+
 - La = arrival rate (packets/second)
 - R = transmission rate (bits/second)
 - L = packet length (bits)
@@ -525,6 +568,7 @@ Total Delay = L / (μ - a)
 This formula shows that total delay = (packet length) / (service capacity - arrival rate)
 
 As arrival rate a approaches service rate μ:
+
 - Denominator (μ - a) approaches 0
 - Total delay approaches infinity
 - This indicates the system becomes unstable
@@ -532,6 +576,7 @@ As arrival rate a approaches service rate μ:
 **Step 6: Key Insights**
 
 **Units Check:**
+
 - L = bits (packet length)
 - μ - a = packets/second
 - L / (μ - a) = bits / (packets/second) = seconds
@@ -539,12 +584,14 @@ As arrival rate a approaches service rate μ:
 Yes, delay in seconds.
 
 **Interpretation:**
+
 - For each packet, delay = packet size / available capacity
 - Available capacity = μ - a (excess service rate)
 - This makes intuitive sense - more packets arrive, less capacity available per packet
 
 **Step 7: Connection to Queuing Theory**
 This is the M/M/1 queue delay formula:
+
 - Arrival rate: a packets/second
 - Service rate: μ packets/second
 - Total delay = 1/(μ - a) for the waiting time in queue
@@ -552,6 +599,7 @@ This is the M/M/1 queue delay formula:
 
 The standard M/M/1 total delay is 1/(μ - a) + 1/μ
 No:
+
 - Queuing delay = ρ/(μ(1-ρ)) = (a/μ)/(μ(1-a/μ)) = a/(μ²(1-a/μ)) = a/(μ(μ-a))
 - Transmission delay = 1/μ
 - Total delay = a/(μ(μ-a)) + 1/μ = [a + (μ-a)]/[μ(μ-a)] = μ/[μ(μ-a)] = 1/(μ-a)
@@ -576,6 +624,7 @@ Total Delay = 1/(μ - a) seconds per packet
 
 **Step 9: Real-World Significance**
 This formula is fundamental in networking:
+
 - **Capacity planning:** Need μ > a to keep delays finite
 - **QoS requirements:** Calculate required capacity for delay bounds
 - **Congestion control:** TCP uses similar logic

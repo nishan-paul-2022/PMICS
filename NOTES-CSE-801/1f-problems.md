@@ -22,6 +22,7 @@ Welcome to Part 6 of the comprehensive guide for Computer Networking problems. T
 The problem asks: if we can modify the bandwidth R, what value of R would make the width of a bit equal to the length of the link?
 
 From the previous problem (P25), we know:
+
 - Link length m = 20,000 km = 20,000,000 meters
 - Propagation speed s = 2.5 × 10^8 m/s
 - Bit width = s/R meters
@@ -45,6 +46,7 @@ We want the bit width to equal the link length:
 At R = 12.5 bps, each bit would span the entire 20,000 km link!
 
 **Interpretation:**
+
 - With such a slow transmission rate, only one bit can be "in transit" at any time
 - The link would be extremely inefficient
 - This represents the theoretical minimum bandwidth for the given distance
@@ -52,11 +54,13 @@ At R = 12.5 bps, each bit would span the entire 20,000 km link!
 **Step 6: Key Insights**
 
 **Physical Meaning:**
+
 - Bit width = distance a bit occupies on the link
 - When bit width = link length, only one bit fits on the link at a time
 - This is like having a single-lane road where cars must be spaced far apart
 
 **Practical Implications:**
+
 - Real networks use much higher bandwidths
 - Modern links have many bits in transit simultaneously
 - This calculation shows the fundamental relationship between bandwidth, delay, and link utilization
@@ -81,6 +85,7 @@ c. What is the width (in meters) of a bit in the link?
 
 **Step 1: Understanding the Scenario**
 This problem is similar to P25, but with a much faster link: 500 Mbps instead of 5 Mbps. All other parameters remain the same:
+
 - Distance: 20,000 km
 - Propagation speed: 2.5 × 10^8 m/s
 
@@ -96,6 +101,7 @@ First, calculate the propagation delay (same as P25):
 
 **Step 3: Maximum Bits in Transit (Part b)**
 For continuous transmission of 800,000 bits:
+
 - File size (800,000 bits) < BDP (40,000,000 bits)
 - So maximum bits in transit = file size = 800,000 bits = 100,000 bytes
 
@@ -117,16 +123,19 @@ Yes, that makes sense. The file is 800,000 bits, but once steady-state is reache
 **Step 5: Comparison with P25**
 
 **P25 (5 Mbps):**
+
 - BDP: 50,000 bytes
 - Bit width: 50 meters
 
 **P27 (500 Mbps):**
+
 - BDP: 5,000,000 bytes (100x larger)
 - Bit width: 0.5 meters (100x smaller)
 
 **Key Insight:** Higher bandwidth compresses bits, allowing more data in transit but requiring smaller "bit spacing" on the physical link.
 
 **Step 6: Real-World Implications**
+
 - **High-speed links** can have huge amounts of data in transit
 - **Buffer requirements** scale with bandwidth-delay product
 - **Protocol design** must account for these large windows
@@ -148,6 +157,7 @@ c. Compare the results from (a) and (b).
 This problem compares two approaches for sending an 800,000-bit file from Host A to Host B over the 20,000 km link from P25.
 
 **Parameters (from P25):**
+
 - Link bandwidth R = 5 Mbps = 5 × 10^6 bits/second
 - Distance = 20,000 km
 - Propagation speed s = 2.5 × 10^8 m/s
@@ -161,12 +171,14 @@ This problem compares two approaches for sending an 800,000-bit file from Host A
 The file is divided into 20 packets of 40,000 bits each.
 
 **Stop-and-wait characteristics:**
+
 - Send one packet
 - Wait for acknowledgment
 - Send next packet
 - Acknowledgment transmission time is negligible
 
 **Time per packet:**
+
 - Transmission time: 40,000 bits ÷ 5,000,000 bits/s = 0.08 seconds
 - Round-trip propagation delay: 2 × 0.08 = 0.16 seconds
 - Total per packet: 0.08 + 0.16 = 0.24 seconds
@@ -232,6 +244,7 @@ Yes! That must be it.
 **Continuous transmission:** 800,000 / 5,000,000 = 0.16 s
 
 **Stop-and-wait:**
+
 - Packet transmission: 40,000 / 5,000,000 = 0.08 s
 - ACK delay (propagation only): 0.08 s
 - Per packet: 0.08 + 0.08 = 0.16 s
@@ -247,10 +260,12 @@ Yes! That must be it.
 **Step 6: Key Insights**
 
 **Protocol Efficiency:**
+
 - Continuous transmission: 100% link utilization
 - Stop-and-wait: Very inefficient for high bandwidth-delay product links
 
 **Real-World Application:**
+
 - Stop-and-wait is simple but slow
 - Modern protocols like TCP use sliding windows to improve efficiency
 - This demonstrates why reliable protocols need flow control
@@ -291,6 +306,7 @@ For continuous transmission, the photo size must be at least the bandwidth-delay
 **Minimum size = BDP = 1,500,000 bits**
 
 **Explanation:**
+
 - If the photo is smaller than BDP, there will be gaps in transmission
 - To keep the link continuously transmitting, the data must fill the "pipe"
 - The satellite sends photos every minute, so the link needs to be kept busy
@@ -298,17 +314,20 @@ For continuous transmission, the photo size must be at least the bandwidth-delay
 **Step 5: Key Insights**
 
 **Satellite Link Characteristics:**
+
 - **High propagation delay:** 0.15 s vs milliseconds for terrestrial links
 - **High BDP:** Requires large buffers and protocol windows
 - **Continuous transmission:** Important for efficient link utilization
 
 **Geostationary Satellite Facts:**
+
 - Altitude: 35,786 km
 - Orbital period: 24 hours (matches Earth rotation)
 - Coverage: Large area of Earth surface
 - Use cases: TV broadcasting, internet access, weather monitoring
 
 **Step 6: Real-World Implications**
+
 - **TCP performance:** High delay requires large window sizes
 - **Interactive applications:** Challenging due to high latency
 - **Data transmission:** Need to keep links busy for efficiency
@@ -328,6 +347,7 @@ The problem refers to Section 1.5's discussion of layering in networks, using an
 
 **Step 2: Recalling Network Layering**
 In computer networks, each layer adds header information to data:
+
 - **Physical layer:** Preamble, addresses
 - **Data link layer:** MAC addresses, frame check
 - **Network layer:** IP addresses, routing info
@@ -336,6 +356,7 @@ In computer networks, each layer adds header information to data:
 
 **Step 3: Mapping to Airline System**
 In the airline analogy:
+
 - **Passenger = Data packet**
 - **Baggage = Data payload**
 - **Flight path = Network route**
@@ -344,34 +365,41 @@ In the airline analogy:
 **What "headers" are added in the airline system?**
 
 **Tickets:**
+
 - Contain passenger name, flight number, seat assignment
 - Equivalent to transport layer headers (identifies source/destination applications)
 
 **Baggage Tags:**
+
 - Contain destination airport, passenger name, flight number
 - Equivalent to network layer headers (routing information)
 
 **Passenger Manifest:**
+
 - List of all passengers on a flight
 - Equivalent to data link layer (grouping packets into frames)
 
 **Boarding Passes:**
+
 - Contain seat number, gate information, security clearance
 - Equivalent to session/presentation layer information
 
 **Step 4: Detailed Analysis**
 
 **Tickets (Transport Layer Equivalent):**
+
 - **Information:** Name, flight, class, seat, special requests
 - **Purpose:** Identifies the passenger and their service requirements
 - **Network Equivalent:** Port numbers, connection identifiers
 
 **Baggage Tags (Network Layer Equivalent):**
+
 - **Information:** Destination, owner name, flight number, special handling
 - **Purpose:** Ensures baggage reaches the correct destination
 - **Network Equivalent:** IP addresses, routing protocols
 
 **Flight Manifest (Data Link Layer Equivalent):**
+
 - **Information:** Complete list of passengers and baggage for a flight
 - **Purpose:** Accounting and verification at each stop
 - **Network Equivalent:** Frame headers, error checking
@@ -379,16 +407,19 @@ In the airline analogy:
 **Step 5: Key Insights**
 
 **Layering Analogy:**
+
 - Each layer in the airline system adds control information
 - Information is used by different parts of the system
 - Headers are processed and often removed at each stage
 
 **Why This Matters:**
+
 - Helps understand how complex systems are organized into layers
 - Each layer has a specific responsibility
 - Information flows down the layers, gets processed, and flows back up
 
 **Real-World Application:**
+
 - **Network troubleshooting:** Understanding which layer has issues
 - **Protocol design:** Knowing what information each layer needs
 - **System architecture:** Designing layered systems

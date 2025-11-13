@@ -28,11 +28,11 @@ For 10 Gbps link, RTT=100 ms, MSS=1500 bytes, what window size achieves 95% util
 
 ### Solution
 
-BDP = R * RTT = 10^10 * 0.1 = 10^9 bits
+BDP = R _ RTT = 10^10 _ 0.1 = 10^9 bits
 
-Packets in BDP = 10^9 / (1500*8) ≈ 83,333 packets
+Packets in BDP = 10^9 / (1500\*8) ≈ 83,333 packets
 
-For 95% utilization, window size ≈ 0.95 * 83,333 ≈ 79,166 packets
+For 95% utilization, window size ≈ 0.95 \* 83,333 ≈ 79,166 packets
 
 ## P39. TCP Loss Rate Impact
 
@@ -52,9 +52,9 @@ If TCP goes idle, should it reuse old cwnd/ssthresh or reset? Discuss pros/cons.
 
 ### Solution
 
-*   **Reuse:** Faster restart if conditions unchanged.
-*   **Reset:** Safer, avoids flooding if conditions worsened.
-*   Modern TCP uses a hybrid approach (congestion window validation).
+- **Reuse:** Faster restart if conditions unchanged.
+- **Reset:** Safer, avoids flooding if conditions worsened.
+- Modern TCP uses a hybrid approach (congestion window validation).
 
 ## P41. TCP Endpoint Authentication
 

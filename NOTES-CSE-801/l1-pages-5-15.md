@@ -5,7 +5,9 @@ This explanation covers pages 5 to 15 of the PDF based on the provided content f
 ## Pages 5-6: Protocol Layers and Reference Models
 
 ### Networks are Complex with Many Pieces
+
 The content starts by explaining that networks are complex systems made up of various components:
+
 - **Hosts**: End-user devices like computers, smartphones, or servers that send and receive data.
 - **Routers**: Devices that forward data packets between networks.
 - **Links of various media**: Physical connections like cables (Ethernet, fiber optics) or wireless (WiFi, cellular).
@@ -18,11 +20,13 @@ This sets the stage for understanding why we need a structured way to discuss an
 ## Page 6: ISO/OSI Reference Model
 
 ### The Seven-Layer OSI/ISO Reference Model
+
 The **OSI (Open Systems Interconnection)** model is a 7-layer framework created by the International Organization for Standardization (ISO) to standardize network communication:
 
 ![OSI Model](../supplies/images/osi-model.png)
 
 **Layers Explained:**
+
 1. **Application Layer**: Provides services directly to user applications (e.g., web browsing, email).
 2. **Presentation Layer**: Handles data formatting, encryption, and compression. For example, it might encrypt data or convert it to a standard format.
 3. **Session Layer**: Manages sessions between applications, including synchronization, checkpointing, and recovery of data exchange.
@@ -32,7 +36,9 @@ The **OSI (Open Systems Interconnection)** model is a 7-layer framework created 
 7. **Physical Layer**: Deals with the physical transmission of bits over media (e.g., electrical signals on wires).
 
 ### Two Layers Not Found in Internet Protocol Stack
+
 The Internet's TCP/IP model does **not** include the Presentation and Session layers!
+
 - **Presentation Layer Services**: Things like encryption, compression, and machine-specific conventions must be implemented within applications if needed.
 - **Session Layer Services**: Synchronization, checkpointing, and recovery must also be handled by applications.
 - **Why?** The Internet stack "missing" these layers means these services are optional and implemented only when necessary in the application layer.
@@ -46,6 +52,7 @@ The Internet uses the **TCP/IP protocol stack**, which is a 5-layer (or sometime
 ![TCP/IP Stack](../supplies/images/tcp-ip-stack.png)
 
 **Layer Functions:**
+
 - **Application Layer**: Supports network applications like HTTP (web), SMTP (email), DNS (name resolution).
 - **Transport Layer**: Provides process-to-process data transfer using TCP (reliable, connection-oriented) or UDP (fast, connectionless).
 - **Network Layer**: Handles routing of datagrams (packets) from source to destination using IP and routing protocols.
@@ -59,6 +66,7 @@ The Internet uses the **TCP/IP protocol stack**, which is a 5-layer (or sometime
 **Layering** is an approach to designing and discussing complex systems like networks:
 
 **Benefits:**
+
 1. **Explicit Structure**: Allows identification and understanding of the system's components and their relationships.
 2. **Modularization**: Makes maintenance and updating easier.
    - Changes in one layer's implementation are transparent to the rest of the system.
@@ -69,6 +77,7 @@ The Internet uses the **TCP/IP protocol stack**, which is a 5-layer (or sometime
 ## Pages 9-12: Services, Layering, and Encapsulation
 
 ### Encapsulation Process
+
 **Encapsulation** is how data is wrapped with headers as it moves down the layers from sender to receiver.
 
 **Step-by-Step Journey of a Message M:**
@@ -84,6 +93,7 @@ At the receiver, each layer removes its header to unwrap the data.
 ![Encapsulation Process](../supplies/images/encapsulation-process.png)
 
 **Headers Explained:**
+
 - **Ht (Transport Header)**: Used for reliable delivery, contains port numbers to identify processes.
 - **Hn (Network Header)**: Contains IP addresses for routing.
 - **Hl (Link Header)**: Contains MAC addresses for local delivery, error checking.
@@ -93,6 +103,7 @@ At the receiver, each layer removes its header to unwrap the data.
 ## Pages 13-15: Encapsulation End-to-End View and Real Internet Delays
 
 ### Encapsulation: An End-to-End View
+
 This section shows the complete path of data from source to destination, passing through routers and switches:
 
 - **Message**: Original data at application layer.
@@ -105,18 +116,22 @@ The diagram illustrates how the data is encapsulated at each layer and decapsula
 **Figure Explanation:** The end-to-end view diagram shows the data flow through the network, with encapsulation at each layer and how routers (network layer) and switches (link layer) handle the packets.
 
 ### Real Internet Delays and Routes
+
 The content discusses how to measure real Internet performance using the **traceroute** program:
 
 **What is Traceroute?**
+
 - A tool that provides delay measurements from source to each router along the path to the destination.
 - Helps understand real Internet delay and packet loss.
 
 **How it Works:**
+
 1. Sends three packets (probes) to each router i on the path (using TTL = i).
 2. Router i returns the packets to the sender when TTL expires.
 3. Measures the **Round Trip Time (RTT)** between transmission and reply.
 
 **Sample Output:**
+
 ```
 1  cs-gw (128.119.240.254)  1 ms  1 ms  2 ms
 2  border1-rt-fa5-1-0.gw.umass.edu (128.119.3.145)  1 ms  1 ms  2 ms
@@ -126,8 +141,9 @@ The content discusses how to measure real Internet performance using the **trace
 ```
 
 **Key Observations:**
+
 - Delays increase for trans-oceanic links (e.g., 22ms to 132ms).
-- Some routers don't respond (shown as * * *), indicating packet loss or no reply.
+- Some routers don't respond (shown as \* \* \*), indicating packet loss or no reply.
 - Delays can decrease in some hops due to routing optimizations.
 
 **Figure Explanation:** The traceroute diagram shows the path from gaia.cs.umass.edu to www.eurecom.fr, with delays at each hop, highlighting the trans-oceanic link and the 3 probes sent to each router.

@@ -13,6 +13,7 @@ This document contains detailed solutions to problems P11-P15. Each problem incl
 ## P11. Consider the scenario introduced in the previous problem. Now suppose that the link is shared by Bob with four other users. Bob uses parallel instances of non-persistent HTTP, and the other four users use non-persistent HTTP without parallel downloads.
 
 **Given:**
+
 - Bob shares link with 4 other users (5 users total)
 - Bob uses parallel instances of non-persistent HTTP
 - Other 4 users use non-persistent HTTP without parallel
@@ -26,6 +27,7 @@ This document contains detailed solutions to problems P11-P15. Each problem incl
 **Background for beginners:** In computer networking, bandwidth is the amount of data that can be transmitted over a network link per second. When multiple users share the same link, the total bandwidth is divided among all active connections. TCP (Transmission Control Protocol) connections are like separate lanes on a highway - each connection gets its own share of the available bandwidth.
 
 Assuming fair sharing of bandwidth:
+
 - **Without coordination:** Each TCP connection gets equal share
 - If Bob opens N parallel connections while others each open 1:
   - Total connections: N (Bob) + 4 (others) = N + 4
@@ -33,11 +35,13 @@ Assuming fair sharing of bandwidth:
   - Each other user's share: 1/(N+4) of total bandwidth
 
 **Example with N=5:**
+
 - Total connections: 5 + 4 = 9
 - Bob gets: 5/9 ≈ 55.6% of bandwidth
 - Each other user gets: 1/9 ≈ 11.1% of bandwidth
 
 **Bob downloads faster because:**
+
 1. He gets more aggregate bandwidth
 2. Multiple objects download in parallel
 3. TCP slow-start affects each connection, but with more connections, Bob overcomes this faster
@@ -53,11 +57,13 @@ Assuming fair sharing of bandwidth:
 **Background for beginners:** When all users use the same strategy, the network becomes congested with many connections competing for limited bandwidth. This is similar to a highway where everyone tries to use multiple lanes - it doesn't help anyone go faster and may even slow everyone down due to increased traffic management overhead.
 
 When all users use same strategy:
+
 - Total connections: 5 × 5 = 25
 - Each user opens 5 connections
 - Each user gets: 5/25 = 1/5 = 20% of total bandwidth
 
 **Result:**
+
 - **Fair distribution:** Each user gets equal share (20%)
 - Bob has no advantage over others
 - All users experience:
@@ -66,6 +72,7 @@ When all users use same strategy:
   - Same overall throughput
 
 **Additional problems when all use parallel connections:**
+
 - Increased congestion
 - More packet loss
 - More TCP retransmissions
@@ -122,16 +129,19 @@ To test if browser generates conditional GET messages:
 4. **Check server output:** The server will display all HTTP requests sent by the browser.
 
 **Indicators of Conditional GET:**
+
 - `If-Modified-Since` header present (with a date)
 - `If-None-Match` header present (with ETag)
 
 **First request (unconditional GET):**
+
 ```
 GET /page.html HTTP/1.1
 Host: example.com
 ```
 
 **Subsequent request (conditional GET):**
+
 ```
 GET /page.html HTTP/1.1
 Host: example.com
@@ -143,9 +153,10 @@ If-None-Match: "686897696a7c876b7e"
 
 **Key concept to memorize:** Conditional GET requests use headers like `If-Modified-Since` and `If-None-Match` to check if cached content is still valid, reducing bandwidth usage and improving performance.
 
-## P13. Consider sending over HTTP/2 a Web page that consists of  one video clip, and five images. Suppose that the video clip is transported as 2000 frames, and each image has three frames. 
+## P13. Consider sending over HTTP/2 a Web page that consists of one video clip, and five images. Suppose that the video clip is transported as 2000 frames, and each image has three frames.
 
 **Given:**
+
 - 1 video clip: 2000 frames
 - 5 images: 3 frames each (total 15 frames)
 - Total frames: 2015
@@ -157,6 +168,7 @@ If-None-Match: "686897696a7c876b7e"
 **Answer: 2000 + 15 = 2015 frame times**
 
 **Explanation:**
+
 - Video frames: 1, 2, 3, ..., 2000
 - Images start after video completes
 - First image frame sent at time 2001
@@ -174,6 +186,7 @@ If-None-Match: "686897696a7c876b7e"
 **Background for beginners:** Interleaving is like shuffling cards from different decks. Instead of dealing all cards from one deck first, you deal one card from each deck in turn. This helps smaller resources (like images) get transmitted faster instead of waiting for large resources (like videos) to finish.
 
 With optimal interleaving (round-robin):
+
 - Frame 1: Video frame 1
 - Frame 2: Image 1, frame 1
 - Frame 3: Image 2, frame 1
@@ -191,9 +204,10 @@ With optimal interleaving (round-robin):
 
 **Key concept to memorize:** HTTP/2 interleaving allows smaller resources to be delivered much faster by mixing their frames with larger resources, improving perceived page load times.
 
-## P14.  Consider the Web page in problem 13. Now HTTP/2 prioritization is employed. Suppose all the images are given priority over the video clip, and that the first image is given priority over the second image, the second image over the third image, and so on. How many frame times will be needed until the second image is sent?
+## P14. Consider the Web page in problem 13. Now HTTP/2 prioritization is employed. Suppose all the images are given priority over the video clip, and that the first image is given priority over the second image, the second image over the third image, and so on. How many frame times will be needed until the second image is sent?
 
 **Given:**
+
 - All images prioritized over video
 - Image 1 > Image 2 > Image 3 > Image 4 > Image 5 > Video
 - Each image: 3 frames
@@ -207,6 +221,7 @@ With optimal interleaving (round-robin):
 **Explanation:**
 
 Priority order (highest to lowest):
+
 1. Image 1 (3 frames)
 2. Image 2 (3 frames) ← **We want to know when this completes**
 3. Image 3 (3 frames)
@@ -215,6 +230,7 @@ Priority order (highest to lowest):
 6. Video (2000 frames)
 
 **Frame schedule:**
+
 - Frames 1-3: Image 1 (frames 1, 2, 3)
 - Frames 4-6: Image 2 (frames 1, 2, 3) ✓ **Complete**
 
@@ -222,13 +238,14 @@ Priority order (highest to lowest):
 
 **Key concept to memorize:** HTTP/2 prioritization ensures critical resources (like above-the-fold images) load before less important content (like below-the-fold videos), improving user experience by showing important content faster.
 
-## P15.  What is the difference between MAIL FROM: in SMTP and From: in the mail message itself?
+## P15. What is the difference between MAIL FROM: in SMTP and From: in the mail message itself?
 
 **Answer:**
 
 **Background for beginners:** Email consists of two parts: the "envelope" (like the outside of a postal letter with addresses) and the "message content" (like the letter inside). These can have different sender information, which is sometimes used legitimately (like mailing lists) but can also be abused (like in spam or phishing).
 
 ### MAIL FROM: (SMTP Protocol Command)
+
 - **Purpose:** Part of the **SMTP envelope**
 - **Used by:** Mail servers for routing and delivery
 - **Format:** `MAIL FROM:<sender@example.com>`
@@ -240,6 +257,7 @@ Priority order (highest to lowest):
 - **Can be different from:** The From: header in the message
 
 ### From: (Email Header)
+
 - **Purpose:** Part of the **message content** (email headers)
 - **Used by:** Email clients to display sender to recipient
 - **Format:** `From: John Doe <john@example.com>`
@@ -252,23 +270,24 @@ Priority order (highest to lowest):
 ### Key Differences:
 
 1. **Layer:**
-    - MAIL FROM: Envelope (transport layer)
-    - From: Message header (content layer)
+   - MAIL FROM: Envelope (transport layer)
+   - From: Message header (content layer)
 
 2. **Analogy:**
-    - MAIL FROM: Return address on outside of postal envelope
-    - From: Return address on letter inside envelope
+   - MAIL FROM: Return address on outside of postal envelope
+   - From: Return address on letter inside envelope
 
 3. **Spoofing:**
-    - From: Can be easily forged
-    - MAIL FROM: Also can be forged but used for routing
-    - This discrepancy is often exploited in phishing/spam
+   - From: Can be easily forged
+   - MAIL FROM: Also can be forged but used for routing
+   - This discrepancy is often exploited in phishing/spam
 
 4. **Bounce handling:**
-    - MAIL FROM: Receives bounce notifications
-    - From: May never know about bounces
+   - MAIL FROM: Receives bounce notifications
+   - From: May never know about bounces
 
 **Example of legitimate difference:**
+
 - Mailing list: MAIL FROM: <list-bounces@mailinglist.com>
 - Message From: <member@example.com>
 

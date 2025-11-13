@@ -24,12 +24,14 @@ The animation likely shows data transmission over multiple links with propagatio
 
 **Step 3: Message Switching Characteristics**
 **Message Switching:**
+
 - Entire message stored at each intermediate node
 - Message waits for complete reception before forwarding
 - Higher delay due to store-and-forward of large messages
 - More buffering required at switches
 
 **Packet Switching:**
+
 - Message divided into small packets
 - Each packet forwarded independently
 - Pipelining effect reduces overall delay
@@ -37,11 +39,13 @@ The animation likely shows data transmission over multiple links with propagatio
 
 **Step 4: Propagation Delay Impact**
 **In Message Switching:**
+
 - Propagation delay affects the entire message
 - Long messages experience full propagation delay on each link
 - Total delay increases significantly with message size
 
 **In Packet Switching:**
+
 - Only packet propagation delay matters
 - Pipelining allows overlapping transmission
 - Propagation delay impact is reduced
@@ -52,21 +56,25 @@ This relates to problems like P10 (end-to-end delay) and P11 (cut-through switch
 **Step 6: Key Insights**
 
 **Delay Components:**
+
 - **Transmission delay:** Time to send data onto link
 - **Propagation delay:** Time for signal to travel
 - **Processing delay:** Time for node to process
 
 **Message Switching Drawbacks:**
+
 - High delay for large messages
 - High buffering requirements
 - Not suitable for interactive traffic
 
 **Packet Switching Advantages:**
+
 - Better delay characteristics
 - More efficient resource usage
 - Better for real-time applications
 
 **Step 7: Real-World Implications**
+
 - Modern networks use packet switching
 - Segmentation allows better delay control
 - Understanding these trade-offs is crucial for network design
@@ -86,6 +94,7 @@ The problem involves sending a large file F bits from Host A to Host B over thre
 
 **Step 2: Delay Components**
 For each packet:
+
 - **Transmission delay:** (S + 80)/R per link
 - **Propagation delay:** d_i/s_i per link (ignored as per problem)
 - **Processing delay:** d_proc per switch (ignored)
@@ -135,11 +144,13 @@ For large F: **S ≈ √(40 × F)**
 **Step 5: Key Insights**
 
 **Trade-offs in Segmentation:**
+
 - **Small packets:** Lower queuing delay, but more headers reduce efficiency
 - **Large packets:** Fewer headers, but higher delay for each packet
 - **Optimal size:** Balances header overhead with transmission efficiency
 
 **Real-World Application:**
+
 - TCP uses similar calculations for Maximum Segment Size (MSS)
 - Network protocols optimize packet sizes for different link characteristics
 - Understanding this optimization is key to protocol design
@@ -165,57 +176,67 @@ A Skype call from a PC to a regular phone follows this path:
 **Step 3: Detailed Path Explanation**
 
 **1. PC to Internet:**
+
 - User speaks into computer microphone
 - Skype software digitizes the audio
 - Audio encoded using Skype's proprietary codec
 - Data sent as IP packets over internet connection
 
 **2. Internet Transmission:**
+
 - Packets routed through internet using standard IP protocols
 - May traverse multiple networks and routers
 - Quality depends on internet connection and congestion
 
 **3. Skype Gateway:**
+
 - Skype maintains special servers that interface between internet and telephone networks
 - Gateway receives VoIP packets from internet
 - Converts digital audio back to analog telephone signal
 - Connects to PSTN using standard telephone protocols
 
 **4. Public Switched Telephone Network (PSTN):**
+
 - Traditional telephone network
 - Uses circuit-switched technology
 - Routes call to destination telephone
 - Maintains call quality standards
 
 **5. Destination Phone:**
+
 - Receives call through normal telephone infrastructure
 - User hears the caller's voice
 
 **Step 4: Technical Challenges**
 
 **Protocol Conversion:**
+
 - VoIP uses packet switching (internet protocols)
 - PSTN uses circuit switching (telephone protocols)
 - Gateway must handle this conversion seamlessly
 
 **Quality of Service:**
+
 - Internet can have variable delay and loss
 - PSTN expects consistent quality
 - Skype must manage jitter and packet loss
 
 **Signaling:**
+
 - Skype uses proprietary signaling
 - Must interface with telephone signaling systems (SS7)
 
 **Step 5: How It Works in Practice**
 
 **Call Setup:**
+
 1. User dials phone number in Skype application
 2. Skype routes call to appropriate gateway server
 3. Gateway signals PSTN to establish connection
 4. Once connected, audio flows PC → Internet → Gateway → PSTN → Phone
 
 **Audio Processing:**
+
 - PC captures audio and sends in real-time
 - Internet introduces some delay and potential quality issues
 - Gateway smooths out variations
@@ -224,26 +245,31 @@ A Skype call from a PC to a regular phone follows this path:
 **Step 6: Key Technologies Involved**
 
 **VoIP Protocols:**
+
 - RTP (Real-time Transport Protocol) for audio
 - Proprietary Skype codecs for compression
 
 **Gateway Technologies:**
+
 - Media Gateway Control Protocol (MGCP)
 - Session Initiation Protocol (SIP)
 - H.323 for multimedia communication
 
 **Telephone Network Integration:**
+
 - SS7 signaling for call setup
 - TDM (Time Division Multiplexing) for audio transport
 
 **Step 7: Business and Technical Implications**
 
 **Why This Service Exists:**
+
 - Bridges old and new telephone technologies
 - Allows internet users to call anyone with a phone
 - Creates new revenue streams for VoIP providers
 
 **Technical Complexity:**
+
 - Requires maintaining gateway infrastructure
 - Must handle international calling
 - Quality control across heterogeneous networks

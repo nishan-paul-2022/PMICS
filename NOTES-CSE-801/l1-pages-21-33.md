@@ -5,6 +5,7 @@ This document provides a detailed, easy-to-read explanation of the content from 
 ## Web and HTTP Overview
 
 ### Quick Review of the Web
+
 - **Web Page Structure**: A web page is made up of multiple **objects**. Each object can be stored on different web servers across the internet.
   - Examples of objects: HTML files (the main structure), JPEG images, Java applets (small programs), audio files, etc.
 - **Base HTML File**: The main part of a web page is an HTML file that includes references to other objects. Each referenced object has a unique address called a **URL** (Uniform Resource Locator).
@@ -15,6 +16,7 @@ This document provides a detailed, easy-to-read explanation of the content from 
 This setup allows web pages to be composed from resources scattered across the internet, making the web flexible and distributed.
 
 ### HTTP Overview
+
 - **HTTP Definition**: HTTP stands for **HyperText Transfer Protocol**. It's the application-layer protocol used by the web.
   - **Application-layer protocol**: A set of rules for how applications (like browsers and servers) communicate over the network.
 - **Client/Server Model**:
@@ -28,6 +30,7 @@ This setup allows web pages to be composed from resources scattered across the i
 ![HTTP Client Server](../supplies/images/http-client-server.png)
 
 ### HTTP and TCP
+
 - **TCP Usage**: HTTP relies on **TCP** (Transmission Control Protocol) for reliable data transfer.
   - **Client Initiates Connection**: The client creates a **socket** (a communication endpoint) and initiates a TCP connection to the server on port 80 (the default port for HTTP).
   - **Server Accepts Connection**: The server accepts the TCP connection from the client.
@@ -42,6 +45,7 @@ This setup allows web pages to be composed from resources scattered across the i
 ## HTTP Connections: Two Types
 
 ### Non-Persistent HTTP
+
 - **Definition**: Each object is sent over a separate TCP connection.
   - **Steps**:
     1. Open a TCP connection.
@@ -50,6 +54,7 @@ This setup allows web pages to be composed from resources scattered across the i
   - **Drawback**: Downloading multiple objects requires multiple connections, which is inefficient.
 
 ### Persistent HTTP
+
 - **Definition**: Multiple objects can be sent over a single TCP connection between the client and server.
   - **Steps**:
     - Open one TCP connection to the server.
@@ -60,6 +65,7 @@ This setup allows web pages to be composed from resources scattered across the i
 ![HTTP Connections](../supplies/images/http-connections.png)
 
 ## Non-Persistent HTTP: Example
+
 - **Scenario**: User enters URL: `www.someSchool.edu/someDepartment/home.index` (an HTML file containing text and references to 10 JPEG images).
 - **Steps**:
   1. **Client Initiates TCP**: HTTP client starts a TCP connection to the HTTP server at `www.someSchool.edu` on port 80.
@@ -73,6 +79,7 @@ This setup allows web pages to be composed from resources scattered across the i
 ![Non-Persistent HTTP Sequence](../supplies/images/non-persistent-http-sequence.png)
 
 ### Response Time in Non-Persistent HTTP
+
 - **RTT Definition**: **Round-Trip Time (RTT)** is the time for a small packet to travel from client to server and back.
 - **HTTP Response Time per Object**:
   - One RTT to initiate the TCP connection.
@@ -83,6 +90,7 @@ This setup allows web pages to be composed from resources scattered across the i
 ![Non-Persistent Response Time](../supplies/images/non-persistent-response-time.png)
 
 ## Persistent HTTP (HTTP 1.1)
+
 - **Issues with Non-Persistent HTTP**:
   - Requires 2 RTTs per object (inefficient).
   - OS overhead (system resources) for each TCP connection.
@@ -96,6 +104,7 @@ This setup allows web pages to be composed from resources scattered across the i
 ![Persistent HTTP Sequence](../supplies/images/persistent-http-sequence.png)
 
 ## HTTP Request Message
+
 - **Message Types**: HTTP has two main types: request and response.
 - **HTTP Request Message**:
   - **Format**: ASCII (human-readable text).
@@ -112,6 +121,7 @@ This setup allows web pages to be composed from resources scattered across the i
       Connection: keep-alive\r\n
       \r\n
       ```
+
       - **Carriage Return (\r)** and **Line Feed (\lf)**: Special characters to end lines.
       - **Request Line**: `GET /index.html HTTP/1.1` – Method (GET), URL, Version.
       - **Header Fields**: `Host`, `User-Agent`, etc.
@@ -128,12 +138,14 @@ This setup allows web pages to be composed from resources scattered across the i
 ![HTTP Request Message](../supplies/images/http-request-message.png)
 
 ### Other HTTP Request Methods
+
 - **POST Method**: Used when a web page has form input. User data is sent in the **entity body** of the HTTP POST request message.
 - **GET Method (with Data)**: User data can be included in the URL after a '?'. Example: `www.somesite.com/animalsearch?monkeys&banana`.
 - **HEAD Method**: Requests only the headers that would be returned if the URL were requested with GET. Useful for checking without downloading the full object.
 - **PUT Method**: Uploads a new file (object) to the server, replacing any existing file at that URL with the content in the entity body.
 
 ## HTTP Response Message
+
 - **Components**:
   - **Status Line**: Includes protocol version, status code, and status phrase.
   - **Header Lines**: Metadata like date, server info, content type.
@@ -155,6 +167,7 @@ This setup allows web pages to be composed from resources scattered across the i
 ![HTTP Response Message](../supplies/images/http-response-message.png)
 
 ### HTTP Response Status Codes
+
 - **Status Codes**: Appear in the first line of the server-to-client response. Indicate the result of the request.
 - **Examples**:
   - **200 OK**: Request succeeded; the requested object is in the message.

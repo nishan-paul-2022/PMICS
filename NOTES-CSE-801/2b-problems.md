@@ -259,6 +259,7 @@ Think of a university campus connected to the internet through a single bottlene
 4. **Problem with typical assumptions:** If we assume 15 Mbps (common for institutional links), ρ > 1, making the system unstable.
 
 5. **Realistic assumption:** Using 100 Mbps access link:
+
    ```
    Δ = 1,000,000 / 100,000,000 = 0.01 seconds
    ρ = 0.01 × 16 = 0.16 (16% utilization)
@@ -285,6 +286,7 @@ Adding a cache is like opening a campus bookstore that stocks popular textbooks 
 2. **Traffic reduction:** Only cache misses (0.4 × 16 = 6.4 requests/sec) cross the bottleneck access link.
 
 3. **New access delay calculation:**
+
    ```
    Effective arrival rate β' = 6.4 requests/sec
    ρ' = Δ × β' = 0.01 × 6.4 = 0.064 (6.4% utilization)
@@ -321,6 +323,7 @@ This scenario is like trying to download files over a very slow straw. The link 
 2. **Objects:** 11 total (1 HTML + 10 referenced objects), each 100 Kbits
 
 3. **Non-persistent HTTP (sequential):**
+
    ```
    Per object:
    - TCP setup: 3 × 1.33 = 4 seconds
@@ -331,6 +334,7 @@ This scenario is like trying to download files over a very slow straw. The link 
    ```
 
 4. **Non-persistent HTTP with N=10 parallel connections:**
+
    ```
    Each connection gets 150/10 = 15 bits/sec
    Data transmission per object: 100,000 / 15 = 6,666.67 seconds
@@ -342,6 +346,7 @@ This scenario is like trying to download files over a very slow straw. The link 
 5. **Why parallel doesn't help:** Bandwidth is so limited that splitting it among connections (15 bits/sec each) doesn't compensate for the massive transmission times. Connection setup overhead becomes negligible.
 
 6. **Persistent HTTP:**
+
    ```
    TCP setup once: 4 seconds
    Initial object: 668 seconds

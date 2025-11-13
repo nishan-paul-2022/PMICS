@@ -18,9 +18,9 @@ Explain how TCP's Additive Increase Multiplicative Decrease (AIMD) achieves fair
 
 AIMD ensures that multiple TCP flows sharing a bottleneck link converge to equal shares of the bandwidth.
 
-*   **Additive Increase:** Each flow increases its `cwnd` by 1 MSS per RTT, leading to gradual increases.
-*   **Multiplicative Decrease:** Upon loss, each flow halves its `cwnd`.
-*   **Convergence:** Flows that send more data experience more losses, leading to equal rates.
+- **Additive Increase:** Each flow increases its `cwnd` by 1 MSS per RTT, leading to gradual increases.
+- **Multiplicative Decrease:** Upon loss, each flow halves its `cwnd`.
+- **Convergence:** Flows that send more data experience more losses, leading to equal rates.
 
 ## P33. TCP AIMD Convergence
 
@@ -48,8 +48,8 @@ Describe the TCP synchronization problem and its causes.
 
 Multiple TCP flows synchronize their congestion windows, leading to periodic bursts of traffic and underutilization.
 
-*   **Cause:** Drop-tail queues cause all flows to lose packets simultaneously.
-*   **Effect:** All flows reduce `cwnd` at the same time, then increase together.
+- **Cause:** Drop-tail queues cause all flows to lose packets simultaneously.
+- **Effect:** All flows reduce `cwnd` at the same time, then increase together.
 
 ## P35. TCP AQM Solutions
 
@@ -61,8 +61,8 @@ Explain Active Queue Management (AQM) and how RED helps solve TCP synchronizatio
 
 AQM proactively manages queue lengths to avoid synchronization.
 
-*   **RED:** Random Early Detection drops packets probabilistically when queue length exceeds a threshold.
-*   **Benefit:** Prevents synchronized losses, leading to smoother traffic.
+- **RED:** Random Early Detection drops packets probabilistically when queue length exceeds a threshold.
+- **Benefit:** Prevents synchronized losses, leading to smoother traffic.
 
 ## P36. TCP High-Speed Variants
 
@@ -72,5 +72,5 @@ Compare TCP CUBIC and TCP Reno for high-speed networks.
 
 ### Solution
 
-*   **TCP Reno:** Linear increase (1 MSS/RTT) is too slow for high BDP.
-*   **TCP CUBIC:** Cubic growth function allows faster recovery and better utilization in high-speed, long-delay networks.
+- **TCP Reno:** Linear increase (1 MSS/RTT) is too slow for high BDP.
+- **TCP CUBIC:** Cubic growth function allows faster recovery and better utilization in high-speed, long-delay networks.

@@ -22,7 +22,7 @@ The derivation is based on the "sawtooth" model of TCP Reno's congestion avoidan
 
 In steady state, TCP Reno's `cwnd` oscillates between `W/2` and `W`, where `W` is the maximum window size when a loss occurs.
 
-*   The average window size is `(W/2 + W) / 2 = 3W/4`.
+- The average window size is `(W/2 + W) / 2 = 3W/4`.
 
 #### Step 2: Loss Rate (L)
 
@@ -34,7 +34,7 @@ So, `L = 1 / (3W^2/8) = 8/(3W^2)`.
 
 #### Step 3: Throughput
 
-Throughput = (Average window size * MSS) / RTT = (3W/4 * MSS) / RTT.
+Throughput = (Average window size _ MSS) / RTT = (3W/4 _ MSS) / RTT.
 
 From the loss rate equation: `W^2 = 8/(3L)` => `W = sqrt(8/(3L))`.
 
@@ -54,16 +54,16 @@ Compare TCP Tahoe and TCP Reno in terms of their congestion control mechanisms. 
 
 #### TCP Tahoe
 
-*   **Reaction to Loss:** Upon detecting a loss (via timeout), Tahoe halves the `cwnd` and sets `ssthresh = cwnd/2`, then enters slow start.
-*   **Fast Retransmit:** Tahoe does not have fast retransmit; it waits for timeouts.
-*   **Behavior:** More conservative, leads to longer recovery times.
+- **Reaction to Loss:** Upon detecting a loss (via timeout), Tahoe halves the `cwnd` and sets `ssthresh = cwnd/2`, then enters slow start.
+- **Fast Retransmit:** Tahoe does not have fast retransmit; it waits for timeouts.
+- **Behavior:** More conservative, leads to longer recovery times.
 
 #### TCP Reno
 
-*   **Reaction to Loss:** 
-    *   Timeout: Same as Tahoe (halve `cwnd`, set `ssthresh`, slow start).
-    *   3 Duplicate ACKs: Halves `cwnd`, sets `ssthresh = cwnd`, enters fast recovery (retransmits lost packet without slow start).
-*   **Advantage:** Faster recovery from isolated losses.
+- **Reaction to Loss:**
+  - Timeout: Same as Tahoe (halve `cwnd`, set `ssthresh`, slow start).
+  - 3 Duplicate ACKs: Halves `cwnd`, sets `ssthresh = cwnd`, enters fast recovery (retransmits lost packet without slow start).
+- **Advantage:** Faster recovery from isolated losses.
 
 #### Diagram
 
@@ -85,16 +85,16 @@ Explain how TCP Reno's fast retransmit and fast recovery mechanisms work. Why ar
 
 #### Fast Retransmit
 
-*   When the sender receives 3 duplicate ACKs, it assumes the packet has been lost and retransmits it immediately, without waiting for a timeout.
+- When the sender receives 3 duplicate ACKs, it assumes the packet has been lost and retransmits it immediately, without waiting for a timeout.
 
 #### Fast Recovery
 
-*   After retransmitting, the sender halves `cwnd` but does not enter slow start. It continues sending new packets (if available) at the reduced rate.
+- After retransmitting, the sender halves `cwnd` but does not enter slow start. It continues sending new packets (if available) at the reduced rate.
 
 #### Benefits
 
-*   Faster recovery from isolated losses, avoiding the long timeout delays.
-*   Maintains higher throughput in networks with occasional packet losses.
+- Faster recovery from isolated losses, avoiding the long timeout delays.
+- Maintains higher throughput in networks with occasional packet losses.
 
 ## P30. TCP Congestion Control Phases
 
@@ -106,21 +106,21 @@ Describe the four phases of TCP congestion control: Slow Start, Congestion Avoid
 
 #### 1. Slow Start
 
-*   `cwnd` starts at 1 MSS, doubles each RTT until it reaches `ssthresh`.
-*   Exponential growth.
+- `cwnd` starts at 1 MSS, doubles each RTT until it reaches `ssthresh`.
+- Exponential growth.
 
 #### 2. Congestion Avoidance
 
-*   `cwnd` increases by 1 MSS per RTT.
-*   Linear growth.
+- `cwnd` increases by 1 MSS per RTT.
+- Linear growth.
 
 #### 3. Fast Retransmit
 
-*   Upon 3 duplicate ACKs, retransmit the lost packet immediately.
+- Upon 3 duplicate ACKs, retransmit the lost packet immediately.
 
 #### 4. Fast Recovery
 
-*   Halve `cwnd`, set `ssthresh = cwnd`, continue sending at reduced rate.
+- Halve `cwnd`, set `ssthresh = cwnd`, continue sending at reduced rate.
 
 ## P31. TCP Congestion Window Analysis
 
@@ -132,9 +132,9 @@ A TCP connection has an MSS of 1460 bytes, RTT of 100 ms, and a loss rate of 10^
 
 Using the throughput formula: `Throughput ≈ 1.22 * MSS / (RTT * sqrt(L))`
 
-*   `MSS = 1460 bytes`
-*   `RTT = 0.1 s`
-*   `L = 10^-5`
+- `MSS = 1460 bytes`
+- `RTT = 0.1 s`
+- `L = 10^-5`
 
 `Throughput ≈ 1.22 * 1460 / (0.1 * sqrt(10^-5)) ≈ 1.22 * 1460 / (0.1 * 0.003162) ≈ 1.22 * 1460 / 0.0003162 ≈ 1.22 * 1460 * 3162 ≈ 1.22 * 4.62e6 ≈ 5.64e6 bps ≈ 5.64 Mbps`
 

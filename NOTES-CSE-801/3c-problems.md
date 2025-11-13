@@ -10,9 +10,9 @@
 
 ## P12. rdt3.0 Ignoring vs. Retransmitting on Bad ACK
 
-The sender side of **rdt3.0** simply ignores (takes no action on) all received packets that are either in error or have the wrong value in the *acknum* field. Suppose that in such circumstances, **rdt3.0** were simply to retransmit the current data packet. Would the protocol still work?
+The sender side of **rdt3.0** simply ignores (takes no action on) all received packets that are either in error or have the wrong value in the _acknum_ field. Suppose that in such circumstances, **rdt3.0** were simply to retransmit the current data packet. Would the protocol still work?
 
-*Hint:* Consider what would happen if there were only bit errors; there are no packet losses but premature timeouts can occur. Consider how many times the nth packet is sent, in the limit as n approaches infinity.
+_Hint:_ Consider what would happen if there were only bit errors; there are no packet losses but premature timeouts can occur. Consider how many times the nth packet is sent, in the limit as n approaches infinity.
 
 ---
 
@@ -53,7 +53,7 @@ The channel becomes filled with duplicate data packets and duplicate ACKs. The s
 
 **In the limit as n approaches infinity:**
 
-The number of times the nth packet is sent would not converge. Each packet transmission has a chance of creating a delayed ACK that will trigger a spurious retransmission of the *next* packet. This effect cascades. The number of transmissions for each packet would likely grow, leading to extremely low channel utilization and possibly a state of livelock, where the sender and receiver are constantly exchanging useless duplicate packets. The protocol's performance would degrade catastrophically.
+The number of times the nth packet is sent would not converge. Each packet transmission has a chance of creating a delayed ACK that will trigger a spurious retransmission of the _next_ packet. This effect cascades. The number of transmissions for each packet would likely grow, leading to extremely low channel utilization and possibly a state of livelock, where the sender and receiver are constantly exchanging useless duplicate packets. The protocol's performance would degrade catastrophically.
 
 Therefore, ignoring unexpected ACKs is essential for the stability of the protocol.
 
@@ -215,14 +215,14 @@ The most common failure happens when an old, heavily delayed ACK is reordered an
       // of pkt0 can be mistaken for an ACK of the current pkt0.
 ```
 
-**The core problem:** The 1-bit sequence number in the alternating-bit protocol is insufficient to handle arbitrary reordering. It cannot distinguish between `ACK0` for the *original* `pkt0` and `ACK0` for a *retransmitted* `pkt0` if there's another `pkt0` in between. This ambiguity can cause the sender to incorrectly believe a packet has been acknowledged, leading it to send the next packet prematurely and causing the protocol to fail. Protocols that handle reordering, like TCP, require a much larger sequence number space.
+**The core problem:** The 1-bit sequence number in the alternating-bit protocol is insufficient to handle arbitrary reordering. It cannot distinguish between `ACK0` for the _original_ `pkt0` and `ACK0` for a _retransmitted_ `pkt0` if there's another `pkt0` in between. This ambiguity can cause the sender to incorrectly believe a packet has been acknowledged, leading it to send the next packet prematurely and causing the protocol to fail. Protocols that handle reordering, like TCP, require a much larger sequence number space.
 
 ## P14. ACK vs NAK Protocols
 
 Consider a reliable data transfer protocol that uses only negative acknowledgments (NAKs).
 
-*   Suppose the sender sends data only infrequently. Would a NAK-only protocol be preferable to a protocol that uses ACKs? Why?
-*   Now suppose the sender has a lot of data to send and the end-to-end connection experiences few losses. In this second case, would a NAK-only protocol be preferable to a protocol that uses ACKs? Why?
+- Suppose the sender sends data only infrequently. Would a NAK-only protocol be preferable to a protocol that uses ACKs? Why?
+- Now suppose the sender has a lot of data to send and the end-to-end connection experiences few losses. In this second case, would a NAK-only protocol be preferable to a protocol that uses ACKs? Why?
 
 ---
 
@@ -234,12 +234,13 @@ Consider a reliable data transfer protocol that uses only negative acknowledgmen
 
 **Why:**
 
-*   **Reduced Overhead:** When data is sent infrequently and the channel is reliable, most packets will arrive successfully. In an ACK-based protocol, every single successful transmission is followed by an ACK packet, adding traffic to the network. In a NAK-only protocol, there is **no feedback** for successful transmissions. Feedback (a NAK) is only sent when something goes wrong (i.e., when the receiver detects a missing packet).
-*   **Efficiency:** For infrequent data, the "silence is golden" approach of a NAK-only protocol is more efficient. The sender sends a packet and assumes it arrived unless it hears otherwise. This minimizes the total number of packets exchanged.
+- **Reduced Overhead:** When data is sent infrequently and the channel is reliable, most packets will arrive successfully. In an ACK-based protocol, every single successful transmission is followed by an ACK packet, adding traffic to the network. In a NAK-only protocol, there is **no feedback** for successful transmissions. Feedback (a NAK) is only sent when something goes wrong (i.e., when the receiver detects a missing packet).
+- **Efficiency:** For infrequent data, the "silence is golden" approach of a NAK-only protocol is more efficient. The sender sends a packet and assumes it arrived unless it hears otherwise. This minimizes the total number of packets exchanged.
 
 **Example:**
-*   **ACK-based:** Send data -> Receive ACK. (2 packets per successful data transfer)
-*   **NAK-only:** Send data -> (Silence). (1 packet per successful data transfer)
+
+- **ACK-based:** Send data -> Receive ACK. (2 packets per successful data transfer)
+- **NAK-only:** Send data -> (Silence). (1 packet per successful data transfer)
 
 #### Case 2: Sender Sends Lots of Data, Few Losses
 
@@ -247,9 +248,9 @@ Consider a reliable data transfer protocol that uses only negative acknowledgmen
 
 **Why:**
 
-*   **Delayed Error Recovery:** In a NAK-only protocol, a lost packet can only be detected by the receiver when it receives the *next* packet. For example, if the sender sends packets 1, 2, 3, 4, 5 and packet 3 is lost, the receiver won't know packet 3 is missing until it receives packet 4. It then sends a NAK for packet 3. The sender has to go back and retransmit packet 3 and everything after it (in a GBN-style NAK protocol). This recovery is slow.
-*   **The "Last Packet" Problem:** A major flaw is that if the **last packet** in a burst is lost, the receiver will never detect its loss. The receiver is waiting for the next packet to arrive to notice a gap, but there is no next packet. The sender will never know the last packet was lost because it will never receive a NAK for it. This requires the sender to have a complex timeout mechanism to handle this specific, common case.
-*   **ACKs Provide Pipelining and Flow Control:** ACK-based protocols (like TCP) do more than just acknowledge data. Cumulative ACKs allow the sender to know that a whole stream of packets has been received, enabling efficient pipelining (sending new data before old data is acknowledged). ACKs also carry information for flow control (the receiver's window size), which a NAK-only protocol cannot easily provide.
+- **Delayed Error Recovery:** In a NAK-only protocol, a lost packet can only be detected by the receiver when it receives the _next_ packet. For example, if the sender sends packets 1, 2, 3, 4, 5 and packet 3 is lost, the receiver won't know packet 3 is missing until it receives packet 4. It then sends a NAK for packet 3. The sender has to go back and retransmit packet 3 and everything after it (in a GBN-style NAK protocol). This recovery is slow.
+- **The "Last Packet" Problem:** A major flaw is that if the **last packet** in a burst is lost, the receiver will never detect its loss. The receiver is waiting for the next packet to arrive to notice a gap, but there is no next packet. The sender will never know the last packet was lost because it will never receive a NAK for it. This requires the sender to have a complex timeout mechanism to handle this specific, common case.
+- **ACKs Provide Pipelining and Flow Control:** ACK-based protocols (like TCP) do more than just acknowledge data. Cumulative ACKs allow the sender to know that a whole stream of packets has been received, enabling efficient pipelining (sending new data before old data is acknowledged). ACKs also carry information for flow control (the receiver's window size), which a NAK-only protocol cannot easily provide.
 
 In a high-data-rate scenario, the fast, proactive feedback from ACKs is crucial for maintaining high throughput and recovering from errors quickly. A NAK-only protocol would be slow to react to loss and unreliable for the final packets of a transmission.
 
@@ -259,7 +260,7 @@ In a high-data-rate scenario, the fast, proactive feedback from ACKs is crucial 
 
 Consider the cross-country example shown in Figure 3.17. How big would the window size have to be for the channel utilization to be greater than 98 percent? Suppose that the size of a packet is 1,500 bytes, including both header fields and data.
 
-*(Note: Figure 3.17 shows a stop-and-wait vs. pipelined protocol. We need to derive the parameters from the text, which are typically RTT = 30 ms and Link Speed = 1 Gbps for this example in the book.)*
+_(Note: Figure 3.17 shows a stop-and-wait vs. pipelined protocol. We need to derive the parameters from the text, which are typically RTT = 30 ms and Link Speed = 1 Gbps for this example in the book.)_
 
 ---
 
@@ -267,10 +268,10 @@ Consider the cross-country example shown in Figure 3.17. How big would the windo
 
 #### Given Parameters:
 
-*   **Link Speed (R):** 1 Gbps = 1 * 10^9 bits/sec
-*   **Round-Trip Time (RTT):** 30 ms = 30 * 10^-3 sec
-*   **Packet Size (L):** 1,500 bytes = 1500 * 8 bits = 12,000 bits
-*   **Desired Utilization (U):** > 98% or 0.98
+- **Link Speed (R):** 1 Gbps = 1 \* 10^9 bits/sec
+- **Round-Trip Time (RTT):** 30 ms = 30 \* 10^-3 sec
+- **Packet Size (L):** 1,500 bytes = 1500 \* 8 bits = 12,000 bits
+- **Desired Utilization (U):** > 98% or 0.98
 
 #### Understanding Channel Utilization
 
@@ -281,7 +282,7 @@ The time it takes to transmit one packet is:
 
 The total amount of data the sender can send in one RTT with a window size of `W` is `W * L`.
 
-The maximum amount of data that *could* be sent in one RTT is `R * RTT`.
+The maximum amount of data that _could_ be sent in one RTT is `R * RTT`.
 
 The formula for utilization is:
 `U = (W * L / R) / RTT = (W * L) / (R * RTT)`
@@ -331,8 +332,8 @@ The sender's FSM is in a state like "Wait for ACK 0". It will not transition to 
 
 Sending a flood of `ACK 0` and `ACK 1` packets from the receiver does nothing to change this.
 
-*   If the sender is waiting for `ACK 0`, it will accept the first valid `ACK 0` it receives and move on. All subsequent `ACK 0`s and all `ACK 1`s will be ignored.
-*   The sender will then send `pkt 1` and wait for `ACK 1`. It will not send another packet until that `ACK 1` arrives.
+- If the sender is waiting for `ACK 0`, it will accept the first valid `ACK 0` it receives and move on. All subsequent `ACK 0`s and all `ACK 1`s will be ignored.
+- The sender will then send `pkt 1` and wait for `ACK 1`. It will not send another packet until that `ACK 1` arrives.
 
 The core limitation—the "stop and wait" behavior—is hard-coded into the sender's protocol and cannot be bypassed by the receiver's actions. Channel utilization remains low because the sender spends most of its time idle, waiting for an ACK to traverse the network.
 
@@ -346,4 +347,4 @@ The core limitation—the "stop and wait" behavior—is hard-coded into the send
 
 3.  **No Real Benefit:** As explained above, the scheme doesn't solve the underlying problem. It's like honking your car horn continuously in a traffic jam; it makes a lot of noise and annoys everyone but doesn't make the traffic move any faster. The bottleneck is elsewhere.
 
-In summary, this design is fundamentally flawed. It misunderstands the performance bottleneck of stop-and-wait and attempts a "solution" that not only fails to work but also actively harms the network. The correct way to increase utilization is to modify the *sender* to use a pipelined protocol like Go-Back-N or Selective Repeat, which allows multiple unacknowledged packets to be in flight at once.
+In summary, this design is fundamentally flawed. It misunderstands the performance bottleneck of stop-and-wait and attempts a "solution" that not only fails to work but also actively harms the network. The correct way to increase utilization is to modify the _sender_ to use a pipelined protocol like Go-Back-N or Selective Repeat, which allows multiple unacknowledged packets to be in flight at once.

@@ -33,14 +33,14 @@ dig @<local-dns-server> www.externalsite.com
 **Analysis:**
 
 1. **If query returns immediately (< 10ms):**
-    - Answer was **cached** in local DNS server
-    - Someone in department queried it recently (within TTL - Time To Live, typically 5 minutes to 1 hour)
-    - **Likely accessed within last few minutes to hour**
+   - Answer was **cached** in local DNS server
+   - Someone in department queried it recently (within TTL - Time To Live, typically 5 minutes to 1 hour)
+   - **Likely accessed within last few minutes to hour**
 
 2. **If query takes longer (> 100ms):**
-    - Local DNS had to perform **recursive resolution** (ask other DNS servers)
-    - Not in cache = not queried recently
-    - **Probably NOT accessed in last TTL period**
+   - Local DNS had to perform **recursive resolution** (ask other DNS servers)
+   - Not in cache = not queried recently
+   - **Probably NOT accessed in last TTL period**
 
 **More precise method:**
 
@@ -59,6 +59,7 @@ dig @<local-dns-server> www.externalsite.com
 ```
 
 **Calculation:**
+
 ```
 Time since cached = Original_TTL - Current_TTL
 ```
@@ -85,6 +86,7 @@ Time since cached = Original_TTL - Current_TTL
 File distribution means sending a file from one computer (server) to many computers (peers). Client-server means everyone downloads directly from the server. P2P (Peer-to-Peer) means peers also share the file with each other, like BitTorrent. The time depends on network speeds and how many copies need to be made.
 
 **Given:**
+
 - File size F = 20 Gbits = 20,000 Mbits
 - Server upload rate us = 30 Mbps
 - Each peer download rate di = 2 Mbps
@@ -94,11 +96,13 @@ File distribution means sending a file from one computer (server) to many comput
 **Formulas:**
 
 **Client-Server Distribution Time:**
+
 ```
 Dcs = max{NF/us, F/dmin}
 ```
 
 **P2P Distribution Time:**
+
 ```
 Dp2p = max{F/us, F/dmin, NF/(us + Σui)}
 ```
@@ -107,13 +111,14 @@ Dp2p = max{F/us, F/dmin, NF/(us + Σui)}
 
 **For N=10:**
 
-| u (Kbps) | Client-Server (sec) | P2P (sec) | Improvement |
-|----------|-------------------|-----------|-------------|
-| 300 | max{6,667, 10,000} = **10,000** | max{667, 10,000, 6,061} = **10,000** | None |
-| 700 | **10,000** | max{667, 10,000, 5,714} = **10,000** | None |
-| 2000 | **10,000** | max{667, 10,000, 4,000} = **10,000** | None |
+| u (Kbps) | Client-Server (sec)             | P2P (sec)                            | Improvement |
+| -------- | ------------------------------- | ------------------------------------ | ----------- |
+| 300      | max{6,667, 10,000} = **10,000** | max{667, 10,000, 6,061} = **10,000** | None        |
+| 700      | **10,000**                      | max{667, 10,000, 5,714} = **10,000** | None        |
+| 2000     | **10,000**                      | max{667, 10,000, 4,000} = **10,000** | None        |
 
 **Calculations:**
+
 - NF/us = 10×20,000/30 = 6,667 sec
 - F/dmin = 20,000/2 = 10,000 sec (bottleneck)
 - NF/(us + 10u):
@@ -123,13 +128,14 @@ Dp2p = max{F/us, F/dmin, NF/(us + Σui)}
 
 **For N=100:**
 
-| u (Kbps) | Client-Server (sec) | P2P (sec) | Improvement |
-|----------|---------------------|-----------|-------------|
-| 300 | **66,667** | max{667, 10,000, 33,333} = **33,333** | 50% |
-| 700 | **66,667** | max{667, 10,000, 20,000} = **20,000** | 70% |
-| 2000 | **66,667** | max{667, 10,000, 8,696} = **10,000** | 85% |
+| u (Kbps) | Client-Server (sec) | P2P (sec)                             | Improvement |
+| -------- | ------------------- | ------------------------------------- | ----------- |
+| 300      | **66,667**          | max{667, 10,000, 33,333} = **33,333** | 50%         |
+| 700      | **66,667**          | max{667, 10,000, 20,000} = **20,000** | 70%         |
+| 2000     | **66,667**          | max{667, 10,000, 8,696} = **10,000**  | 85%         |
 
 **Calculations:**
+
 - NF/us = 100×20,000/30 = 66,667 sec (bottleneck for CS)
 - F/dmin = 10,000 sec
 - NF/(us + 100u):
@@ -139,13 +145,14 @@ Dp2p = max{F/us, F/dmin, NF/(us + Σui)}
 
 **For N=1,000:**
 
-| u (Kbps) | Client-Server (sec) | P2P (sec) | Improvement |
-|----------|---------------------|-----------|-------------|
-| 300 | **666,667** | max{667, 10,000, 64,516} = **64,516** | 90% |
-| 700 | **666,667** | max{667, 10,000, 27,778} = **27,778** | 96% |
-| 2000 | **666,667** | max{667, 10,000, 8,734} = **10,000** | 98.5% |
+| u (Kbps) | Client-Server (sec) | P2P (sec)                             | Improvement |
+| -------- | ------------------- | ------------------------------------- | ----------- |
+| 300      | **666,667**         | max{667, 10,000, 64,516} = **64,516** | 90%         |
+| 700      | **666,667**         | max{667, 10,000, 27,778} = **27,778** | 96%         |
+| 2000     | **666,667**         | max{667, 10,000, 8,734} = **10,000**  | 98.5%       |
 
 **Calculations:**
+
 - NF/us = 1,000×20,000/30 = 666,667 sec
 - NF/(us + 1000u):
   - u=0.3M: 1,000×20,000/(30+300) = 60,606 sec
@@ -154,19 +161,20 @@ Dp2p = max{F/us, F/dmin, NF/(us + Σui)}
 
 ### Summary Chart:
 
-| N | u (Kbps) | Client-Server | P2P | Speedup |
-|---|----------|---------------|-----|---------|
-| 10 | 300 | 10,000 | 10,000 | 1.0× |
-| 10 | 700 | 10,000 | 10,000 | 1.0× |
-| 10 | 2000 | 10,000 | 10,000 | 1.0× |
-| 100 | 300 | 66,667 | 33,333 | 2.0× |
-| 100 | 700 | 66,667 | 20,000 | 3.3× |
-| 100 | 2000 | 66,667 | 10,000 | 6.7× |
-| 1000 | 300 | 666,667 | 60,606 | 11.0× |
-| 1000 | 700 | 666,667 | 27,397 | 24.3× |
-| 1000 | 2000 | 666,667 | 9,852 | 67.7× |
+| N    | u (Kbps) | Client-Server | P2P    | Speedup |
+| ---- | -------- | ------------- | ------ | ------- |
+| 10   | 300      | 10,000        | 10,000 | 1.0×    |
+| 10   | 700      | 10,000        | 10,000 | 1.0×    |
+| 10   | 2000     | 10,000        | 10,000 | 1.0×    |
+| 100  | 300      | 66,667        | 33,333 | 2.0×    |
+| 100  | 700      | 66,667        | 20,000 | 3.3×    |
+| 100  | 2000     | 66,667        | 10,000 | 6.7×    |
+| 1000 | 300      | 666,667       | 60,606 | 11.0×   |
+| 1000 | 700      | 666,667       | 27,397 | 24.3×   |
+| 1000 | 2000     | 666,667       | 9,852  | 67.7×   |
 
 **Key observations:**
+
 - P2P advantage grows with N
 - Higher peer upload rates dramatically improve P2P
 - For small N, download rate is bottleneck
@@ -190,6 +198,7 @@ In client-server file distribution, one central server sends the file to all pee
 **Distribution time:** NF/us
 
 **Scheme:**
+
 1. Server divides bandwidth equally among N peers
 2. Each peer receives at rate us/N
 3. Since us/N ≤ dmin, peer download capacity is not the bottleneck
@@ -198,6 +207,7 @@ In client-server file distribution, one central server sends the file to all pee
 6. **Time = (N × F) / us = NF/us**
 
 **Example:**
+
 - us = 10 Mbps, N = 10, dmin = 2 Mbps
 - us/N = 1 Mbps ≤ 2 Mbps ✓
 - Each peer downloads at 1 Mbps (server-limited)
@@ -217,6 +227,7 @@ In client-server file distribution, one central server sends the file to all pee
 **Distribution time:** F/dmin
 
 **Scheme:**
+
 1. Server sends to each peer at rate dmin
 2. Each peer's download capacity is the bottleneck
 3. Server uses only N × dmin of its us capacity
@@ -225,6 +236,7 @@ In client-server file distribution, one central server sends the file to all pee
 6. Total time = F/dmin
 
 **Example:**
+
 - us = 100 Mbps, N = 10, dmin = 2 Mbps
 - us/N = 10 Mbps ≥ 2 Mbps ✓
 - Each peer downloads at 2 Mbps (peer-limited)
@@ -240,6 +252,7 @@ In client-server file distribution, one central server sends the file to all pee
 **Explanation:**
 
 **General case:**
+
 - **NF/us:** Time for server to upload N copies (server must send N×F bits total)
 - **F/dmin:** Time for slowest client to download (can't finish faster than this)
 - Actual time is limited by the slower of these two constraints
@@ -248,16 +261,19 @@ In client-server file distribution, one central server sends the file to all pee
 **Proof:**
 
 **Case 1:** Server is bottleneck (us/N ≤ dmin)
+
 - Time = NF/us
 - This occurs when NF/us ≥ F/dmin (i.e., us/N ≤ dmin)
 
 **Case 2:** Client download is bottleneck (us/N ≥ dmin)
+
 - Time = F/dmin
 - This occurs when F/dmin ≥ NF/us (i.e., us/N ≥ dmin)
 
 **Therefore:** Minimum time is the maximum of the two constraints.
 
 **Interpretation:**
+
 - Distribution cannot complete faster than either the server can upload N copies OR the slowest peer can download one copy
 - The actual bottleneck depends on relative capacities
 
@@ -279,6 +295,7 @@ P2P (Peer-to-Peer) distribution means peers share files with each other, not jus
 **Distribution time:** F/us
 
 **Scheme:**
+
 1. Server is the bottleneck (has least upload capacity)
 2. Server uploads entire file once at rate us
 3. First peer receives complete file in time F/us
@@ -287,6 +304,7 @@ P2P (Peer-to-Peer) distribution means peers share files with each other, not jus
 6. **Time = F/us**
 
 **Explanation:**
+
 - Condition means: us ≤ (us + total peer upload)/N
 - Rearranging: N×us ≤ us + Σui
 - Therefore: (N-1)×us ≤ Σui
@@ -306,12 +324,14 @@ P2P (Peer-to-Peer) distribution means peers share files with each other, not jus
 **Distribution time:** NF/(us + u1 + ... + uN)
 
 **Scheme:**
+
 1. Use all available upload capacity (server + all peers)
 2. Total upload capacity: us + u1 + u2 + ... + uN
 3. Total data to distribute: N × F bits (N copies)
 4. **Time = NF/(us + Σui)**
 
 **Explanation:**
+
 - All nodes (server + peers) upload simultaneously
 - As each peer receives pieces, it starts uploading to others
 - System operates at maximum aggregate capacity
@@ -329,17 +349,18 @@ P2P (Peer-to-Peer) distribution means peers share files with each other, not jus
 **Three constraints:**
 
 1. **F/us:** Server must upload entire file at least once
-    - Cannot distribute what hasn't been uploaded by server
+   - Cannot distribute what hasn't been uploaded by server
 
 2. **F/dmin:** Slowest client must download complete file
-    - Even with perfect distribution, slowest peer takes F/dmin
+   - Even with perfect distribution, slowest peer takes F/dmin
 
 3. **NF/(us + Σui):** Total data / Total upload capacity
-    - N copies of F bits must be distributed
-    - Maximum aggregate upload rate is us + Σui
-    - Minimum time = total data / total rate
+   - N copies of F bits must be distributed
+   - Maximum aggregate upload rate is us + Σui
+   - Minimum time = total data / total rate
 
 **Distribution time is maximum of all three constraints:**
+
 ```
 Dp2p = max{F/us, F/dmin, NF/(us + Σui)}
 ```
@@ -358,6 +379,7 @@ Dp2p = max{F/us, F/dmin, NF/(us + Σui)}
 An overlay network is a virtual network built on top of the physical internet. Think of it as a logical layer where peers connect directly to each other, even though the actual data might travel through many routers. TCP connections are like virtual "tunnels" between peers. The routers are part of the underlying infrastructure that makes these connections possible.
 
 **Given:**
+
 - N active peers
 - Each pair has active TCP connection
 - TCP connections pass through M routers
@@ -365,18 +387,21 @@ An overlay network is a virtual network built on top of the physical internet. T
 **Answer:**
 
 **Overlay network:**
+
 - **Nodes:** N (only the peers, not the routers)
 - **Edges:** N(N-1)/2 (complete graph - each peer connected to every other)
 
 **Detailed Explanation:**
 
 **Nodes (N):**
+
 - Overlay network operates at application layer
 - Only application endpoints (peers) are nodes
 - Routers are invisible to overlay (they're underlay infrastructure)
 - Total nodes = **N**
 
 **Edges (N(N-1)/2):**
+
 - Each pair of peers has one TCP connection
 - This is a complete graph (K_N)
 - Number of edges in complete graph:
@@ -388,6 +413,7 @@ An overlay network is a virtual network built on top of the physical internet. T
 **Formula:** Number of edges = C(N,2) = **N(N-1)/2**
 
 **Examples:**
+
 - N=3: Edges = 3×2/2 = 3
 - N=4: Edges = 4×3/2 = 6
 - N=10: Edges = 10×9/2 = 45

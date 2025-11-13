@@ -37,6 +37,7 @@ Propagation delay is the time it takes for a signal to travel from one end of th
 dprop = m/s
 
 **Explanation:**
+
 - m = distance between hosts (meters)
 - s = propagation speed through the medium (meters/second)
 - This is like calculating how long it takes to drive from one city to another at a given speed
@@ -48,6 +49,7 @@ Transmission time is how long it takes to put all the bits of the packet onto th
 dtrans = L/R
 
 **Explanation:**
+
 - L = number of bits in the packet
 - R = transmission rate of the link (bits/second)
 - This is like calculating how long it takes to load a truck with cargo at a given loading rate
@@ -59,6 +61,7 @@ The end-to-end delay is the total time from when the first bit starts transmitti
 Delay = dtrans + dprop = L/R + m/s
 
 **Explanation:**
+
 - First, all L bits must be transmitted onto the link (takes L/R time)
 - Then, the signal propagates the distance m at speed s (takes m/s time)
 - Total time = transmission time + propagation time
@@ -69,6 +72,7 @@ At time t = dtrans, the transmission of the packet has just completed at Host A.
 **Position of Last Bit:** Just leaving Host A
 
 **Explanation:**
+
 - At t = 0, transmission begins
 - During the first dtrans seconds, all L bits are being transmitted
 - At exactly t = dtrans, the last bit has just finished being transmitted and is leaving Host A
@@ -80,6 +84,7 @@ When propagation delay is longer than transmission time, the packet is "skinny" 
 **Position of First Bit:** dtrans meters from Host B (or equivalently, m - dtrans meters from Host A)
 
 **Explanation:**
+
 - The first bit started traveling at t = 0
 - After dtrans seconds, the first bit has traveled dtrans × s meters
 - Since dprop > dtrans, the first bit hasn't reached Host B yet
@@ -95,6 +100,7 @@ When transmission time is longer than propagation delay, the packet is "fat" - i
 **Position of First Bit:** Already arrived at Host B; the last bit is (dtrans - dprop) meters from Host B
 
 **Explanation:**
+
 - The first bit reaches Host B after dprop seconds
 - But transmission continues until dtrans seconds
 - At t = dtrans, the first bit has been at Host B for (dtrans - dprop) seconds
@@ -114,6 +120,7 @@ m/s = L/R
 m = (L/R) × s = 0.0012 × 2.5 × 10^8 = 3 × 10^5 meters = 300 meters
 
 **Step 9: Key Insights**
+
 - **Transmission delay** depends on packet size and link speed
 - **Propagation delay** depends on distance and signal speed
 - The relative sizes of these delays determine how "spread out" the packet is on the link
@@ -131,6 +138,7 @@ m = (L/R) × s = 0.0012 × 2.5 × 10^8 = 3 × 10^5 meters = 300 meters
 VoIP stands for Voice over IP - it's technology that lets you make phone calls over the internet instead of traditional phone lines. The problem describes how Host A converts analog voice (regular sound waves) into digital data that can be sent over a network.
 
 **Step 2: Understanding the Data Conversion Process**
+
 - **Analog to Digital Conversion:** Host A takes continuous voice signals and converts them to digital format
 - **Bit Rate:** The voice is digitized at 64 kbps (64,000 bits per second) - this is a standard rate for telephone-quality voice
 - **Packetization:** The digital bits are grouped into packets of 56 bytes each for transmission
@@ -143,6 +151,7 @@ First, we need to understand how big each packet is:
 - So packet size = 56 × 8 = 448 bits
 
 **Step 4: Understanding the Network Path**
+
 - Host A and Host B are connected by a single link
 - Link transmission rate = 10 Mbps (10,000,000 bits per second)
 - Propagation delay = 10 milliseconds (time for signal to travel from A to B)
@@ -188,6 +197,7 @@ The packetization delay is often overlooked but is crucial in VoIP systems. Voic
 
 **Step 10: Real-World Implications**
 This calculation shows why VoIP calls can have delays:
+
 - **Local calls:** Short propagation delays (microseconds)
 - **Long-distance/international calls:** Long propagation delays (milliseconds)
 - **Satellite calls:** Very long delays (hundreds of milliseconds)
@@ -195,6 +205,7 @@ This calculation shows why VoIP calls can have delays:
 The 17 ms delay calculated here includes the packetization delay that I initially missed. This is still acceptable for voice communication, as humans can tolerate delays up to about 150-200 ms before the conversation feels unnatural.
 
 **Step 11: Key Takeaways**
+
 - VoIP converts analog voice to digital packets for internet transmission
 - Total delay includes packetization, transmission, and propagation times
 - Packetization delay depends on packet size and data rate
@@ -226,6 +237,7 @@ Circuit switching reserves dedicated bandwidth for each user. If a user gets a c
 **Maximum Users:** Link capacity ÷ Per user requirement = 10,000 ÷ 200 = 50 users
 
 **Explanation:**
+
 - Each user needs a dedicated 200 kbps circuit
 - The link can only support 10,000 kbps total
 - 50 users × 200 kbps = 10,000 kbps (uses the full link capacity)
@@ -250,6 +262,7 @@ With 120 users, we want to find the probability that exactly n users are transmi
 P(X = n) = C(120,n) × (0.1)^n × (0.9)^(120-n)
 
 Where:
+
 - C(120,n) = number of ways to choose n users out of 120
 - (0.1)^n = probability that n specific users transmit
 - (0.9)^(120-n) = probability that the other (120-n) users don't transmit
@@ -265,11 +278,13 @@ This means we subtract the probability of having 50 or fewer transmitters from 1
 **Step 6: Key Differences Between Circuit and Packet Switching**
 
 **Circuit Switching:**
+
 - **Advantages:** Guaranteed bandwidth, no interference from other users
 - **Disadvantages:** Inefficient when users aren't constantly transmitting (wastes bandwidth)
 - **In this scenario:** Supports exactly 50 users, no more
 
 **Packet Switching:**
+
 - **Advantages:** Efficient bandwidth usage, supports more users through statistical multiplexing
 - **Disadvantages:** No bandwidth guarantees, potential congestion when many users transmit simultaneously
 - **In this scenario:** Can support 120 users, but with risk of overload when many transmit at once
@@ -280,6 +295,7 @@ The key insight is that packet switching allows more users because they don't al
 However, there's still a chance that more than 50 users could transmit simultaneously, causing congestion. The binomial calculation helps quantify this risk.
 
 **Step 8: Real-World Implications**
+
 - **Circuit switching:** Good for constant bit rate applications (like traditional phone calls)
 - **Packet switching:** Good for bursty traffic (like web browsing, email)
 - **Trade-off:** Reliability vs efficiency
@@ -309,6 +325,7 @@ In circuit switching, each user needs dedicated bandwidth. Since each user requi
 **Maximum Users (N):** 1,000,000 ÷ 100 = 10,000 users
 
 **Explanation:**
+
 - Each user gets a dedicated 100 kbps circuit
 - The 1 Gbps link can be divided into 1,000,000 ÷ 100 = 10,000 such circuits
 - This is the hard limit - no more than 10,000 users can be supported simultaneously
@@ -317,6 +334,7 @@ In circuit switching, each user needs dedicated bandwidth. Since each user requi
 In packet switching, users share the link and don't get dedicated bandwidth. The problem considers M users sharing the link, and we want the probability that more than N users are transmitting simultaneously.
 
 **Parameters:**
+
 - M = number of users
 - N = 10,000 (maximum for circuit switching)
 - p = 0.1 (probability each user is transmitting)
@@ -326,6 +344,7 @@ In packet switching, users share the link and don't get dedicated bandwidth. The
 If more than N=10,000 users try to transmit simultaneously, the total demand would be more than 10,000 × 100 kbps = 1,000,000 kbps = 1 Gbps, which equals the link capacity. With exactly the link capacity demand, the system would be at 100% utilization, which could cause performance issues.
 
 **Binomial Distribution Setup:**
+
 - Each user is either transmitting (success) or not (failure)
 - Probability of success p = 0.1
 - We have M independent trials (users)
@@ -338,7 +357,7 @@ P(X > N) = Probability that more than 10,000 users are transmitting
 P(X = k) = C(M,k) × p^k × (1-p)^(M-k)
 
 **So:**
-P(X > N) = 1 - ∑_{k=0 to N} C(M,k) × p^k × (1-p)^(M-k)
+P(X > N) = 1 - ∑\_{k=0 to N} C(M,k) × p^k × (1-p)^(M-k)
 
 **Step 4: Interpreting the Formula**
 This formula gives the probability of congestion (overload) for different numbers of users M. For example:
@@ -350,22 +369,26 @@ This formula gives the probability of congestion (overload) for different number
 **Step 5: Key Insights**
 
 **Circuit Switching:**
+
 - Fixed capacity: exactly 10,000 users maximum
 - Predictable performance
 - Inefficient for bursty traffic
 
 **Packet Switching:**
+
 - Can support many more users through statistical multiplexing
 - Risk of overload when many users transmit simultaneously
 - More efficient for variable traffic patterns
 
 **Statistical Multiplexing Gain:**
+
 - Circuit switching: 10,000 users
 - Packet switching: Can support 20,000+ users with low overload probability
 - The "gain" comes from the fact that users don't transmit simultaneously
 
 **Step 6: Real-World Application**
 This calculation is crucial for network design:
+
 - **Network providers** use such calculations to determine how many subscribers they can support
 - **Quality of Service** depends on keeping overload probabilities low
 - **Bandwidth allocation** decisions are based on these statistical models
@@ -387,6 +410,7 @@ The problem describes a packet traveling from Host A to Host B through three lin
 Host A → Link 1 → Router 1 → Link 2 → Router 2 → Link 3 → Host B
 
 **Parameters for each link:**
+
 - **di**: Length of link i (distance)
 - **si**: Propagation speed on link i
 - **Ri**: Transmission rate of link i
@@ -440,6 +464,7 @@ Where the summation is over i = 1, 2, 3
 Now plug in the specific values:
 
 **Given:**
+
 - L = 1,500 bytes = 12,000 bits
 - Propagation speed s_i = 2.5 × 10^8 m/s for all links
 - Transmission rates R_i = 2.5 Mbps = 2,500,000 bps for all links
@@ -447,6 +472,7 @@ Now plug in the specific values:
 - Link lengths: d_1 = 5,000 km, d_2 = 4,000 km, d_3 = 1,000 km
 
 **Convert distances to meters:**
+
 - d_1 = 5,000,000 m
 - d_2 = 4,000,000 m
 - d_3 = 1,000,000 m
@@ -457,6 +483,7 @@ L/R = 12,000 bits / 2,500,000 bps = 0.0048 seconds = 4.8 ms
 **Total Transmission Delay:** 3 × 4.8 ms = 14.4 ms
 
 **Calculate Propagation Delays:**
+
 - Link 1: 5,000,000 m / 2.5 × 10^8 m/s = 0.02 seconds = 20 ms
 - Link 2: 4,000,000 m / 2.5 × 10^8 m/s = 0.016 seconds = 16 ms
 - Link 3: 1,000,000 m / 2.5 × 10^8 m/s = 0.004 seconds = 4 ms
@@ -468,6 +495,7 @@ L/R = 12,000 bits / 2,500,000 bps = 0.0048 seconds = 4.8 ms
 **Total Delay:** 14.4 + 40 + 6 = 60.4 ms
 
 **Step 8: Key Insights**
+
 - **Propagation delay dominates:** 40 ms out of 60.4 ms total
 - **Long-distance links:** The 5,000 km link contributes the most delay
 - **Processing overhead:** 6 ms for two routers
@@ -475,6 +503,7 @@ L/R = 12,000 bits / 2,500,000 bps = 0.0048 seconds = 4.8 ms
 
 **Step 9: Real-World Implications**
 This calculation shows why:
+
 - **Geographic distance** significantly affects network performance
 - **Router processing** adds consistent delays
 - **High-speed links** reduce transmission delays but not propagation delays

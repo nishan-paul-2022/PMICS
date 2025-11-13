@@ -20,26 +20,26 @@ TCP Reno is a foundational version of TCP's congestion control mechanism. Its go
 
 #### Phase 1: Slow Start
 
-*   **Purpose:** To quickly probe for available bandwidth at the beginning of a connection or after a connection has been idle. Despite its name, this phase is one of exponential growth and is very aggressive.
-*   **Mechanism:**
-    1.  The connection begins with a small `cwnd`, typically 1 to 10 MSS (Maximum Segment Size). Let's assume it starts at 1 MSS.
-    2.  For every ACK received, the sender increases `cwnd` by 1 MSS.
-    3.  Since a sender with `cwnd=N` will send `N` segments and receive `N` ACKs in one RTT, this effectively doubles the `cwnd` every RTT.
-        *   RTT 1: `cwnd` = 1 MSS. Sends 1 segment.
-        *   RTT 2: `cwnd` = 2 MSS. Sends 2 segments.
-        *   RTT 3: `cwnd` = 4 MSS. Sends 4 segments.
-        *   RTT 4: `cwnd` = 8 MSS. Sends 8 segments.
-*   **Exiting Slow Start:** The exponential growth continues until one of two things happens:
-    1.  A packet loss is detected (either by timeout or duplicate ACKs).
-    2.  The `cwnd` reaches a predefined **slow start threshold (`ssthresh`)**. This threshold is a "memory" of the last known good network capacity. When `cwnd` reaches `ssthresh`, the growth must slow down to avoid overshooting the link capacity. The protocol then transitions to the Congestion Avoidance phase.
+- **Purpose:** To quickly probe for available bandwidth at the beginning of a connection or after a connection has been idle. Despite its name, this phase is one of exponential growth and is very aggressive.
+- **Mechanism:**
+  1.  The connection begins with a small `cwnd`, typically 1 to 10 MSS (Maximum Segment Size). Let's assume it starts at 1 MSS.
+  2.  For every ACK received, the sender increases `cwnd` by 1 MSS.
+  3.  Since a sender with `cwnd=N` will send `N` segments and receive `N` ACKs in one RTT, this effectively doubles the `cwnd` every RTT.
+      - RTT 1: `cwnd` = 1 MSS. Sends 1 segment.
+      - RTT 2: `cwnd` = 2 MSS. Sends 2 segments.
+      - RTT 3: `cwnd` = 4 MSS. Sends 4 segments.
+      - RTT 4: `cwnd` = 8 MSS. Sends 8 segments.
+- **Exiting Slow Start:** The exponential growth continues until one of two things happens:
+  1.  A packet loss is detected (either by timeout or duplicate ACKs).
+  2.  The `cwnd` reaches a predefined **slow start threshold (`ssthresh`)**. This threshold is a "memory" of the last known good network capacity. When `cwnd` reaches `ssthresh`, the growth must slow down to avoid overshooting the link capacity. The protocol then transitions to the Congestion Avoidance phase.
 
 #### Phase 2: Congestion Avoidance (AIMD)
 
-*   **Purpose:** Once the connection has found a rough estimate of the available bandwidth (the `ssthresh`), it needs to probe for more bandwidth gently and additively.
-*   **Mechanism (Additive Increase):**
-    1.  Instead of doubling every RTT, the `cwnd` is increased by approximately **1 MSS per RTT**.
-    2.  This results in a linear, steady increase in the sending rate. The sender is carefully "filling the pipe" to find the exact point of congestion.
-*   **Exiting Congestion Avoidance:** This phase continues until a packet loss is detected. TCP Reno has two different reactions depending on how the loss is detected.
+- **Purpose:** Once the connection has found a rough estimate of the available bandwidth (the `ssthresh`), it needs to probe for more bandwidth gently and additively.
+- **Mechanism (Additive Increase):**
+  1.  Instead of doubling every RTT, the `cwnd` is increased by approximately **1 MSS per RTT**.
+  2.  This results in a linear, steady increase in the sending rate. The sender is carefully "filling the pipe" to find the exact point of congestion.
+- **Exiting Congestion Avoidance:** This phase continues until a packet loss is detected. TCP Reno has two different reactions depending on how the loss is detected.
 
 #### Phase 3: Reaction to Loss
 
@@ -50,7 +50,7 @@ This is where TCP Reno's specific implementation shines.
 This is considered a major congestion event. The network is likely in bad shape, as no packets (or their ACKs) are getting through.
 
 1.  **Set `ssthresh`:** The slow start threshold is set to half of the current `cwnd`.
-    *   `ssthresh = cwnd / 2`. This records a new, lower estimate of the network's capacity.
+    - `ssthresh = cwnd / 2`. This records a new, lower estimate of the network's capacity.
 2.  **Reset `cwnd`:** The congestion window is reset to its initial small value, `cwnd = 1 MSS`.
 3.  **Re-enter Slow Start:** The protocol goes all the way back to Phase 1 (Slow Start) and begins the exponential growth process again until it reaches the new, lower `ssthresh`.
 
@@ -60,8 +60,8 @@ Receiving three duplicate ACKs is a weaker signal of congestion. It implies that
 
 1.  **Fast Retransmit:** Upon receiving the 3rd duplicate ACK, the sender immediately retransmits the missing segment without waiting for its timer to expire.
 2.  **Set `ssthresh` and `cwnd` (Multiplicative Decrease):**
-    *   `ssthresh = cwnd / 2`.
-    *   `cwnd = ssthresh`. (In some variants, `cwnd = ssthresh + 3 MSS` to account for the segments that have left the network).
+    - `ssthresh = cwnd / 2`.
+    - `cwnd = ssthresh`. (In some variants, `cwnd = ssthresh + 3 MSS` to account for the segments that have left the network).
 3.  **Fast Recovery:** The protocol now enters a special state. For every additional duplicate ACK that arrives, it increases `cwnd` by 1 MSS. This "inflates" the window to account for the fact that packets are still leaving the network.
 4.  **Exit Fast Recovery:** When an ACK finally arrives for the retransmitted data (a "new ACK"), the sender deflates the `cwnd` back down to `ssthresh` and immediately enters **Congestion Avoidance** (Phase 2), resuming its gentle, linear growth.
 
@@ -81,11 +81,11 @@ In this scenario, the mechanism that prevents Host A from continuously sending a
 
 Let's break down why:
 
-*   **Application Rate (S):** The application at Host A is generating data at a massive rate (`10 * R`), far exceeding the network capacity.
-*   **TCP Send Buffer:** This buffer sits between the application and the TCP sender. The application writes data into this buffer. Its size is finite (1% of the file size).
-*   **Network Link (R):** The physical link between A and B has a capacity of `R`. This is the absolute maximum rate at which TCP can physically transmit segments.
-*   **Congestion Control:** The problem states the connection is "perfect TCP (no loss)". In a no-loss environment, TCP's congestion control window (`cwnd`) will grow very large (in theory, indefinitely, but in practice, it's capped by the receiver's window). So, congestion control will **not** be the limiting factor.
-*   **Receiver Buffer:** The receiver's buffer is stated to be large, implying it's not the bottleneck.
+- **Application Rate (S):** The application at Host A is generating data at a massive rate (`10 * R`), far exceeding the network capacity.
+- **TCP Send Buffer:** This buffer sits between the application and the TCP sender. The application writes data into this buffer. Its size is finite (1% of the file size).
+- **Network Link (R):** The physical link between A and B has a capacity of `R`. This is the absolute maximum rate at which TCP can physically transmit segments.
+- **Congestion Control:** The problem states the connection is "perfect TCP (no loss)". In a no-loss environment, TCP's congestion control window (`cwnd`) will grow very large (in theory, indefinitely, but in practice, it's capped by the receiver's window). So, congestion control will **not** be the limiting factor.
+- **Receiver Buffer:** The receiver's buffer is stated to be large, implying it's not the bottleneck.
 
 **The Limiting Process:**
 
@@ -118,10 +118,10 @@ This question describes the **Congestion Avoidance** phase of TCP, where the con
 
 #### a. Time to Grow from 6 to 12 MSS
 
-*   **Starting `cwnd`:** 6 MSS
-*   **Target `cwnd`:** 12 MSS
-*   **Increase required:** 12 - 6 = 6 MSS
-*   **Increase rate:** 1 MSS per RTT
+- **Starting `cwnd`:** 6 MSS
+- **Target `cwnd`:** 12 MSS
+- **Increase required:** 12 - 6 = 6 MSS
+- **Increase rate:** 1 MSS per RTT
 
 The time required is simply the total increase needed divided by the rate of increase.
 
@@ -134,14 +134,14 @@ It will take 6 RTTs for the congestion window to grow from 6 MSS to 12 MSS.
 
 We need to calculate the total data sent over the 6 RTTs and divide by the total time.
 
-*   **RTT 1:** `cwnd` is 6 MSS. 6 segments are sent.
-*   **RTT 2:** `cwnd` is 7 MSS. 7 segments are sent.
-*   **RTT 3:** `cwnd` is 8 MSS. 8 segments are sent.
-*   **RTT 4:** `cwnd` is 9 MSS. 9 segments are sent.
-*   **RTT 5:** `cwnd` is 10 MSS. 10 segments are sent.
-*   **RTT 6:** `cwnd` is 11 MSS. 11 segments are sent.
+- **RTT 1:** `cwnd` is 6 MSS. 6 segments are sent.
+- **RTT 2:** `cwnd` is 7 MSS. 7 segments are sent.
+- **RTT 3:** `cwnd` is 8 MSS. 8 segments are sent.
+- **RTT 4:** `cwnd` is 9 MSS. 9 segments are sent.
+- **RTT 5:** `cwnd` is 10 MSS. 10 segments are sent.
+- **RTT 6:** `cwnd` is 11 MSS. 11 segments are sent.
 
-(At the *end* of the 6th RTT, the window grows to 12 MSS for the next round).
+(At the _end_ of the 6th RTT, the window grows to 12 MSS for the next round).
 
 **Total Segments Sent:**
 `Total = 6 + 7 + 8 + 9 + 10 + 11 = 51 MSS`
@@ -168,26 +168,26 @@ TCP Reno is a foundational version of TCP's congestion control mechanism. Its go
 
 #### Phase 1: Slow Start
 
-*   **Purpose:** To quickly probe for available bandwidth at the beginning of a connection or after a connection has been idle. Despite its name, this phase is one of exponential growth and is very aggressive.
-*   **Mechanism:**
-    1.  The connection begins with a small `cwnd`, typically 1 to 10 MSS (Maximum Segment Size). Let's assume it starts at 1 MSS.
-    2.  For every ACK received, the sender increases `cwnd` by 1 MSS.
-    3.  Since a sender with `cwnd=N` will send `N` segments and receive `N` ACKs in one RTT, this effectively doubles the `cwnd` every RTT.
-        *   RTT 1: `cwnd` = 1 MSS. Sends 1 segment.
-        *   RTT 2: `cwnd` = 2 MSS. Sends 2 segments.
-        *   RTT 3: `cwnd` = 4 MSS. Sends 4 segments.
-        *   RTT 4: `cwnd` = 8 MSS. Sends 8 segments.
-*   **Exiting Slow Start:** The exponential growth continues until one of two things happens:
-    1.  A packet loss is detected (either by timeout or duplicate ACKs).
-    2.  The `cwnd` reaches a predefined **slow start threshold (`ssthresh`)**. This threshold is a "memory" of the last known good network capacity. When `cwnd` reaches `ssthresh`, the growth must slow down to avoid overshooting the link capacity. The protocol then transitions to the Congestion Avoidance phase.
+- **Purpose:** To quickly probe for available bandwidth at the beginning of a connection or after a connection has been idle. Despite its name, this phase is one of exponential growth and is very aggressive.
+- **Mechanism:**
+  1.  The connection begins with a small `cwnd`, typically 1 to 10 MSS (Maximum Segment Size). Let's assume it starts at 1 MSS.
+  2.  For every ACK received, the sender increases `cwnd` by 1 MSS.
+  3.  Since a sender with `cwnd=N` will send `N` segments and receive `N` ACKs in one RTT, this effectively doubles the `cwnd` every RTT.
+      - RTT 1: `cwnd` = 1 MSS. Sends 1 segment.
+      - RTT 2: `cwnd` = 2 MSS. Sends 2 segments.
+      - RTT 3: `cwnd` = 4 MSS. Sends 4 segments.
+      - RTT 4: `cwnd` = 8 MSS. Sends 8 segments.
+- **Exiting Slow Start:** The exponential growth continues until one of two things happens:
+  1.  A packet loss is detected (either by timeout or duplicate ACKs).
+  2.  The `cwnd` reaches a predefined **slow start threshold (`ssthresh`)**. This threshold is a "memory" of the last known good network capacity. When `cwnd` reaches `ssthresh`, the growth must slow down to avoid overshooting the link capacity. The protocol then transitions to the Congestion Avoidance phase.
 
 #### Phase 2: Congestion Avoidance (AIMD)
 
-*   **Purpose:** Once the connection has found a rough estimate of the available bandwidth (the `ssthresh`), it needs to probe for more bandwidth gently and additively.
-*   **Mechanism (Additive Increase):**
-    1.  Instead of doubling every RTT, the `cwnd` is increased by approximately **1 MSS per RTT**.
-    2.  This results in a linear, steady increase in the sending rate. The sender is carefully "filling the pipe" to find the exact point of congestion.
-*   **Exiting Congestion Avoidance:** This phase continues until a packet loss is detected. TCP Reno has two different reactions depending on how the loss is detected.
+- **Purpose:** Once the connection has found a rough estimate of the available bandwidth (the `ssthresh`), it needs to probe for more bandwidth gently and additively.
+- **Mechanism (Additive Increase):**
+  1.  Instead of doubling every RTT, the `cwnd` is increased by approximately **1 MSS per RTT**.
+  2.  This results in a linear, steady increase in the sending rate. The sender is carefully "filling the pipe" to find the exact point of congestion.
+- **Exiting Congestion Avoidance:** This phase continues until a packet loss is detected. TCP Reno has two different reactions depending on how the loss is detected.
 
 #### Phase 3: Reaction to Loss
 
@@ -198,7 +198,7 @@ This is where TCP Reno's specific implementation shines.
 This is considered a major congestion event. The network is likely in bad shape, as no packets (or their ACKs) are getting through.
 
 1.  **Set `ssthresh`:** The slow start threshold is set to half of the current `cwnd`.
-    *   `ssthresh = cwnd / 2`. This records a new, lower estimate of the network's capacity.
+    - `ssthresh = cwnd / 2`. This records a new, lower estimate of the network's capacity.
 2.  **Reset `cwnd`:** The congestion window is reset to its initial small value, `cwnd = 1 MSS`.
 3.  **Re-enter Slow Start:** The protocol goes all the way back to Phase 1 (Slow Start) and begins the exponential growth process again until it reaches the new, lower `ssthresh`.
 
@@ -208,8 +208,8 @@ Receiving three duplicate ACKs is a weaker signal of congestion. It implies that
 
 1.  **Fast Retransmit:** Upon receiving the 3rd duplicate ACK, the sender immediately retransmits the missing segment without waiting for its timer to expire.
 2.  **Set `ssthresh` and `cwnd` (Multiplicative Decrease):**
-    *   `ssthresh = cwnd / 2`.
-    *   `cwnd = ssthresh`. (In some variants, `cwnd = ssthresh + 3 MSS` to account for the segments that have left the network).
+    - `ssthresh = cwnd / 2`.
+    - `cwnd = ssthresh`. (In some variants, `cwnd = ssthresh + 3 MSS` to account for the segments that have left the network).
 3.  **Fast Recovery:** The protocol now enters a special state. For every additional duplicate ACK that arrives, it increases `cwnd` by 1 MSS. This "inflates" the window to account for the fact that packets are still leaving the network.
 4.  **Exit Fast Recovery:** When an ACK finally arrives for the retransmitted data (a "new ACK"), the sender deflates the `cwnd` back down to `ssthresh` and immediately enters **Congestion Avoidance** (Phase 2), resuming its gentle, linear growth.
 
@@ -235,27 +235,27 @@ As shown in P50, TCP Reno's linear growth of "1 MSS per RTT" is extremely slow. 
 
 CUBIC's core innovation is to change the window growth function. Instead of being linear, the `cwnd` growth is governed by a **cubic function of time**.
 
-*   **Formula:** `W(t) = C * (t - K)^3 + W_max`
-    *   `W(t)`: The target `cwnd` at time `t` since the last loss event.
-    *   `W_max`: The `cwnd` value just before the last loss event occurred. This is CUBIC's "memory" of the last known network capacity.
-    *   `C`: A scaling constant.
-    *   `K`: The time it would take for the window to grow from its current size back to `W_max` if it were using standard TCP's growth rate. `K = cuberoot(W_max * β / C)`. `β` is the multiplicative decrease factor.
+- **Formula:** `W(t) = C * (t - K)^3 + W_max`
+  - `W(t)`: The target `cwnd` at time `t` since the last loss event.
+  - `W_max`: The `cwnd` value just before the last loss event occurred. This is CUBIC's "memory" of the last known network capacity.
+  - `C`: A scaling constant.
+  - `K`: The time it would take for the window to grow from its current size back to `W_max` if it were using standard TCP's growth rate. `K = cuberoot(W_max * β / C)`. `β` is the multiplicative decrease factor.
 
 #### Step 3: The Three Phases of CUBIC's Growth
 
 The shape of the cubic function gives CUBIC three distinct growth phases after a packet loss.
 
 1.  **Concave Growth (Stabilization):**
-    *   **Behavior:** Immediately after a loss, the `cwnd` is reduced. The cubic function is initially in its concave region, meaning the window grows very **slowly** at first and then gradually accelerates.
-    *   **Why:** This is a network-friendly phase. CUBIC is being cautious, ensuring the network has stabilized after the previous congestion event before it starts ramping up its sending rate aggressively.
+    - **Behavior:** Immediately after a loss, the `cwnd` is reduced. The cubic function is initially in its concave region, meaning the window grows very **slowly** at first and then gradually accelerates.
+    - **Why:** This is a network-friendly phase. CUBIC is being cautious, ensuring the network has stabilized after the previous congestion event before it starts ramping up its sending rate aggressively.
 
 2.  **Linear-like Growth (Approaching `W_max`):**
-    *   **Behavior:** As time `t` approaches `K`, the cubic function flattens out around its inflection point. In this region, the window growth becomes almost **linear**, closely mimicking the behavior of TCP Reno.
-    *   **Why:** This ensures that CUBIC coexists fairly with standard TCP Reno flows if they are sharing the same bottleneck link. This is known as "TCP-friendliness".
+    - **Behavior:** As time `t` approaches `K`, the cubic function flattens out around its inflection point. In this region, the window growth becomes almost **linear**, closely mimicking the behavior of TCP Reno.
+    - **Why:** This ensures that CUBIC coexists fairly with standard TCP Reno flows if they are sharing the same bottleneck link. This is known as "TCP-friendliness".
 
 3.  **Convex Growth (Probing for Bandwidth):**
-    *   **Behavior:** Once the `cwnd` surpasses the old `W_max`, the cubic function enters its convex region. The window growth becomes very **fast and aggressive**, accelerating as it moves further from `W_max`.
-    *   **Why:** This is the key to CUBIC's high performance. Instead of Reno's slow linear probing (1 MSS per RTT), CUBIC rapidly expands its window to discover new, unused bandwidth on the link. It is actively and quickly searching for the new network ceiling.
+    - **Behavior:** Once the `cwnd` surpasses the old `W_max`, the cubic function enters its convex region. The window growth becomes very **fast and aggressive**, accelerating as it moves further from `W_max`.
+    - **Why:** This is the key to CUBIC's high performance. Instead of Reno's slow linear probing (1 MSS per RTT), CUBIC rapidly expands its window to discover new, unused bandwidth on the link. It is actively and quickly searching for the new network ceiling.
 
 #### Step 4: Reaction to Loss
 
@@ -268,12 +268,12 @@ CUBIC's reaction to a loss event is similar to Reno's but sets up the next growt
 
 #### Step 5: Conclusion - Reno vs. CUBIC
 
-| Feature           | TCP Reno                                          | TCP CUBIC                                                              |
-| ----------------- | ------------------------------------------------- | ---------------------------------------------------------------------- |
-| **Growth Model**  | Linear (Additive Increase)                        | Cubic function of time                                                 |
-| **Growth Rate**   | Constant (1 MSS per RTT)                          | Variable (slow, then linear-like, then fast)                           |
-| **Dependency**    | Growth is independent of RTT.                     | Growth is primarily dependent on **time** between loss events, not RTT. |
-| **High-Speed Perf.** | Very poor. Takes hours to recover on fast links.  | Excellent. Recovers very quickly by aggressively probing for bandwidth. |
-| **Fairness**      | Can be unfair to connections with longer RTTs.     | More fair to connections with different RTTs because growth is time-based. |
+| Feature              | TCP Reno                                         | TCP CUBIC                                                                  |
+| -------------------- | ------------------------------------------------ | -------------------------------------------------------------------------- |
+| **Growth Model**     | Linear (Additive Increase)                       | Cubic function of time                                                     |
+| **Growth Rate**      | Constant (1 MSS per RTT)                         | Variable (slow, then linear-like, then fast)                               |
+| **Dependency**       | Growth is independent of RTT.                    | Growth is primarily dependent on **time** between loss events, not RTT.    |
+| **High-Speed Perf.** | Very poor. Takes hours to recover on fast links. | Excellent. Recovers very quickly by aggressively probing for bandwidth.    |
+| **Fairness**         | Can be unfair to connections with longer RTTs.   | More fair to connections with different RTTs because growth is time-based. |
 
 In summary, TCP CUBIC is a more intelligent and aggressive algorithm that is "aware" of its distance from the last known network capacity. Its three-phase growth allows it to be stable and fair when needed, but also to rapidly expand and capitalize on the high bandwidth available in modern networks, solving the critical performance bottleneck of TCP Reno.

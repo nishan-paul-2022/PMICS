@@ -7,4 +7,3 @@ Countermeasures are actions or steps taken to fight against specific threats. Co
 5. Creating social awareness
 6. Doing social engineering
 7. Early recognition and reporting
-  

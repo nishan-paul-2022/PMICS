@@ -22,6 +22,7 @@ Welcome to Part 5 of the comprehensive guide for Computer Networking problems. T
 Figure 1.19(b) shows a server connected to a client through multiple parallel paths. Each path consists of N links with different transmission rates. No two paths share any links, so they provide completely independent routes.
 
 **Network Elements:**
+
 - **Server link:** Rs (server's connection capacity)
 - **Client link:** Rc (client's connection capacity)
 - **M paths:** Each path k has N links with rates Rk1, Rk2, ..., RkN
@@ -35,6 +36,7 @@ If the server can only use one path to send data:
 Where min(Rk) is the minimum link rate on path k.
 
 **Explanation:**
+
 - **Server limit (Rs):** Server can't send faster than its link allows
 - **Client limit (Rc):** Client can't receive faster than its link allows
 - **Path limit (min(Rk)):** Path can't carry data faster than its slowest link
@@ -47,6 +49,7 @@ If the server can use all M paths simultaneously:
 Where ∑ min(Rk) is the sum of the minimum link rates across all paths.
 
 **Explanation:**
+
 - **Server limit (Rs):** Server's total capacity across all paths
 - **Client limit (Rc):** Client's total receiving capacity
 - **Total path capacity (∑ min(Rk)):** Combined capacity of all paths
@@ -54,11 +57,13 @@ Where ∑ min(Rk) is the sum of the minimum link rates across all paths.
 **Step 4: Detailed Analysis**
 
 **Single Path Scenario:**
+
 - Server sends all data through one path
 - Throughput limited by that path's bottleneck
 - Other paths remain unused
 
 **Multiple Path Scenario:**
+
 - Server can split traffic across all M paths
 - Each path contributes its bottleneck capacity
 - Total throughput is sum of individual path throughputs
@@ -67,6 +72,7 @@ Where ∑ min(Rk) is the sum of the minimum link rates across all paths.
 **Step 5: Example Calculations**
 
 **Example:** M = 3 paths, each with different bottleneck rates
+
 - Path 1: min(R11,R12,...,R1N) = 10 Mbps
 - Path 2: min(R21,R22,...,R2N) = 15 Mbps
 - Path 3: min(R31,R32,...,R3N) = 20 Mbps
@@ -79,22 +85,26 @@ Where ∑ min(Rk) is the sum of the minimum link rates across all paths.
 **Step 6: Key Insights**
 
 **Path Diversity Benefits:**
+
 - Multiple paths provide redundancy
 - Allow load balancing for higher throughput
 - Improve reliability (if one path fails)
 
 **Bottleneck Analysis:**
+
 - Each path's capacity determined by slowest link
 - Total capacity is sum of individual path capacities
 - End-system capacities may still limit overall throughput
 
 **Step 7: Real-World Applications**
+
 - **Multi-homing:** Servers connected via multiple ISPs
 - **Load balancing:** Distributing traffic across multiple paths
 - **CDN networks:** Multiple routes to content delivery
 - **MPLS networks:** Traffic engineering with multiple paths
 
 **Step 8: Practical Considerations**
+
 - **Path selection:** Choose paths with highest min(Rk) for single path
 - **Traffic splitting:** Need mechanisms to distribute load across paths
 - **Path independence:** No shared bottlenecks between paths
@@ -131,12 +141,14 @@ When a packet is lost, the server retransmits it. The process continues until th
 
 **Step 4: Calculating Average Retransmissions**
 This is a geometric distribution problem. Each transmission attempt has:
+
 - Success probability: 1 - p
 - Failure probability: p
 
 **Average retransmissions = p / (1 - p)**
 
 **Explanation:**
+
 - The first transmission succeeds with probability (1-p)
 - If it fails, we retransmit, and this continues until success
 - The expected number of attempts is 1 / (1-p)
@@ -145,6 +157,7 @@ This is a geometric distribution problem. Each transmission attempt has:
 **Step 5: Detailed Analysis**
 
 **Transmission Attempts:**
+
 - Attempt 1: Success probability (1-p), Retransmissions = 0
 - Attempt 2: Failure on 1, success on 2: p × (1-p), Retransmissions = 1
 - Attempt 3: Failure on 1&2, success on 3: p² × (1-p), Retransmissions = 2
@@ -159,22 +172,26 @@ Yes, matches the formula.
 **Step 6: Real-World Implications**
 
 **Impact of Loss Probability:**
+
 - p = 0.01 (1% loss): Average retransmissions ≈ 0.01
 - p = 0.1 (10% loss): Average retransmissions ≈ 0.11
 - p = 0.5 (50% loss): Average retransmissions ≈ 1
 
 **Performance Impact:**
+
 - Higher loss rates dramatically increase retransmissions
 - Each retransmission adds delay and consumes bandwidth
 - TCP congestion control amplifies these effects
 
 **Step 7: Network Design Considerations**
+
 - **Error recovery:** Protocols need retransmission mechanisms
 - **Forward error correction:** Add redundancy to reduce effective loss
 - **Path diversity:** Multiple paths can reduce loss correlation
 - **Quality of Service:** Loss-sensitive applications need better paths
 
 **Step 8: Key Insights**
+
 - Even small loss probabilities require significant retransmission overhead
 - Independent link losses compound along the path
 - Retransmission strategies are essential for reliable data transfer
@@ -200,6 +217,7 @@ Figure 1.19(a) shows a simple two-link path: Server → Link 1 (Rs) → Router �
 **Inter-arrival time** is the time between when the last bit of the first packet arrives at the client and when the last bit of the second packet arrives.
 
 **First Packet Journey:**
+
 - Starts transmission at t = 0
 - Takes L/Rs to transmit on first link
 - Takes L/Rs + d_prop to arrive at router (ignoring propagation for simplicity)
@@ -207,6 +225,7 @@ Figure 1.19(a) shows a simple two-link path: Server → Link 1 (Rs) → Router �
 - Total time for first packet: L/Rs + L/Rc
 
 **Second Packet Journey:**
+
 - Starts transmission immediately after first packet (at t = L/Rs)
 - Takes L/Rs to transmit on first link
 - Arrives at router at t = L/Rs + L/Rs = 2×(L/Rs)
@@ -222,6 +241,7 @@ Since Rs is the bottleneck (Rs < Rc), the second packet catches up to the first 
 The question asks whether the second packet can queue at the input of the second link, and how large the spacing T must be to prevent queuing.
 
 **Scenario Analysis:**
+
 - If Rc < Rs (second link is bottleneck), then the second link is slower
 - The second packet might arrive at the router before the first packet has finished transmitting on the second link
 - This would cause the second packet to queue
@@ -241,16 +261,19 @@ Since Rc < Rs (second link bottleneck), L/Rc > L/Rs, so T > 0.
 **Step 4: Key Insights**
 
 **Bottleneck Effects:**
+
 - When the first link is faster (Rs > Rc), packets bunch up at the slower second link
 - This causes queuing and increased delays
 - The spacing between packets changes as they traverse the network
 
 **Traffic Shaping:**
+
 - Proper spacing (T) can prevent unnecessary queuing
 - This is important for real-time traffic like VoIP
 - Network protocols use pacing to control packet spacing
 
 **Step 5: Real-World Applications**
+
 - **TCP congestion control:** Prevents overwhelming slow links
 - **Traffic engineering:** Ensures smooth flow through bottlenecks
 - **Quality of Service:** Maintains delay bounds for sensitive applications
@@ -268,6 +291,7 @@ The inter-arrival time between packets changes as they pass through links of dif
 
 **Step 1: Understanding the Data Transfer Challenge**
 You have an urgent need to deliver 50 terabytes of data from Boston to Los Angeles. You have two options:
+
 1. Use a dedicated 100 Mbps network link
 2. Send it via FedEx overnight delivery
 
@@ -289,6 +313,7 @@ The question is which method is faster for such a large data transfer.
 FedEx overnight delivery takes approximately 1 day (24 hours) to go from Boston to Los Angeles.
 
 **Comparison:**
+
 - Network transfer: ~46 days
 - FedEx delivery: 1 day
 
@@ -296,11 +321,13 @@ FedEx overnight delivery takes approximately 1 day (24 hours) to go from Boston 
 
 **Step 4: Understanding Why Network Transfer is Slow**
 **Bandwidth Limitations:**
+
 - 100 Mbps seems fast, but for huge data transfers, it's actually quite slow
 - Compare: downloading a 1 GB movie takes ~80 seconds at 100 Mbps
 - 50 TB is 50,000 GB - that's 50,000 movies!
 
 **Real-World Context:**
+
 - Typical home internet: 10-100 Mbps
 - Even "fast" business connections: 100-1000 Mbps
 - Large data centers use 10-100 Gbps links
@@ -308,21 +335,25 @@ FedEx overnight delivery takes approximately 1 day (24 hours) to go from Boston 
 **Step 5: Practical Considerations**
 
 **Network Transfer Advantages:**
+
 - No physical shipping required
 - Can start immediately
 - Automatic and reliable
 
 **Network Transfer Disadvantages:**
+
 - Very slow for massive data
 - Requires continuous connection
 - Cost accumulates over time
 
 **FedEx Advantages:**
+
 - Extremely fast for physical media
 - No technical setup required
 - Reliable delivery guarantee
 
 **FedEx Disadvantages:**
+
 - Requires data to be copied to physical media
 - Shipping costs
 - Security concerns with physical transport
@@ -331,15 +362,18 @@ FedEx overnight delivery takes approximately 1 day (24 hours) to go from Boston 
 Today, there are better options than the original 100 Mbps link:
 
 **High-Speed Networks:**
+
 - 10 Gbps links: ~5 days for 50 TB
 - 100 Gbps links: ~12 hours for 50 TB
 
 **Cloud Services:**
+
 - AWS Snowball/Snowmobile: Physical devices for large transfers
 - Azure Data Box: Similar service
 - Google Transfer Appliance: High-capacity transfer devices
 
 **Step 7: Key Insights**
+
 - **Scale matters:** What seems fast for small transfers is slow for large ones
 - **Physical shipping** can be faster than slow networks for huge data
 - **Technology evolution:** Network speeds have improved dramatically
@@ -366,10 +400,12 @@ The bandwidth-delay product (BDP) is a fundamental concept in networking that te
 **BDP = Bandwidth × Delay**
 
 Where:
+
 - Bandwidth (R) = link capacity (bits/second)
 - Delay (d) = round-trip propagation delay (seconds)
 
 **Step 2: Given Parameters**
+
 - Distance: 20,000 km between hosts
 - Link speed: R = 5 Mbps = 5 × 10^6 bits/second
 - Propagation speed: s = 2.5 × 10^8 m/s (speed of light in fiber)
@@ -392,6 +428,7 @@ First, we need the one-way propagation delay:
 When sending a continuous stream of data, the maximum number of bits that can be "in the pipe" at any time is exactly the bandwidth-delay product.
 
 For a file of 800,000 bits:
+
 - This is larger than the BDP (400,000 bits)
 - So maximum bits in transit = BDP = 400,000 bits = 50,000 bytes
 
@@ -399,6 +436,7 @@ For a file of 800,000 bits:
 The BDP represents the maximum amount of unacknowledged data that can be in transit on a link.
 
 **Why it matters:**
+
 - **TCP performance:** TCP can send up to BDP worth of data before needing acknowledgments
 - **Buffer sizing:** Network devices need buffers at least as large as BDP
 - **Link utilization:** Determines how efficiently high-bandwidth, high-delay links can be used
@@ -417,27 +455,32 @@ The "width" of a bit is how much physical distance it occupies on the link.
 **Bit width = s / R meters**
 
 Where:
+
 - s = propagation speed (m/s)
 - R = link bandwidth (bits/s)
 
 **Step 8: Key Insights**
 
 **High BDP Links:**
+
 - Long-distance links (satellite, transoceanic cables)
 - High-speed links (10Gbps+)
 - Require large buffers and window sizes
 
 **Performance Implications:**
+
 - **TCP window size:** Should be at least BDP for full link utilization
 - **Latency impact:** High delay links need large windows to maintain throughput
 - **Buffer requirements:** Network equipment must handle BDP-sized bursts
 
 **Step 9: Real-World Examples**
+
 - **Geostationary satellite:** 250ms delay × 10Mbps = 312.5 KB BDP
 - **Transatlantic cable:** 50ms delay × 10Gbps = 62.5 MB BDP
 - **Local Ethernet:** 0.1ms delay × 1Gbps = 12.5 KB BDP
 
 **Step 10: Practical Applications**
+
 - **Network design:** Determining buffer sizes and TCP parameters
 - **Performance tuning:** Optimizing protocols for different link characteristics
 - **Quality of Service:** Understanding delay-bandwidth tradeoffs

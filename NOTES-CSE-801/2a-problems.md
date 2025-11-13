@@ -166,21 +166,22 @@ The primary differences lie in their **infrastructure dependencies and encryptio
 To retrieve a Web document when the IP address is initially unknown, the following protocols are needed:
 
 1. **DNS (Domain Name System)** - Application Layer
-     - To resolve the domain name in the URL to an IP address
-     - Uses UDP port 53 (typically)
+   - To resolve the domain name in the URL to an IP address
+   - Uses UDP port 53 (typically)
 
 2. **UDP (User Datagram Protocol)** - Transport Layer
-     - Used by DNS for query/response messages
+   - Used by DNS for query/response messages
 
 3. **TCP (Transmission Control Protocol)** - Transport Layer
-     - HTTP uses TCP for reliable data transfer
-     - Establishes connection before HTTP communication
+   - HTTP uses TCP for reliable data transfer
+   - Establishes connection before HTTP communication
 
 4. **IP (Internet Protocol)** - Network Layer
-     - For routing packets between client and server
-     - Not explicitly mentioned as "besides HTTP" but necessary
+   - For routing packets between client and server
+   - Not explicitly mentioned as "besides HTTP" but necessary
 
 **Process Flow:**
+
 1. DNS query (using UDP) to resolve domain name → IP address
 2. TCP connection establishment (3-way handshake) to the server
 3. HTTP GET request sent over TCP connection
@@ -199,28 +200,28 @@ Let's understand this step by step, as if you're learning networking for the fir
 4. **What is DNS?** DNS stands for Domain Name System. It's like the phone book of the internet. It translates human-readable domain names into IP addresses that computers can use.
 
 5. **Step-by-step process:**
-    - User enters URL: http://www.example.com/index.html
-    - Client extracts the hostname: www.example.com
-    - Client sends a DNS query to find the IP address of www.example.com
-    - DNS server responds with the IP address (e.g., 93.184.216.34)
-    - Now the client knows where to connect.
+   - User enters URL: http://www.example.com/index.html
+   - Client extracts the hostname: www.example.com
+   - Client sends a DNS query to find the IP address of www.example.com
+   - DNS server responds with the IP address (e.g., 93.184.216.34)
+   - Now the client knows where to connect.
 
 6. **What happens after getting the IP address?** The client needs to establish a connection to the server and send the HTTP request. This requires a transport protocol.
 
 7. **What is TCP?** TCP (Transmission Control Protocol) is a transport layer protocol that provides reliable, ordered delivery of data between applications. HTTP runs on top of TCP.
 
 8. **Why TCP specifically?** HTTP is designed to work over TCP because:
-    - TCP ensures data arrives in order and without errors.
-    - TCP handles flow control and congestion control.
-    - HTTP needs reliable delivery for web pages.
+   - TCP ensures data arrives in order and without errors.
+   - TCP handles flow control and congestion control.
+   - HTTP needs reliable delivery for web pages.
 
 9. **Could it use UDP?** No, because UDP (User Datagram Protocol) is unreliable - it doesn't guarantee delivery or order. HTTP requires reliability.
 
 10. **Are there other protocols involved?** In some cases, HTTPS (secure HTTP) might be used, which adds TLS/SSL for encryption, but the question specifies HTTP, so we stick to the basics.
 
 11. **Summary of protocols needed:**
-     - Application layer: DNS (to resolve domain name to IP) and HTTP (to request the document)
-     - Transport layer: TCP (to reliably transport the HTTP messages)
+    - Application layer: DNS (to resolve domain name to IP) and HTTP (to request the document)
+    - Transport layer: TCP (to reliably transport the HTTP messages)
 
 12. **Key concept to memorize:** For HTTP over the internet, you need DNS to find the server and TCP to reliably deliver the messages. HTTP itself is the application protocol for the web request/response.
 
@@ -244,6 +245,7 @@ Encoding: zip,deflate<cr><lf>Accept-Charset: ISO
 **Answer:** `http://gaia.cs.umass.edu/cs453/index.html`
 
 **Location:**
+
 - Path: First line - `/cs453/index.html`
 - Host: Second line - `gaia.cs.umass.edu`
 
@@ -256,9 +258,9 @@ Encoding: zip,deflate<cr><lf>Accept-Charset: ISO
 3. **Looking at the message:** The first line is: `GET /cs453/index.html HTTP/1.1<cr><lf>`
 
 4. **Breaking it down:**
-    - GET: The method (asking to retrieve something)
-    - /cs453/index.html: This is the path part of the URL
-    - HTTP/1.1: The version of HTTP being used
+   - GET: The method (asking to retrieve something)
+   - /cs453/index.html: This is the path part of the URL
+   - HTTP/1.1: The version of HTTP being used
 
 5. **What about the full URL?** The full URL would be the Host header plus this path. But the question asks for "the URL of the document requested," and in the context, it means the path. The Host header gives the domain: gaia.cs.umass.edu
 
@@ -309,7 +311,7 @@ Encoding: zip,deflate<cr><lf>Accept-Charset: ISO
 2. **Headers present:**
    - Host: The server being requested
    - User-Agent: Browser info
-   - Accept*: What content types accepted
+   - Accept\*: What content types accepted
    - Keep-Alive: Connection preference
    - Connection: Connection type
 
@@ -326,6 +328,7 @@ Encoding: zip,deflate<cr><lf>Accept-Charset: ISO
 **Location:** User-Agent header - `Mozilla/5.0 (Windows;U; Windows NT 5.1; en-US; rv:1.7.2) Gecko/20040804 Netscape/7.2 (ax)`
 
 **Why it's needed:**
+
 - **Content negotiation:** Servers can send different content based on browser capabilities
 - **Browser-specific features:** Some browsers support different HTML/CSS/JavaScript features
 - **Statistics:** Website owners track browser usage
@@ -339,9 +342,9 @@ Encoding: zip,deflate<cr><lf>Accept-Charset: ISO
 2. **What does this mean?** It's Netscape 7.2 browser on Windows, but identifies as Mozilla for compatibility.
 
 3. **Why is it needed?** Servers can send different content based on browser capabilities. For example:
-    - Different HTML for different browsers
-    - Different features or workarounds for older browsers
-    - Analytics and debugging
+   - Different HTML for different browsers
+   - Different features or workarounds for older browsers
+   - Analytics and debugging
 
 4. **Key concept to memorize:** User-Agent header identifies the browser/client, allowing servers to customize responses.
 
@@ -368,10 +371,12 @@ NTU-ST550ASpring 2005 homepage</title><lf></head><lf>
 ### a. Was the server able to successfully find the document? What time was the reply provided?
 
 **Answer:**
+
 - **Success:** YES - indicated by status code `200 OK`
 - **Time:** Tuesday, 07 Mar 2008, 12:39:45 GMT
 
 **Location:**
+
 - Status: First line - `HTTP/1.1 200 OK`
 - Time: `Date: Tue, 07 Mar 2008 12:39:45 GMT`
 
@@ -422,10 +427,12 @@ NTU-ST550ASpring 2005 homepage</title><lf></head><lf>
 ### d. What are the first 5 bytes of the document being returned? Did the server agree to a persistent connection?
 
 **Answer:**
+
 - **First 5 bytes:** `<!doc` (the beginning of `<!doctype...>`)
 - **Persistent connection:** YES
 
 **Location:**
+
 - First bytes: Start of message body after the blank line
 - Persistent connection: `Connection: Keep-Alive` header
 
