@@ -1,14 +1,18 @@
 {
-  "window.commandCenter": 1,
-  "workbench.iconTheme": "material-icon-theme",
-  "editor.tabSize": 2,
-  "editor.indentSize": "tabSize",
-  "files.autoSave": "afterDelay",
-  "editor.formatOnSave": false,
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "editor.formatOnSave": false,
+  "editor.indentSize": "tabSize",
+  "editor.tabSize": 2,
+  "excel-viewer.showInfo": false,
   "files.associations": {
     "stdio.h": "c"
-  }
+  },
+  "files.autoSave": "afterDelay",
+  "window.commandCenter": 1,
+  "workbench.editorAssociations": {
+    "*.md": "vscode.markdown.preview.editor"
+  },
+  "workbench.iconTheme": "material-icon-theme"
 }

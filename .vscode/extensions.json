@@ -2,6 +2,7 @@
   "recommendations": [
     "ms-vscode.cpptools",
     "dbaeumer.vscode-eslint",
+    "grapecity.gc-excelviewer",
     "mhutchie.git-graph",
     "kilocode.kilo-code",
     "yzhang.markdown-all-in-one",
