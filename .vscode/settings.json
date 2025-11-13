@@ -12,8 +12,8 @@
   "files.autoSave": "afterDelay",
   "window.commandCenter": 1,
   "workbench.editorAssociations": {
-    "*.md": "vscode.markdown.preview.editor",
-    "*.csv": "gc-excelviewer-csv-editor"
+    "*.csv": "gc-excelviewer-csv-editor",
+    "*.md": "vscode.markdown.preview.editor"
   },
   "workbench.iconTheme": "material-icon-theme"
 }
