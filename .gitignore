@@ -3,3 +3,7 @@ Z/investigation-of-http-traffic.log
 Z/lab-image.E01
 Z/metasploitable-linux-2.0.0.zip
 Z/volatility-2.6-lin64-standalone.zip
+
+.kilocode
+.vscode
+node_modules
