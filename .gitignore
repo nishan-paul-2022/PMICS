@@ -1,9 +1,11 @@
-Z/hex-value-image-converter.ipynb
-Z/investigation-of-http-traffic.log
-Z/lab-image.E01
-Z/metasploitable-linux-2.0.0.zip
-Z/volatility-2.6-lin64-standalone.zip
+# Dependencies
+node_modules/
 
-.kilocode
-.vscode
-node_modules
+# Tools
+.kilocode/
+
+# Z directory specific files
+Z/*.ipynb
+Z/*.log
+Z/*.E01
+Z/*.zip
