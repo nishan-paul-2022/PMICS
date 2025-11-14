@@ -1,0 +1,32 @@
+# === SHORT SUMMARY (max 50 chars) ===
+# Format: <type>(optional scope): <summary>
+# Example: docs(CSE-807): add week 4 notes
+
+<type>(<scope>): <summary>
+
+
+# === OPTIONAL DESCRIPTION ===
+# Explain what changed and why (if useful).
+# Keep each line under 72 characters.
+
+# <description>
+
+
+# === ALLOWED TYPES ===
+# docs     → notes, slides, readings, summaries
+# feat     → new course module / chapter / material
+# fix      → correction of mistakes in notes/diagrams
+# lab      → lab or assignment uploads/updates
+# asset    → images, diagrams, charts
+# chore    → folder restructure, file rename, cleanup
+# refactor → reorganizing content without changing meaning
+
+
+# === SCOPE (examples) ===
+# CSE-801, CSE-802, CSE-804, CSE-807
+# general, folders, diagrams, slides
+
+
+# === FOOTER (optional) ===
+# For reference, linking issues, or notes.
+# Example: Related: #12
