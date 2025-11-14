@@ -11,6 +11,7 @@
   "scripts": {
     "format": "prettier --write \"**/*.{json,md,svg}\" --ignore-path .gitignore",
     "format:check": "prettier --check \"**/*.{json,md,svg}\" --ignore-path .gitignore",
+    "format:staged": "lint-staged",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -19,13 +20,14 @@
     ]
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.5.0",
-    "@commitlint/config-conventional": "^19.5.0",
-    "husky": "^9.1.6",
-    "lint-staged": "^15.2.10",
-    "prettier": "^3.3.3"
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
+    "prettier": "^3.6.2"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
   }
 }
