@@ -1,0 +1,31 @@
+{
+  "name": "pmics-course-materials",
+  "version": "1.0.0",
+  "description": "Comprehensive course materials, notes, labs, and resources for PMICS courses on networking and cybersecurity",
+  "author": "nishan-paul-2022",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nishan-paul-2022/PMICS"
+  },
+  "scripts": {
+    "format": "prettier --write \"**/*.{json,md,svg}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{json,md,svg}\" --ignore-path .gitignore",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{json,md,svg}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
