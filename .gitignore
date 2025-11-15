@@ -1,7 +1,8 @@
 # Dependencies
 node_modules/
 
-# Tools
+# IDE Configurations
+.vscode/
 .kilocode/
 
 # Z directory specific files
