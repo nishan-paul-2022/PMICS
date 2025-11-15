@@ -1,10 +1,6 @@
 # Dependencies
 node_modules/
 
-# IDE Configurations
-.vscode/
-.kilocode/
-
 # Z directory specific files
 Z/*.ipynb
 Z/*.log
