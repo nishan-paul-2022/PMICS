@@ -111,6 +111,7 @@ This setup allows web pages to be composed from resources scattered across the i
   - **Components**:
     - **Header Lines**: Provide metadata (e.g., browser type, accepted formats).
     - **Example Request**:
+
       ```
       GET /index.html HTTP/1.1\r\n
       Host: www-net.cs.umass.edu\r\n
@@ -126,6 +127,7 @@ This setup allows web pages to be composed from resources scattered across the i
       - **Request Line**: `GET /index.html HTTP/1.1` – Method (GET), URL, Version.
       - **Header Fields**: `Host`, `User-Agent`, etc.
       - Empty line indicates end of headers.
+
 - **General Format**:
   ```
   Request Line: method sp URL sp version cr lf

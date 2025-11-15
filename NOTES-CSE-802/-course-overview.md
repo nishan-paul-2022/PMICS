@@ -64,7 +64,7 @@
 
 #### 1. Key Generation and Exchange
 
-#### 2. Key/Identity Management 
+#### 2. Key/Identity Management
 
 #### 3. Symmetric Key Distribution Using Symmetric Encryption
 
